@@ -1,0 +1,11 @@
+[
+  {
+    "name": "SR-00007",
+    "doctype": "Customer",
+    "customer_name": "Демо Заказчик",
+    "customer_group": "Commercial",
+    "territory": "Russia",
+    "customer_type": "Company",
+    "__islocal": 1
+  }
+]

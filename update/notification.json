@@ -1,0 +1,14 @@
+[
+  {
+    "doctype": "Notification",
+    "name": "Service Request Status Change",
+    "enabled": 1,
+    "document_type": "Service Request",
+    "subject": "Статус заявки {{ doc.name }} изменен на {{ doc.status }}",
+    "message": "Заявка {{ doc.name }} находится в статусе {{ doc.status }}.",
+    "event": "Value Change",
+    "value_changed": "status",
+    "channel": "Email",
+    "recipients": [{"receiver_by_role": "Проектный менеджер"}]
+  }
+]
