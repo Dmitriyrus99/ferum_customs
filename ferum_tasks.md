@@ -9,8 +9,8 @@
 - [ ] Убедиться, что `ferum_customs` подключено в `apps.json`, Dockerfile
 - [ ] Завершить установку `ferum_customs` через `install_app`
 - [ ] Установить `erpnext` и `payments` перед кастомным приложением
-- [ ] Проверить volumes и параметры подключения БД в Docker
-- [ ] Проверить `site_config.json` на валидность
+- [x] Проверить volumes и параметры подключения БД в Docker
+- [x] Проверить `site_config.json` на валидность
 - [ ] Использовать `vi` или `vim` вместо `nano`
 - [x] Настроить CI: pytest, flake8, разделение тестов
 - [x] Проверить `get_notification_config` в `hooks.py`
