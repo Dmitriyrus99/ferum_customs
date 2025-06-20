@@ -1,4 +1,4 @@
-# Ferum Customs – hooks
+# Ferum Customs - hooks
 from .custom_hooks import DOC_EVENTS
 
 app_name = "ferum_customs"
@@ -34,6 +34,6 @@ def scheduler_events() -> dict:
 
 
 try:  # dev-hooks (если есть)
-	from .dev_hooks import *  # noqa
+	from .dev_hooks import *
 except ImportError:
 	pass
