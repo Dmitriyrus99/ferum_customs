@@ -1,4 +1,4 @@
-# Copyright (c) 2024, Ferum LLC (или ваш издатель) and contributors
+# Copyright (c) 2025 Ferum LLC and contributors
 # For license information, please see license.txt
 
 # import frappe
