@@ -1,4 +1,4 @@
-# Ferum Customs – hooks
+# Ferum Customs - hooks
 from .custom_hooks import DOC_EVENTS
 
 app_name = "ferum_customs"
