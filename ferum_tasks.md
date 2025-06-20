@@ -1,0 +1,24 @@
+# ✅ Task List для проекта `ferum_customs`
+
+## Основные задачи по итогам аудита:
+
+- [ ] Проверить и обновить `.env`, `docker-compose.override.yml` под прод/дев
+- [ ] Создать суперпользователя `postgres`, назначить роль `frappe`
+- [ ] Исправить ошибки удаления `drop-site` вручную
+- [ ] Очистить `.swp` файлы, валидировать JSON
+- [ ] Убедиться, что `ferum_customs` подключено в `apps.json`, Dockerfile
+- [ ] Завершить установку `ferum_customs` через `install_app`
+- [ ] Установить `erpnext` и `payments` перед кастомным приложением
+- [ ] Проверить volumes и параметры подключения БД в Docker
+- [ ] Проверить `site_config.json` на валидность
+- [ ] Использовать `vi` или `vim` вместо `nano`
+- [ ] Настроить CI: pytest, flake8, разделение тестов
+- [ ] Проверить `get_notification_config` в `hooks.py`
+- [ ] Актуализировать `fixtures`, удалить лишнее
+- [ ] Проверить `yarn run production`, зависимости node
+- [ ] Удалить неиспользуемые зависимости (`openai`)
+- [ ] Написать `README.md`, `SECURITY.md`, `install.md`
+- [ ] Проверить структуру `service_*` модулей
+- [ ] Обеспечить запуск `bench` из правильной среды
+- [ ] Настроить `tests/unit`, `tests/integration`, `tests/e2e`
+
