@@ -25,7 +25,6 @@ if TYPE_CHECKING:
 # --------------------------------------------------------------------------- #
 
 
-
 def validate(doc: ServiceReport, method: str | None = None) -> None:
 	"""
 	Проверяет, что отчёт ссылается на существующую заявку со статусом «Выполнена».
@@ -70,9 +69,7 @@ def validate(doc: ServiceReport, method: str | None = None) -> None:
 		)
 
 
-
 def on_submit(doc: ServiceReport, method: str | None = None) -> None:
-
 	"""
 	После отправки (submit) отчёта обновляет связанную service_request.
 
@@ -92,7 +89,6 @@ def on_submit(doc: ServiceReport, method: str | None = None) -> None:
 
 	try:
 		req: ServiceRequest = frappe.get_doc("Service Request", doc.service_request)
-
 
 		req.set(FIELD_CUSTOM_LINKED_REPORT, doc.name)
 
