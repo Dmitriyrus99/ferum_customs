@@ -30,6 +30,11 @@ Pre-commit is configured to use the following tools for checking and formatting 
 - prettier
 - pyupgrade
 
+### CLI Tips
+
+When editing configuration files on the server, use **vi** or **vim** instead of
+`nano`, which might not be available by default.
+
 ### Project Structure
 
 All application code lives inside the `ferum_customs` package. Important
