@@ -15,6 +15,7 @@ if TYPE_CHECKING:
 	# from ..doctype.service_report.service_report import ServiceReport # Если используется в расчетах
 
 
+
 def validate(doc: PayrollEntryCustom, method: str | None = None) -> None:
 	"""
 	Проверяет корректность дат периода. Дата окончания не может быть раньше даты начала.
@@ -38,6 +39,7 @@ def validate(doc: PayrollEntryCustom, method: str | None = None) -> None:
 	# Сюда можно добавить другие проверки для PayrollEntryCustom.
 	# if not doc.get("employee"):
 	#     frappe.throw(_("Не выбран сотрудник для расчета зарплаты."))
+
 
 
 def before_save(doc: PayrollEntryCustom, method: str | None = None) -> None:
@@ -77,6 +79,7 @@ def before_save(doc: PayrollEntryCustom, method: str | None = None) -> None:
 
 	if doc.get("total_payable") is None:
 		doc.total_payable = 0.0
+
 
 	if isinstance(doc.get("total_payable"), float | int):
 		doc.total_payable = round(doc.total_payable, 2)
