@@ -2,6 +2,6 @@
 
 
 def execute():
-    """Migrate permissions if necessary."""
-    # Роли создаются через fixtures/role.json, поэтому патч пока ничего не делает
-    pass
+	"""Migrate permissions if necessary."""
+	# Роли создаются через fixtures/role.json, поэтому патч пока ничего не делает
+	pass
