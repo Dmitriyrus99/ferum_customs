@@ -43,6 +43,7 @@ class ServiceReport(Document):
 		if posting_date_val:
 			if not isinstance(posting_date_val, str):
 				if isinstance(posting_date_val, datetime.datetime | datetime.date):
+
 					self.posting_date = posting_date_val.isoformat()
 		else:
 			if self.is_new() and self.meta.get_field("posting_date").reqd:
@@ -97,6 +98,7 @@ class ServiceReport(Document):
 		total_pay: float = 0.0
 
 		work_items_table: list[Document] = self.get("work_items", [])
+
 
 		for item in work_items_table:
 			try:

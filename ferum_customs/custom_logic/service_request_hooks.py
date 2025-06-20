@@ -5,6 +5,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+
 import frappe
 from frappe import _
 from frappe.utils import get_link_to_form, now
@@ -61,12 +62,14 @@ def validate(doc: ServiceRequest, method: str | None = None) -> None:
 
 
 def on_update_after_submit(doc: ServiceRequest, method: str | None = None) -> None:
+
 	"""Вызывается после обновления отправленного документа."""
 	if doc.status == STATUS_ZAKRYTA:
 		_notify_project_manager(doc)
 
 
 def prevent_deletion_with_links(doc: ServiceRequest, method: str | None = None) -> None:
+
 	"""Запрещает удаление заявки, если на нее есть ссылки."""
 	if linked_report := frappe.db.exists("Service Report", {"service_request": doc.name}):
 		frappe.throw(
@@ -83,12 +86,14 @@ def prevent_deletion_with_links(doc: ServiceRequest, method: str | None = None) 
 
 @frappe.whitelist()
 def get_engineers_for_object(service_object_name: str) -> list[str]:
+
 	"""Возвращает список инженеров, назначенных на объект обслуживания."""
 	if not service_object_name:
 		return []
 
 	try:
 		so_doc: FrappeDocument = frappe.get_doc("Service Object", service_object_name)
+appeDocument" = frappe.get_doc("Service Object", service_object_name)
 		engineers_table = so_doc.get("assigned_engineers") or []
 		return list({entry.get("engineer") for entry in engineers_table if entry.get("engineer")})
 	except frappe.DoesNotExistError:
