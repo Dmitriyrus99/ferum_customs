@@ -54,6 +54,7 @@ ignore = [
     "RUF002", # allow Cyrillic characters in docstrings
     "RUF003", # allow non-ASCII characters in comments
     "RUF022", # don't enforce sorting of __all__
+
 ]
 typing-modules = ["frappe.types.DF"]
 
