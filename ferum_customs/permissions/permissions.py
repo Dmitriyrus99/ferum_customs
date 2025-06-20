@@ -5,17 +5,17 @@
 
 from __future__ import annotations
 
-from typing import Dict, List, Optional, Union
+from typing import Union
 
 import frappe
 
 from ..constants import ROLE_ZAKAZCHIK
 
-PQCConditionValue = Union[str, List[Union[str, List[str]]], Dict[str, str], tuple[str, str]]
-PQCConditions = Dict[str, PQCConditionValue]
+PQCConditionValue = str | list[str | list[str]] | dict[str, str] | tuple[str, str]
+PQCConditions = dict[str, PQCConditionValue]
 
 
-def get_service_request_pqc(user: Optional[str] = None) -> Optional[PQCConditions]:
+def get_service_request_pqc(user: str | None = None) -> PQCConditions | None:
 	if user is None:
 		user = frappe.session.user
 

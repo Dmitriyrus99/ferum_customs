@@ -6,7 +6,7 @@ Python-контроллер для DocType "Service Report".
 from __future__ import annotations
 
 import datetime
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING
 
 import frappe
 from frappe import _
@@ -42,7 +42,8 @@ class ServiceReport(Document):
 		posting_date_val = self.get("posting_date")
 		if posting_date_val:
 			if not isinstance(posting_date_val, str):
-				if isinstance(posting_date_val, (datetime.datetime, datetime.date)):
+				if isinstance(posting_date_val, datetime.datetime | datetime.date):
+
 					self.posting_date = posting_date_val.isoformat()
 		else:
 			if self.is_new() and self.meta.get_field("posting_date").reqd:
@@ -96,7 +97,8 @@ class ServiceReport(Document):
 		total_qty: float = 0.0
 		total_pay: float = 0.0
 
-		work_items_table: List[Document] = self.get("work_items", [])
+		work_items_table: list[Document] = self.get("work_items", [])
+
 
 		for item in work_items_table:
 			try:

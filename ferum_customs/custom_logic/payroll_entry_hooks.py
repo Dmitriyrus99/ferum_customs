@@ -15,7 +15,8 @@ if TYPE_CHECKING:
 	# from ..doctype.service_report.service_report import ServiceReport # Если используется в расчетах
 
 
-def validate(doc: "PayrollEntryCustom", method: str | None = None) -> None:
+
+def validate(doc: PayrollEntryCustom, method: str | None = None) -> None:
 	"""
 	Проверяет корректность дат периода. Дата окончания не может быть раньше даты начала.
 
@@ -40,7 +41,8 @@ def validate(doc: "PayrollEntryCustom", method: str | None = None) -> None:
 	#     frappe.throw(_("Не выбран сотрудник для расчета зарплаты."))
 
 
-def before_save(doc: "PayrollEntryCustom", method: str | None = None) -> None:
+
+def before_save(doc: PayrollEntryCustom, method: str | None = None) -> None:
 	"""Calculate ``total_payable`` before saving."""
 
 	total_bonus = 0.0
@@ -62,7 +64,8 @@ def before_save(doc: "PayrollEntryCustom", method: str | None = None) -> None:
 					frappe.logger(__name__).warning(
 						f"Invalid bonus value in ServiceReport '{r}' while calculating payroll"
 					)
-	except Exception as exc:  # noqa: BLE001
+
+	except Exception as exc:
 		frappe.logger(__name__).error(
 			f"Error fetching ServiceReport bonuses for '{doc.name}': {exc}",
 			exc_info=True,
@@ -77,5 +80,6 @@ def before_save(doc: "PayrollEntryCustom", method: str | None = None) -> None:
 	if doc.get("total_payable") is None:
 		doc.total_payable = 0.0
 
-	if isinstance(doc.get("total_payable"), (float, int)):
+
+	if isinstance(doc.get("total_payable"), float | int):
 		doc.total_payable = round(doc.total_payable, 2)
