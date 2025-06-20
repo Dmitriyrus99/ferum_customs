@@ -1,0 +1,11 @@
+[
+  {
+    "doctype": "User",
+    "name": "demo@example.com",
+    "first_name": "Demo",
+    "email": "demo@example.com",
+    "roles": [
+      {"role": "System Manager"}
+    ]
+  }
+]
