@@ -12,13 +12,13 @@
 - [ ] Проверить volumes и параметры подключения БД в Docker
 - [ ] Проверить `site_config.json` на валидность
 - [ ] Использовать `vi` или `vim` вместо `nano`
-- [ ] Настроить CI: pytest, flake8, разделение тестов
+- [x] Настроить CI: pytest, flake8, разделение тестов
 - [x] Проверить `get_notification_config` в `hooks.py`
-- [ ] Актуализировать `fixtures`, удалить лишнее
+- [x] Актуализировать `fixtures`, удалить лишнее
 - [ ] Проверить `yarn run production`, зависимости node
 - [x] Удалить неиспользуемые зависимости (`openai`)
 - [x] Написать `README.md`, `SECURITY.md`, `install.md`
-- [ ] Проверить структуру `service_*` модулей
+- [x] Проверить структуру `service_*` модулей
 - [ ] Обеспечить запуск `bench` из правильной среды
 - [x] Настроить `tests/unit`, `tests/integration`, `tests/e2e`
 
