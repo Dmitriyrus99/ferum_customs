@@ -20,5 +20,5 @@
 - [x] Написать `README.md`, `SECURITY.md`, `install.md`
 - [ ] Проверить структуру `service_*` модулей
 - [ ] Обеспечить запуск `bench` из правильной среды
-- [ ] Настроить `tests/unit`, `tests/integration`, `tests/e2e`
+- [x] Настроить `tests/unit`, `tests/integration`, `tests/e2e`
 
