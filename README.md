@@ -37,4 +37,4 @@ This app can use GitHub Actions for CI. The following workflows are configured:
 
 ### License
 
-mit
+MIT. See [license.txt](license.txt) for details.
