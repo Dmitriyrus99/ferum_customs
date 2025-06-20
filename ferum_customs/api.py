@@ -1,12 +1,12 @@
-from typing import Optional
 
+from typing import Optional
 import frappe
 from frappe import _, whitelist
 from frappe.exceptions import PermissionError
 
 
 @whitelist()
-def validate_service_request(docname: str) -> Optional[dict]:
+def validate_service_request(docname: str) -> dict | None:
 	"""Return the service request document as a dict after permission check."""
 	if not frappe.has_permission("Service Request", "read"):
 		frappe.throw(_("Not permitted"), PermissionError)
@@ -32,7 +32,7 @@ def cancel_service_request(docname: str) -> None:
 
 
 @whitelist()
-def validate_service_report(docname: str) -> Optional[dict]:
+def validate_service_report(docname: str) -> dict | None:
 	"""Return the service report document as a dict after permission check."""
 	if not frappe.has_permission("Service Report", "read"):
 		frappe.throw(_("Not permitted"), PermissionError)

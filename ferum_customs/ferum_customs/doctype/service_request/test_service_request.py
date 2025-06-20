@@ -3,7 +3,7 @@ from unittest.mock import patch  # Для мокирования frappe.sendmail
 import pytest
 
 try:
-	import frappe  # noqa: F401
+	import frappe
 	from frappe.tests.utils import FrappeTestCase
 	from frappe.utils import add_days, now_datetime
 except Exception:  # pragma: no cover

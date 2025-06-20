@@ -50,7 +50,11 @@ ignore = [
     "UP030", # Use implicit references for positional format fields (translations)
     "UP031", # Use format specifiers instead of percent format
     "UP032", # Use f-string instead of `format` call (translations)
+    "RUF001", # allow Cyrillic characters in string literals
+    "RUF002", # allow Cyrillic characters in docstrings
     "RUF003", # allow non-ASCII characters in comments
+    "RUF022", # don't enforce sorting of __all__
+
 ]
 typing-modules = ["frappe.types.DF"]
 

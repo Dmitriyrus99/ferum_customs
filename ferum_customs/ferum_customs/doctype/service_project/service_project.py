@@ -80,7 +80,8 @@ class ServiceProject(Document):  # Имя класса в CamelCase
 		for fieldname in date_fields:
 			field_value = self.get(fieldname)
 			if field_value and not isinstance(field_value, str):
-				if isinstance(field_value, (datetime.datetime, datetime.date)):
+				if isinstance(field_value, datetime.datetime | datetime.date):
+
 					try:
 						setattr(self, fieldname, field_value.isoformat())
 					except Exception as e:

@@ -16,7 +16,8 @@ if TYPE_CHECKING:
 	# ServiceObject = Document
 
 
-def validate(doc: "ServiceObject", method: str | None = None) -> None:
+
+def validate(doc: ServiceObject, method: str | None = None) -> None:
 	"""
 	Проверяет уникальность серийного номера объекта обслуживания.
 	Эта проверка является примером бизнес-требования.

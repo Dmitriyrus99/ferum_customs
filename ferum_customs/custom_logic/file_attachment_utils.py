@@ -103,7 +103,7 @@ def delete_attachment_file_from_filesystem(file_url: str, is_private: bool = Fal
 			exc_info=True,
 		)
 		return
-	except Exception as e:  # noqa: BLE001
+	except Exception as e:
 		logger.error(
 			"Error resolving paths for attachment URL '%s': %s",
 			file_url,
