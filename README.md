@@ -27,6 +27,19 @@ Pre-commit is configured to use the following tools for checking and formatting 
 - eslint
 - prettier
 - pyupgrade
+
+### Project Structure
+
+All application code lives inside the `ferum_customs` package. Important
+subdirectories include:
+
+- `custom_logic` – Python hooks used by DocType events
+- `ferum_customs/doctype` – definitions of custom DocTypes
+- `fixtures` – exported records such as roles and custom fields
+- `workflow` and `workspace` – workflow configuration and Desk shortcuts
+
+The `update` folder from the original archive has been merged into these
+subdirectories.
 ### CI
 
 This app can use GitHub Actions for CI. The following workflows are configured:
