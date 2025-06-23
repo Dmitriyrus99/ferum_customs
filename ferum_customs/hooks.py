@@ -13,12 +13,13 @@ get_notification_config = "ferum_customs.notifications.notifications.get_notific
 
 # ── актуальный список фикстур: только данные, без описаний DocType ──
 fixtures = [
-	"custom_fields.json",
-	"custom_docperm.json",
-	"workflow_service_request.json",
-	"portal_menu_item.json",
-	"role.json",
-	"notification.json",
+        "custom_fields.json",
+        "custom_docperm.json",
+        "workflow_service_request.json",
+        "portal_menu_item.json",
+        "role.json",
+        "notification.json",
+        {"doctype": "DocType", "filters": [["name", "=", "ServiceReportWorkItem"]]},
 ]
 
 
