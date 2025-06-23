@@ -76,14 +76,6 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build & push frappe layer cache
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: Dockerfile.frappe
-          push: false
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
 
       - name: Build and start Frappe Stack
         run: DOCKER_BUILDKIT=1 docker compose up -d --build
