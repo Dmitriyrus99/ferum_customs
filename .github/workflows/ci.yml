@@ -8,6 +8,7 @@ jobs:
     env:
       SITE_NAME: test_site
       ADMIN_PASSWORD: admin
+      ERPNEXT_TAG: version-15
     steps:
       - uses: actions/checkout@v4
 
@@ -18,6 +19,9 @@ jobs:
           key: ${{ runner.os }}-docker-${{ hashFiles('docker-compose.test.yml') }}
           restore-keys: |
             ${{ runner.os }}-docker-
+
+      - name: Validate image tag
+        run: docker manifest inspect frappe/erpnext-worker:${{ env.ERPNEXT_TAG }} >/dev/null
 
       - name: Pull images
         run: docker compose --env-file .env -f docker-compose.test.yml pull 
@@ -30,9 +34,7 @@ jobs:
       - name: Derive ERPNext branch from Docker tag
         id: erpnext_branch
         run: |
-          TAG=$(grep 'erpnext-worker:' docker-compose.test.yml | cut -d':' -f3)
-          MAJOR=$(echo "$TAG" | sed 's/^v\([0-9]*\).*/\1/')
-          echo "branch=version-$MAJOR" >> "$GITHUB_OUTPUT"
+          echo "branch=${ERPNEXT_TAG}" >> "$GITHUB_OUTPUT"
 
       - name: Install app + ERPNext + deps
         run: |
