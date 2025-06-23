@@ -31,6 +31,13 @@ bench install-app ferum_customs
 # Run all bench commands from within your bench directory so that the correct
 # Python environment is used
 ```
+### Запуск в Docker
+
+Run the stack with:
+```bash
+docker compose up -d
+```
+
 
 ### Contributing
 

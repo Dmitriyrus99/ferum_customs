@@ -68,23 +68,28 @@ jobs:
           key: ${{ runner.os }}-buildkit-${{ github.sha }}
           restore-keys: ${{ runner.os }}-buildkit-
 
-      - name: Upgrade Docker Compose
-        run: |
-          sudo curl -L https://github.com/docker/compose/releases/download/v2.23.3/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose
-          sudo chmod +x /usr/local/bin/docker-compose
-          docker compose version
+
+      - name: Login to ghcr.io
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build & push frappe layer cache
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: Dockerfile.frappe
+          push: false
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - name: Build and start Frappe Stack
-        run: DOCKER_BUILDKIT=1 docker compose -f docker-compose.yml up -d --build
+        run: DOCKER_BUILDKIT=1 docker compose up -d --build
 
-      - name: Create Frappe test site
-        run: |
-          docker compose exec -T frappe bench new-site $SITE_NAME \
-            --admin-password $ADMIN_PASSWORD --no-mariadb-socket \
-            --install-app erpnext --install-app ferum_customs
-        env:
-          SITE_NAME: test_site
-          ADMIN_PASSWORD: admin
+      - name: Verify site exists
+        run: docker compose exec -T frappe bench --site $SITE_NAME --force reload-doc
 
       - name: Wait for site to be ready
         run: |
