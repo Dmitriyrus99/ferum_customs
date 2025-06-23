@@ -8,7 +8,7 @@ jobs:
     env:
       SITE_NAME: test_site
       ADMIN_PASSWORD: admin
-      ERPNEXT_TAG: v15.37.0
+      ERPNEXT_TAG: v15
     steps:
       - uses: actions/checkout@v4
 
