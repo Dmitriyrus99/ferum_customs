@@ -1,7 +1,10 @@
 import json
 from pathlib import Path
 
-FIXTURE_PATH = Path("ferum_customs/fixtures")
+# Compute absolute path to fixtures so tests work regardless of CWD
+FIXTURE_PATH = (
+    Path(__file__).resolve().parents[2] / "ferum_customs" / "fixtures"
+)
 
 
 def load_fixture(name: str):
