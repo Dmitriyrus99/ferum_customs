@@ -13,10 +13,10 @@ get_notification_config = "ferum_customs.notifications.notifications.get_notific
 
 # ── актуальный список фикстур: только данные, без описаний DocType ──
 fixtures = [
-    {
-        "doctype": "DocType",
-        "filters": [["name", "=", "Service Report Work Item"]],
-    },
+	{
+		"doctype": "DocType",
+		"filters": [["name", "=", "Service Report Work Item"]],
+	},
 ]
 
 
