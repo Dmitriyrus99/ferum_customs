@@ -25,10 +25,10 @@ services:
       redis:
         condition: service_started
     environment:
-      FRAPPE_PATHS_APPEND: "/workspace"
+      FRAPPE_PATHS_APPEND: ""
     volumes:
       - ./sites:/home/frappe/frappe-bench/sites
-      - .:/workspace
+      - .:/home/frappe/frappe-bench/apps/ferum_customs
     user: "${UID:-1000}:${GID:-1000}"
     working_dir: /home/frappe/frappe-bench
     command: sleep infinity
