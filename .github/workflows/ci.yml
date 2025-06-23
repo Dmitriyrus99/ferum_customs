@@ -1,150 +1,176 @@
-name: CI
+# .github/workflows/ci.yml
 
+# Имя рабочего процесса, которое будет отображаться в GitHub Actions
+name: CI/CD Pipeline
+
+# Динамическое имя для каждого конкретного запуска
+run-name: >-
+  🛠️ ${{ github.actor }} запустил CI для ветки ${{ github.ref_name }}
+
+# --- ТРИГГЕРЫ ЗАПУСКА ---
 on:
+  # При push в основные ветки
   push:
-    branches:
-      - main
+    branches: [main, develop]
+  # При создании Pull Request в основные ветки
   pull_request:
+    branches: [main, develop]
+  # Для ручного запуска из интерфейса GitHub
+  workflow_dispatch:
+  # Еженедельный запуск для проверки стабильности
+  schedule:
+    - cron: '0 4 * * 1' # Каждый понедельник в 04:00 UTC
 
+# --- УПРАВЛЕНИЕ ПАРАЛЛЕЛЬНЫМИ ЗАПУСКАМИ ---
+# Отменяет предыдущие запуски для того же PR или ветки при новом коммите
 concurrency:
-  group: main-ferum_customs-${{ github.event.number }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-jobs:
-  tests:
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        type: [unit, integration, e2e]
-    name: Tests (${{ matrix.type }})
+# --- РАЗРЕШЕНИЯ ---
+# Устанавливаем минимально необходимые права для повышения безопасности
+permissions:
+  contents: read
 
-    services:
-      redis-cache:
-        image: redis:alpine
-        ports:
-          - 13000:6379
-      redis-queue:
-        image: redis:alpine
-        ports:
-          - 11000:6379
-      mariadb:
-        image: mariadb:10.6
-        env:
-          MYSQL_ROOT_PASSWORD: root
-        ports:
-          - 3306:3306
-        options: --health-cmd="mariadb-admin ping" --health-interval=5s --health-timeout=2s --health-retries=3
+jobs:
+  # =======================================================
+  #  ЗАДАНИЕ 1: ПРОВЕРКА КАЧЕСТВА КОДА (ЛИНТЕРЫ)
+  # =======================================================
+  lint:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10 # Ограничение времени выполнения
 
     steps:
-      - name: Clone
-        uses: actions/checkout@v3
+      # Шаг 1: Клонирование кода из репозитория
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Find tests
-        run: |
-          echo "Finding tests"
-          grep -rn "def test" > /dev/null
-
+      # Шаг 2: Настройка окружения Python
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
-      - name: Setup Node
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
-          check-latest: true
-
-      - name: Cache pip
+      # Шаг 3: Кэширование хуков pre-commit для ускорения последующих запусков
+      - name: Cache pre-commit hooks
         uses: actions/cache@v4
         with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/*requirements.txt', '**/pyproject.toml', '**/setup.py', '**/setup.cfg') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
-            ${{ runner.os }}-
+          path: ~/.cache/pre-commit
+          key: ${{ runner.os }}-precommit-${{ hashFiles('.pre-commit-config.yaml') }}
 
+      # Шаг 4: Установка зависимостей для проверок
+      - name: Install dependencies
+        run: pip install -r dev-requirements.txt
 
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: 'echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT'
+      # Шаг 5: Запуск всех хуков pre-commit, включая pytest
+      - name: Run pre-commit hooks
+        run: pre-commit run --all-files --show-diff-on-failure
 
-      - uses: actions/cache@v4
-        id: yarn-cache
-        with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
+  # =======================================================
+  #  ЗАДАНИЕ 2: ИНТЕГРАЦИОННОЕ ТЕСТИРОВАНИЕ
+  # =======================================================
+  tests:
+    # Запускается только после успешного завершения 'lint'
+    needs: lint
+    runs-on: ubuntu-22.04
+    timeout-minutes: 30
+    env:
+      SITE_NAME: test_site
+      ADMIN_PASSWORD: admin
 
-      - name: Install MariaDB Client
-        run: |
-          sudo apt update
-          sudo apt-get install mariadb-client
+    steps:
+      # Шаг 1: Клонирование кода
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Setup
-        run: |
-          pip install frappe-bench
-          bench init --skip-redis-config-generation --skip-assets --python "$(which python)" ~/frappe-bench
-          mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "SET GLOBAL character_set_server = 'utf8mb4'"
-          mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "SET GLOBAL collation_server = 'utf8mb4_unicode_ci'"
-
-      - name: Install
-        working-directory: /home/runner/frappe-bench
-        run: |
-          bench get-app ferum_customs $GITHUB_WORKSPACE
-          bench setup requirements --dev
-          bench new-site --db-root-password root --admin-password admin test_site
-        env:
-          CI: 'Yes'
-
-      - name: Detect Frappe major version
-        id: frappe_ver
-        working-directory: /home/runner/frappe-bench
-        run: |
-          FRAPPE_VERSION=$(python - <<'PY'
-import importlib.metadata, re
-v = importlib.metadata.version("frappe")
-print(re.match(r"(\d+)", v).group(1))
-PY
-          )
-          echo "major=${FRAPPE_VERSION}" >> "$GITHUB_OUTPUT"
-
-      - name: Cache ERPNext app
+      # Кэш Docker layer'ов для ускорения сборки
+      - name: Restore Docker build cache
         uses: actions/cache@v4
         with:
-          path: ~/frappe-bench/apps/erpnext
-          key: ${{ runner.os }}-erpnext-${{ steps.frappe_ver.outputs.major }}-${{ hashFiles('**/ci.yml') }}
+          path: ~/.cache/buildkit
+          key: ${{ runner.os }}-buildkit-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildkit-
 
-      - name: Get & install ERPNext
-        working-directory: /home/runner/frappe-bench
+      - name: Upgrade Docker Compose (>= 2.10)
         run: |
-          ERP_BRANCH="version-${{ steps.frappe_ver.outputs.major }}"
-          echo "Installing ERPNext branch $ERP_BRANCH"
-          bench get-app erpnext --branch "$ERP_BRANCH" https://github.com/frappe/erpnext
-          bench --site test_site install-app erpnext
+          sudo curl -L https://github.com/docker/compose/releases/download/v2.23.3/docker-compose-linux-x86_64 \
+          -o /usr/local/bin/docker-compose
+          sudo chmod +x /usr/local/bin/docker-compose
+          docker compose version   # вывод версии для контроля
+
+      # Шаг 2: Сборка и запуск Docker-стека в фоновом режиме
+      - name: Build and start Frappe Stack
+        run: DOCKER_BUILDKIT=1 docker compose -f docker-compose.yml up -d --build
+
+      - name: Create Frappe test site
+        run: |
+          docker compose exec -T frappe bench new-site $SITE_NAME \
+            --admin-password $ADMIN_PASSWORD \
+            --no-mariadb-socket \
+            --install-app erpnext \
+            --install-app ferum_customs
         env:
-          CI: 'Yes'
+          SITE_NAME: test_site
+          ADMIN_PASSWORD: admin
 
-      - name: Install ferum_customs
-        working-directory: /home/runner/frappe-bench
-        run: |
-          bench --site test_site install-app ferum_customs
-          bench build
-        env:
-          CI: 'Yes'
 
-      - name: Install dev dependencies
-        working-directory: /home/runner/frappe-bench
+      # --- Tests ----------------------------------------------------------
+      - name: Run pytest
         run: |
-          ./env/bin/pip install -r $GITHUB_WORKSPACE/requirements-dev.txt
+          echo "Waiting for Frappe site to become available..."
+          timeout=600 # Увеличенный таймаут 10 минут
+          start_time=$(date +%s)
+          # Имя хоста и порт должны соответствовать настройкам в docker-compose.yml
+          SITE_HOST="http://localhost:8000"
 
-      - name: Run Tests
-        working-directory: /home/runner/frappe-bench
-        run: |
-          bench --site test_site set-config allow_tests true
-          bench --site test_site run-tests --app ferum_customs
-          ./env/bin/pytest $GITHUB_WORKSPACE/tests/${{ matrix.type }} -ra -q
-        env:
-          TYPE: server
+          while true; do
+            current_time=$(date +%s)
+            elapsed=$((current_time - start_time))
+            if [ $elapsed -ge $timeout ]; then
+              echo "::error::Timeout: Site did not become ready in ${timeout} seconds."
+              docker compose logs mariadb
+              docker compose logs frappe # Выводим логи для отладки
+              exit 1
+            fi
+            
+            # Отправляем запрос к стандартному эндпоинту Frappe для проверки доступности
+            status_code=$(curl -s -o /dev/null -w "%{http_code}" $SITE_HOST/api/method/ping || echo "000")
+            
+            if [ "$status_code" -eq 200 ]; then
+              echo "Site is ready! Status code: $status_code."
+              break
+            else
+              echo "Site not ready yet (status: $status_code). Retrying in 15 seconds..."
+              sleep 15
+            fi
+          done
+
+      # Шаг 4: Запуск тестов pytest внутри работающего контейнера
+      # Имя сервиса 'frappe' и имя сайта берутся из docker-compose.yml
+      - name: Run tests inside container
+        run: >
+          docker compose exec -T frappe
+          bench --site "$SITE_NAME" run-tests --app ferum_customs
+
+      # Шаг 5 (опционально): Загрузка артефактов (отчетов о тестировании)
+      # Если ваши тесты генерируют отчеты (например, в формате JUnit),
+      # вы можете раскомментировать этот шаг для их сохранения.
+      - name: Upload test reports
+        if: always() # Выполняется всегда, даже если тесты упали
+        uses: actions/upload-artifact@v4
+        with:
+          name: pytest-reports
+          path: ./reports # Укажите путь к вашим отчетам
+
+      # Шаг 6: Остановка контейнеров для очистки ресурсов
+      - name: Stop Frappe Stack
+        if: always() # Выполняется всегда
+        run: docker compose down -v
+
+      - name: Save Docker build cache
+        if: always()
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/buildkit
+          key: ${{ runner.os }}-buildkit-${{ github.sha }}
