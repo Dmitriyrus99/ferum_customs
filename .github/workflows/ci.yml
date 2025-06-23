@@ -17,6 +17,11 @@ jobs:
     strategy:
       fail-fast: false
     name: Server
+    env:
+      SITE_NAME: test_site
+      ADMIN_PASSWORD: admin
+      BENCH_PATH: $HOME/frappe-bench
+      ERPNEXT_BRANCH: develop
 
     services:
       redis-cache:
@@ -96,14 +101,14 @@ jobs:
       - name: Install
         working-directory: ${{ env.BENCH_PATH }}
         run: |
-          bench get-app ferum_customs $GITHUB_WORKSPACE
-          bench get-app --branch version-16 erpnext https://github.com/frappe/erpnext
+          bench get-app erpnext --branch "$ERPNEXT_BRANCH" https://github.com/frappe/erpnext
+          bench get-app ferum_customs "$GITHUB_WORKSPACE"
           bench setup requirements --dev
-          bench new-site --db-root-password root --admin-password admin test_site
-          bench --site test_site install-app erpnext
-          bench --site test_site install-app ferum_customs
+          bench new-site --db-root-password root --admin-password "$ADMIN_PASSWORD" "$SITE_NAME"
+          bench --site "$SITE_NAME" install-app erpnext
+          bench --site "$SITE_NAME" install-app ferum_customs
           bench build
-          bench --site test_site list-apps
+          bench --site "$SITE_NAME" list-apps
         env:
           CI: 'Yes'
 
@@ -114,7 +119,7 @@ jobs:
       - name: Run Tests
         working-directory: ${{ env.BENCH_PATH }}
         run: |
-          bench --site test_site set-config allow_tests true
-          bench --site test_site run-tests --app ferum_customs
+          bench --site "$SITE_NAME" set-config allow_tests true
+          bench --site "$SITE_NAME" run-tests --app ferum_customs
         env:
           TYPE: server
