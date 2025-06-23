@@ -109,3 +109,4 @@ echo "  Пароль:       ${ADMIN_PASSWORD}"
 echo
 echo "Для просмотра логов используйте: $DC_COMMAND -f pwd.yml logs -f"
 echo "Для остановки окружения используйте: $DC_COMMAND -f pwd.yml down"
+
