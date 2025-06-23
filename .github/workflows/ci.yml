@@ -17,6 +17,12 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      - name: Install latest compose
+        run: |
+          sudo curl -L https://github.com/docker/compose/releases/download/v2.27.0/docker-compose-linux-x86_64 \
+            -o /usr/local/bin/docker-compose
+          sudo chmod +x /usr/local/bin/docker-compose
+
       - name: Cache pip packages
         uses: actions/cache@v4
         with:
@@ -51,6 +57,9 @@ jobs:
       - name: Start Docker stack
         run: docker compose -f docker-compose.test.yml up -d
 
+      - name: Allow git access to workspace
+        run: docker compose exec -T frappe git config --global --add safe.directory /workspace
+
       - name: Install apps and dependencies
         run: |
           docker compose exec -T --user root frappe chown -R frappe:frappe /home/frappe/frappe-bench
@@ -70,14 +79,13 @@ jobs:
             bench pip install -q pytest pytest-cov
           '
 
-      - name: Run Pytest
+      - name: Run tests
         run: |
-          docker compose run --rm frappe bash -c '
-            set -e
-            bench --site "$SITE_NAME" set-config allow_tests true
-            cd /workspace
-            pytest -m "not slow" --cov=ferum_customs --cov-report=xml
-          '
+          docker compose --env-file .env -f docker-compose.test.yml \
+            up --abort-on-container-exit --exit-code-from frappe
+
+      - name: Cleanup
+        run: docker compose -f docker-compose.test.yml down -v
 
       - name: Upload coverage report
         uses: actions/upload-artifact@v4
