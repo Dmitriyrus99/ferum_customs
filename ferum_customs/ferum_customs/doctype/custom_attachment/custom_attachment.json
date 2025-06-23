@@ -2,6 +2,7 @@
     "doctype": "DocType",
     "name": "Custom Attachment",
     "module": "Ferum Customs",
+    "track_changes": 1,
     "fields": [
         {
             "fieldname": "attachment_type",
