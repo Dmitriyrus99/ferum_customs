@@ -1,4 +1,4 @@
-pytest
+pytest>=8,<9
+pytest-cov  # optional, for coverage
 ruff
 pre-commit
-pytest-cov

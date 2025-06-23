@@ -1,5 +1,8 @@
 ### ferum_customs
 
+![CI](https://github.com/<owner>/ferum_customs/actions/workflows/ci.yml/badge.svg)
+![Coverage](https://img.shields.io/badge/coverage-unknown-lightgrey.svg)
+
 Ferum Customs adds a service management layer to ERPNext. The app helps keep
 a registry of serviced equipment, register incoming requests and collect reports
 about the work performed. All documents are linked so that a Service Request

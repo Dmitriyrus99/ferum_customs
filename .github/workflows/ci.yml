@@ -63,9 +63,6 @@ jobs:
             ${{ runner.os }}-pip-
             ${{ runner.os }}-
 
-      - name: Install Python dev dependencies
-        run: |
-          pip install -r requirements-dev.txt
 
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
@@ -101,6 +98,11 @@ jobs:
           bench build
         env:
           CI: 'Yes'
+
+      - name: Install dev dependencies
+        working-directory: /home/runner/frappe-bench
+        run: |
+          ./env/bin/pip install -r $GITHUB_WORKSPACE/requirements-dev.txt
 
       - name: Run Tests
         working-directory: /home/runner/frappe-bench
