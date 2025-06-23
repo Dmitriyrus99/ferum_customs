@@ -29,5 +29,6 @@ services:
     volumes:
       - ./sites:/home/frappe/frappe-bench/sites
       - .:/workspace
+    user: "${UID:-1000}:${GID:-1000}"
     working_dir: /home/frappe/frappe-bench
     command: sleep infinity

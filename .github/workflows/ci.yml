@@ -58,7 +58,7 @@ jobs:
         run: docker compose -f docker-compose.test.yml up -d
 
       - name: Allow git access to workspace
-        run: docker compose exec -T frappe git config --global --add safe.directory /workspace
+        run: docker compose exec -T frappe bash -c 'if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then git config --global --add safe.directory /workspace; fi'
 
       - name: Install apps and dependencies
         run: |
