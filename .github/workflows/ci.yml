@@ -8,7 +8,7 @@ jobs:
     env:
       SITE_NAME: test_site
       ADMIN_PASSWORD: admin
-      ERPNEXT_TAG: version-15
+      ERPNEXT_TAG: v15.37.0
     steps:
       - uses: actions/checkout@v4
 
@@ -20,7 +20,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-docker-
 
-      - name: Validate image tag
+      - name: Validate tag
         run: docker manifest inspect frappe/erpnext-worker:${{ env.ERPNEXT_TAG }} >/dev/null
 
       - name: Pull images
