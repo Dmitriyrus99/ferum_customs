@@ -26,7 +26,7 @@ cd $PATH_TO_YOUR_BENCH
 bench get-app $URL_OF_THIS_REPO --branch main
 # ERPNext branch should match your installed Frappe version
 bench get-app erpnext --branch version-XX https://github.com/frappe/erpnext
-# Replace XX with your Frappe major version, e.g. 15
+# Replace XX with your Frappe major version, e.g. 16
 bench install-app ferum_customs
 # Run all bench commands from within your bench directory so that the correct
 # Python environment is used
