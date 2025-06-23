@@ -95,7 +95,13 @@ jobs:
             bench get-app ferum_customs /workspace
 
             # --- dev-зависимости и сайт -----------------------------------------
-            bench new-site --db-root-password "$DB_ROOT_PASSWORD" --admin-password "$ADMIN_PASSWORD" "$SITE_NAME"
+            bench new-site \
+              --db-host mariadb \
+              --db-port 3306 \
+              --no-mariadb-socket \
+              --db-root-password "$DB_ROOT_PASSWORD" \
+              --admin-password "$ADMIN_PASSWORD" \
+              "$SITE_NAME"
             bench --site "$SITE_NAME" install-app erpnext
             bench --site "$SITE_NAME" install-app ferum_customs
 
