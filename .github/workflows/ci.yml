@@ -44,7 +44,11 @@ jobs:
         run: |
           {
             echo "FRAPPE_SITE_NAME=${{ env.FRAPPE_SITE_NAME }}"
+            echo "SITE_NAME=${{ env.FRAPPE_SITE_NAME }}"
+            echo "DB_ROOT_USER=root"
+            echo "MYSQL_ROOT_PASSWORD=${{ env.DB_ROOT_PASSWORD }}"
             echo "ADMIN_PASSWORD=${{ env.ADMIN_PASSWORD }}"
+            echo "INSTALL_APPS=erpnext,ferum_customs"
             echo "ERPNEXT_TAG=${{ env.ERPNEXT_TAG }}"
             echo "DB_ROOT_PASSWORD=${{ env.DB_ROOT_PASSWORD }}"
           } > .env
@@ -55,40 +59,18 @@ jobs:
       - name: Pull Docker images
         run: docker compose -f docker-compose.test.yml pull || { echo "::error::Image pull failed"; exit 1; }
 
-      - name: Start Docker stack
-        run: docker compose -f docker-compose.test.yml up -d
+      - name: Start Database and Cache
+        run: docker compose -f docker-compose.test.yml up -d mariadb redis
 
-
-      - name: Install apps and dependencies
+      - name: Install test dependencies
         run: |
-          docker compose exec -T -e GITHUB_REF_NAME=$GITHUB_REF_NAME frappe bash -eo pipefail -c '
-            set -e
-            source apps/ferum_customs/.env
-            if [ ! -d apps/erpnext ]; then
-                bench get-app --branch "${ERPNEXT_TAG}" --depth 1 erpnext https://github.com/frappe/erpnext
-            else
-                cd apps/erpnext && git fetch --depth=1 origin "${ERPNEXT_TAG}" && git checkout -q "${ERPNEXT_TAG}" && cd -
-            fi
-            bench setup requirements --node --python
-            if [ -d apps/ferum_customs/.git ]; then
-                echo "ferum_customs уже смонтирован – пропускаю bench get-app"
-            else
-                bench get-app --branch "$GITHUB_REF_NAME" --overwrite ferum_customs https://github.com/${{ github.repository }}.git
-            fi
-            if bench --site "$FRAPPE_SITE_NAME" exist >/dev/null 2>&1; then
-                bench drop-site "$FRAPPE_SITE_NAME" --root-password "$DB_ROOT_PASSWORD" --force
-            fi
-            bench new-site --db-root-password "$DB_ROOT_PASSWORD" \
-               --admin-password "$ADMIN_PASSWORD" "$FRAPPE_SITE_NAME"
-            bench --site "$FRAPPE_SITE_NAME" install-app erpnext
-            bench --site "$FRAPPE_SITE_NAME" install-app ferum_customs
-            bench pip install -q pytest pytest-cov
-          '
+          docker compose run --rm frappe \
+            pip install -q pytest pytest-cov
 
       - name: Run tests
         run: |
           docker compose --env-file .env -f docker-compose.test.yml \
-            up --abort-on-container-exit --exit-code-from frappe
+            run --rm frappe bash -c "pytest -q --cov"
 
       - name: Cleanup
         run: docker compose -f docker-compose.test.yml down -v

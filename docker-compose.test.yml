@@ -26,6 +26,11 @@ services:
         condition: service_started
     environment:
       FRAPPE_PATHS_APPEND: ""
+      SITE_NAME: ${FRAPPE_SITE_NAME}
+      DB_ROOT_USER: root
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      INSTALL_APPS: "erpnext,ferum_customs"
     volumes:
       - ./sites:/home/frappe/frappe-bench/sites
       - .:/home/frappe/frappe-bench/apps/ferum_customs
@@ -35,4 +40,3 @@ services:
       bash -c "
         git config --global --add safe.directory /home/frappe/frappe-bench/apps/ferum_customs &&
         exec docker-entrypoint.sh"
-    command: sleep infinity
