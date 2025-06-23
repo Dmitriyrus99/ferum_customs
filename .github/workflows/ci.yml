@@ -10,7 +10,7 @@ jobs:
     env:
       SITE_NAME: test_site
       ADMIN_PASSWORD: admin
-      ERPNEXT_TAG: v15
+      ERPNEXT_TAG: v15.65.4
 
     steps:
       # 1. Получаем код
@@ -27,7 +27,7 @@ jobs:
 
       # 3. Проверяем, что указанный тег ERPNext существует в Docker Hub
       - name: Validate ERPNext tag
-        run: docker manifest inspect frappe/erpnext-worker:${{ env.ERPNEXT_TAG }} >/dev/null
+        run: docker manifest inspect frappe/erpnext:${{ env.ERPNEXT_TAG }} >/dev/null
 
       # 4. Загружаем образы (если не скачались — явно завершаем job)
       - name: Pull images
