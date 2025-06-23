@@ -64,7 +64,7 @@ jobs:
         run: |
           # 1) починили права (root внутри контейнера)
           docker compose exec -T --user root frappe \
-            chown -R frappe:frappe /home/frappe/frappe-bench
+            chown -R frappe:frappe /workspace
 
           # 2) теперь обычный сценарий (под пользователем frappe)
           docker compose exec -T frappe bash -eo pipefail -c '
