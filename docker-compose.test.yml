@@ -13,14 +13,21 @@ services:
 
   redis:
     image: redis:alpine
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 2s
+      retries: 10
 
   frappe:
-    image: frappe/erpnext-worker:v16
+    image: frappe/erpnext-worker:v16.21.1
     depends_on:
       mariadb:
         condition: service_healthy
       redis:
         condition: service_started
+    environment:
+      FRAPPE_PATHS_APPEND: "/workspace"
     volumes:
       - ./sites:/home/frappe/frappe-bench/sites
       - .:/workspace
