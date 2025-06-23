@@ -20,7 +20,7 @@ jobs:
             ${{ runner.os }}-docker-
 
       - name: Pull images
-        run: docker compose --env-file .env -f docker-compose.test.yml pull \
+        run: docker compose --env-file .env -f docker-compose.test.yml pull 
           || { echo "::error::Image pull failed"; exit 1; }
 
       - name: Start stack
