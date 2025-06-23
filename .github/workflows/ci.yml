@@ -12,6 +12,7 @@ jobs:
       FRAPPE_SITE_NAME: tests.local
       ADMIN_PASSWORD: admin
       ERPNEXT_TAG: v15.65.4
+      BENCH_TAG: v5.26.0
       DB_ROOT_PASSWORD: root
 
     steps:
@@ -55,6 +56,13 @@ jobs:
 
       - name: Validate ERPNext Docker tag
         run: docker manifest inspect frappe/erpnext:${{ env.ERPNEXT_TAG }} >/dev/null
+
+      - name: Sanity-check Bench tag
+        run: |
+          TAG=${{ env.BENCH_TAG }}
+          if ! docker manifest inspect frappe/bench:$TAG > /dev/null 2>&1; then
+            echo "::error::frappe/bench:$TAG not found on Docker Hub"; exit 1
+          fi
 
       - name: Pull Docker images
         run: docker compose -f docker-compose.test.yml pull || { echo "::error::Image pull failed"; exit 1; }
