@@ -1,6 +1,17 @@
 ### ferum_customs
 
-ferum_customs
+Ferum Customs extends ERPNext with a simple service management module. It adds
+documents for keeping a register of serviced equipment, creating service
+requests and logging performed work. These documents are connected via a
+workflow that drives a request from "Открыта" to "Закрыта".
+
+Key DocTypes:
+
+- **Service Object** — equipment or site that requires maintenance.
+- **Service Request** — a ticket linked to a Service Object describing required
+  work.
+- **Service Report** — a record of work done for a request.
+- **Service Project** — optional container to group multiple requests.
 
 ### Installation
 
@@ -47,12 +58,34 @@ subdirectories include:
 
 The `update` folder from the original archive has been merged into these
 subdirectories.
+
+### Usage
+
+After installation a new **Ferum Customs** module appears on the ERPNext desk.
+Users with roles "Проектный менеджер" or "System Manager" can create Service
+Objects and manage Service Requests through the provided workflow. Engineers
+update requests assigned to them and submit Service Reports. Customers see only
+their own documents if granted the "Customer" role.
 ### CI
 
 This app can use GitHub Actions for CI. The following workflows are configured:
 
 - CI: Installs this app and runs unit tests on every push to `develop` branch.
 - Linters: Runs [Frappe Semgrep Rules](https://github.com/frappe/semgrep-rules) and [pip-audit](https://pypi.org/project/pip-audit/) on every pull request.
+
+### Testing
+
+Run the test suite with `pytest` from the repository root:
+
+```bash
+pytest
+```
+
+If you prefer using bench:
+
+```bash
+bench --site <your-site> run-tests apps/ferum_customs
+```
 
 
 ### License
