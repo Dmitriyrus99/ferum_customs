@@ -70,7 +70,8 @@ jobs:
             fi
 
             # обновляем зависимости под актуальный код
-            bench setup requirements --node --python --overwrite
+            # начиная с bench 5.25 флаг --overwrite больше не нужен
+            bench setup requirements --node --python
 
             # --- Ваша кастомная аппка -------------------------------------------
             bench get-app ferum_customs /workspace
