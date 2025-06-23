@@ -97,10 +97,13 @@ jobs:
         working-directory: ${{ env.BENCH_PATH }}
         run: |
           bench get-app ferum_customs $GITHUB_WORKSPACE
+          bench get-app --branch version-16 erpnext https://github.com/frappe/erpnext
           bench setup requirements --dev
           bench new-site --db-root-password root --admin-password admin test_site
+          bench --site test_site install-app erpnext
           bench --site test_site install-app ferum_customs
           bench build
+          bench --site test_site list-apps
         env:
           CI: 'Yes'
 
