@@ -1,6 +1,6 @@
 {
     "doctype": "DocType",
-    "name": "Service Report Work Item", 
+    "name": "Service Report Work Item",
     "module": "Ferum Customs",
     "istable": 1,
     "engine": "InnoDB",

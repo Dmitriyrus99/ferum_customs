@@ -1,114 +1,127 @@
+name: tests
 
-name: CI
-
-on:
-  push:
-    branches:
-      - develop
-  pull_request:
-
-concurrency:
-  group: develop-ferum_customs-${{ github.event.number }}
-  cancel-in-progress: true
+on: [push, pull_request]
 
 jobs:
-  tests:
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-    name: Server
+  server:
+    runs-on: ubuntu-22.04
 
-    services:
-      redis-cache:
-        image: redis:alpine
-        ports:
-          - 13000:6379
-      redis-queue:
-        image: redis:alpine
-        ports:
-          - 11000:6379
-      mariadb:
-        image: mariadb:10.6
-        env:
-          MYSQL_ROOT_PASSWORD: root
-        ports:
-          - 3306:3306
-        options: --health-cmd="mariadb-admin ping" --health-interval=5s --health-timeout=2s --health-retries=3
+    # Базовые переменные — их же пишем в .env
+    env:
+      SITE_NAME: test_site
+      ADMIN_PASSWORD: admin
+      ERPNEXT_TAG: v15.65.4
+      DB_ROOT_PASSWORD: root
 
     steps:
-      - name: Clone
-        uses: actions/checkout@v3
+      # 1. Получаем код
+      - uses: actions/checkout@v4
 
-      - name: Find tests
-        run: |
-          echo "Finding tests"
-          grep -rn "def test" > /dev/null
-
-      - name: Setup Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.10'
-
-      - name: Setup Node
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
-          check-latest: true
-
+      # Cache Python packages
       - name: Cache pip
         uses: actions/cache@v4
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/*requirements.txt', '**/pyproject.toml', '**/setup.py', '**/setup.cfg') }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/pyproject.toml', '**/*requirements.txt', '**/setup.py') }}
           restore-keys: |
             ${{ runner.os }}-pip-
-            ${{ runner.os }}-
 
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: 'echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT'
-
-      - uses: actions/cache@v4
-        id: yarn-cache
+      # Cache Node packages
+      - name: Cache npm
+        uses: actions/cache@v4
         with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json', '**/yarn.lock') }}
           restore-keys: |
-            ${{ runner.os }}-yarn-
+            ${{ runner.os }}-npm-
 
-      - name: Install MariaDB Client
-        env:
-          MARIADB_CLIENT_PKG: mariadb-client
+      # 2. Создаём .env для docker-compose
+      - name: Generate .env
         run: |
-          sudo apt-get update
-          sudo apt-get install -y $MARIADB_CLIENT_PKG
+          {
+            echo "SITE_NAME=${{ env.SITE_NAME }}"
+            echo "ADMIN_PASSWORD=${{ env.ADMIN_PASSWORD }}"
+            echo "ERPNEXT_TAG=${{ env.ERPNEXT_TAG }}"
+            echo "DB_ROOT_PASSWORD=${{ env.DB_ROOT_PASSWORD }}"
+          } > .env
 
-      - name: Setup
+      # 3. Проверяем, что указанный тег ERPNext существует в Docker Hub
+      - name: Validate ERPNext tag
+        run: docker manifest inspect frappe/erpnext:${{ env.ERPNEXT_TAG }} >/dev/null
+
+      # 4. Загружаем образы (если не скачались — явно завершаем job)
+      - name: Pull images
         run: |
-          pip install frappe-bench
-          bench init --skip-redis-config-generation --skip-assets --python "$(which python)" ~/frappe-bench
-          mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "SET GLOBAL character_set_server = 'utf8mb4'"
-          mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "SET GLOBAL collation_server = 'utf8mb4_unicode_ci'"
+          docker compose --env-file .env -f docker-compose.test.yml pull \
+          || { echo "::error::Image pull failed"; exit 1; }
 
-      - name: Install
-        working-directory: /home/runner/frappe-bench
+      # 5. Поднимаем стек
+      - name: Start stack
+        run: docker compose --env-file .env -f docker-compose.test.yml up -d
+
+      # 6. Устанавливаем приложения и зависимости внутрь контейнера frappe
+      - name: Install app + ERPNext + deps
         run: |
-          bench get-app ferum_customs $GITHUB_WORKSPACE
-          bench setup requirements --dev
-          bench new-site --db-root-password root --admin-password admin test_site
-          bench --site test_site install-app ferum_customs
-          bench build
-        env:
-          CI: 'Yes'
+          # 1) починили права (root внутри контейнера)
+          docker compose exec -T --user root frappe \
+            chown -R frappe:frappe /workspace
 
-      - name: Install test deps
-        working-directory: /home/frappe/frappe-bench
-        run: bench pip install pytest pytest-cov
+          # 2) теперь обычный сценарий (под пользователем frappe)
+          docker compose exec -T frappe bash -eo pipefail -c '
+            set -e
+            source /workspace/.env
 
-      - name: Run Tests
-        working-directory: /home/runner/frappe-bench
+            # --- ERPNext ----------------------------------------------------
+            if [ ! -d apps/erpnext ]; then
+                echo "ERPNext not found — cloning..."
+                bench get-app --branch "${ERPNEXT_TAG}" erpnext https://github.com/frappe/erpnext
+            elif [ ! -d apps/erpnext/.git ]; then
+                echo "ERPNext present but not a git repo — replacing..."
+                rm -rf apps/erpnext
+                bench get-app --branch "${ERPNEXT_TAG}" erpnext https://github.com/frappe/erpnext
+            else
+                echo "ERPNext git repo detected — switching to tag ${ERPNEXT_TAG}"
+                cd apps/erpnext
+                git fetch --depth=1 origin "${ERPNEXT_TAG}"
+                git checkout -q "${ERPNEXT_TAG}"
+                cd -
+            fi
+
+            # обновляем зависимости под актуальный код
+            # начиная с bench 5.25 флаг --overwrite больше не нужен
+            bench setup requirements --node --python
+
+            # --- Ваша кастомная аппка -------------------------------------------
+            bench get-app ferum_customs /workspace
+
+            # --- dev-зависимости и сайт -----------------------------------------
+            bench new-site \
+              --db-host mariadb \
+              --db-port 3306 \
+              --no-mariadb-socket \
+              --db-root-password "$DB_ROOT_PASSWORD" \
+              --admin-password "$ADMIN_PASSWORD" \
+              "$SITE_NAME"
+            bench --site "$SITE_NAME" install-app erpnext
+            bench --site "$SITE_NAME" install-app ferum_customs
+
+            # pytest
+            bench pip install -q pytest pytest-cov
+          '
+
+      # 7. Запускаем тесты
+      - name: Run tests
         run: |
-          bench --site test_site set-config allow_tests true
-          bench --site test_site run-tests --app ferum_customs
-        env:
-          TYPE: server
+          docker compose --env-file .env -f docker-compose.test.yml run --exit-code-from frappe --rm frappe bash -c '
+            set -e
+            bench --site "$SITE_NAME" set-config allow_tests true
+            cd /workspace
+            pytest -m "not slow" --cov=ferum_customs --cov-report=xml
+          '
+
+      # 8. Публикуем отчёт о покрытии
+      - name: Upload coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage.xml

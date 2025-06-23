@@ -1,0 +1,33 @@
+services:
+  mariadb:
+    image: mariadb:10.6
+    environment:
+      MARIADB_ROOT_PASSWORD: root
+    healthcheck:
+      test: ["CMD", "mariadb-admin", "ping", "-h", "127.0.0.1", "-uroot", "-proot"]
+      interval: 5s
+      timeout: 2s
+      retries: 10
+
+  redis:
+    image: redis:alpine
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 2s
+      retries: 10
+
+  frappe:
+    image: frappe/erpnext:${ERPNEXT_TAG}
+    depends_on:
+      mariadb:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    environment:
+      FRAPPE_PATHS_APPEND: "/workspace"
+    volumes:
+      - ./sites:/home/frappe/frappe-bench/sites
+      - .:/workspace
+    working_dir: /home/frappe/frappe-bench
+    command: sleep infinity
