@@ -30,7 +30,10 @@ bench get-app erpnext --branch version-XX https://github.com/frappe/erpnext
 bench install-app ferum_customs
 # Run all bench commands from within your bench directory so that the correct
 # Python environment is used
+
 ```
+Alternatively, run `scripts/setup_environment.sh` from your bench directory to automate these steps.
+
 ### Запуск в Docker
 
 Run the stack with:
