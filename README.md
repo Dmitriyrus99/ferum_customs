@@ -1,11 +1,12 @@
 ### ferum_customs
 
-Ferum Customs extends ERPNext with a simple service management module. It adds
-documents for keeping a register of serviced equipment, creating service
-requests and logging performed work. These documents are connected via a
-workflow that drives a request from "Открыта" to "Закрыта".
+Ferum Customs adds a service management layer to ERPNext. The app helps keep
+a registry of serviced equipment, register incoming requests and collect reports
+about the work performed. All documents are linked so that a Service Request
+always refers to a Service Object and can be closed with a Service Report. The
+workflow takes a request from "Открыта" to "Закрыта".
 
-Key DocTypes:
+Key DocTypes and their relations:
 
 - **Service Object** — equipment or site that requires maintenance.
 - **Service Request** — a ticket linked to a Service Object describing required
@@ -61,11 +62,21 @@ subdirectories.
 
 ### Usage
 
-After installation a new **Ferum Customs** module appears on the ERPNext desk.
-Users with roles "Проектный менеджер" or "System Manager" can create Service
-Objects and manage Service Requests through the provided workflow. Engineers
-update requests assigned to them and submit Service Reports. Customers see only
-their own documents if granted the "Customer" role.
+After installing the app you will see a new **Ferum Customs** module on the
+ERPNext desk. Typical workflow looks as follows:
+
+1. Create a **Service Object** that represents equipment or a location.
+2. Open a **Service Request** for that object.
+3. Technicians update the request and submit **Service Reports** describing the
+   work done.
+4. Optionally group several requests in a **Service Project**.
+
+Users require the following roles:
+
+- **Проектный менеджер** or **System Manager** — manage all documents and the
+  workflow.
+- **Service Engineer** — update assigned Service Requests and submit reports.
+- **Customer** — view their own Service Requests and related reports.
 ### CI
 
 This app can use GitHub Actions for CI. The following workflows are configured:
@@ -75,7 +86,8 @@ This app can use GitHub Actions for CI. The following workflows are configured:
 
 ### Testing
 
-Run the test suite with `pytest` from the repository root:
+Unit tests can be run locally with `pytest` or through bench. From the
+repository root execute:
 
 ```bash
 pytest
