@@ -3,6 +3,7 @@
     "name": "Assigned Engineer Item",
     "module": "Ferum Customs",
     "istable": 1,
+    "track_changes": 1,
     "fields": [
         {
             "fieldname": "engineer",
