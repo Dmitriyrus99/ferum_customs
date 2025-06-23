@@ -1,10 +1,14 @@
 {
- "add_total_row": 0,
- "is_standard": "Yes",
- "ref_doctype": "service_request",
- "report_name": "Engineer Workload",
- "report_type": "Script Report",
- "roles": [
-  {"role": "Проектный менеджер"}
- ]
+  "doctype": "Report",
+  "name": "Engineer Workload",
+  "report_name": "Engineer Workload",
+  "ref_doctype": "service_request",
+  "report_type": "Script Report",
+  "is_standard": "Yes",
+  "add_total_row": 0,
+  "roles": [
+    {
+      "role": "Проектный менеджер"
+    }
+  ]
 }
