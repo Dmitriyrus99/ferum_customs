@@ -8,7 +8,7 @@
 # вашего проекта ferum_customs.
 # ====================================================================================
 
-set -e
+set -eo pipefail
 
 # --- Переменные конфигурации ---
 GIT_REPO="https://github.com/frappe/frappe_docker.git"

@@ -8,7 +8,7 @@ jobs:
     name: Run Server-Side Tests
 
     env:
-      SITE_NAME: test_site
+      FRAPPE_SITE_NAME: tests.local
       ADMIN_PASSWORD: admin
       ERPNEXT_TAG: v15.65.4
       DB_ROOT_PASSWORD: root
@@ -42,7 +42,7 @@ jobs:
       - name: Generate .env file
         run: |
           {
-            echo "SITE_NAME=${{ env.SITE_NAME }}"
+            echo "FRAPPE_SITE_NAME=${{ env.FRAPPE_SITE_NAME }}"
             echo "ADMIN_PASSWORD=${{ env.ADMIN_PASSWORD }}"
             echo "ERPNEXT_TAG=${{ env.ERPNEXT_TAG }}"
             echo "DB_ROOT_PASSWORD=${{ env.DB_ROOT_PASSWORD }}"
@@ -58,24 +58,24 @@ jobs:
         run: docker compose -f docker-compose.test.yml up -d
 
       - name: Allow git access to workspace
-        run: docker compose exec -T frappe bash -c 'if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then git config --global --add safe.directory /workspace; fi'
+        run: docker compose exec -T frappe bash -c 'if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then git config --global --add safe.directory /home/frappe/frappe-bench/apps/ferum_customs; fi'
 
       - name: Install apps and dependencies
         run: |
           docker compose exec -T --user root frappe chown -R frappe:frappe /home/frappe/frappe-bench
-          docker compose exec -T frappe bash -eo pipefail -c '
+          docker compose exec -T -e GITHUB_REF_NAME=$GITHUB_REF_NAME frappe bash -eo pipefail -c '
             set -e
-            source /workspace/.env
+            source apps/ferum_customs/.env
             if [ ! -d apps/erpnext ]; then
                 bench get-app --branch "${ERPNEXT_TAG}" --depth 1 erpnext https://github.com/frappe/erpnext
             else
                 cd apps/erpnext && git fetch --depth=1 origin "${ERPNEXT_TAG}" && git checkout -q "${ERPNEXT_TAG}" && cd -
             fi
             bench setup requirements --node --python
-            bench get-app ferum_customs /workspace
-            bench new-site --db-root-password "$DB_ROOT_PASSWORD" --admin-password "$ADMIN_PASSWORD" "$SITE_NAME"
-            bench --site "$SITE_NAME" install-app erpnext
-            bench --site "$SITE_NAME" install-app ferum_customs
+            bench get-app --branch "$GITHUB_REF_NAME" ferum_customs https://github.com/${{ github.repository }}.git
+            bench new-site --db-root-password "$DB_ROOT_PASSWORD" --admin-password "$ADMIN_PASSWORD" "$FRAPPE_SITE_NAME"
+            bench --site "$FRAPPE_SITE_NAME" install-app erpnext
+            bench --site "$FRAPPE_SITE_NAME" install-app ferum_customs
             bench pip install -q pytest pytest-cov
           '
 
