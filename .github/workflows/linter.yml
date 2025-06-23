@@ -27,8 +27,12 @@ jobs:
           cache: pip
       - name: Validate Docker tag
         run: |
-          TAG=${ERPNEXT_TAG:-version-15}
-          docker manifest inspect frappe/erpnext-worker:$TAG >/dev/null
+          IMAGE_TAG=$(grep 'image:' docker-compose.test.yml | cut -d' ' -f2)
+          IMAGE_NAME=$(echo $IMAGE_TAG | cut -d':' -f1)
+          TAG=$(echo $IMAGE_TAG | cut -d':' -f2)
+          if ! curl -fsSL "https://registry.hub.docker.com/v2/repositories/$IMAGE_NAME/tags/$TAG" >/dev/null; then
+            echo "::error::Image $IMAGE_NAME with tag $TAG does not exist on Docker Hub"; exit 1
+          fi
       - name: Validate pyproject
         run: |
           python - <<'PY'
