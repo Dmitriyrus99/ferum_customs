@@ -23,6 +23,17 @@ jobs:
         with:
           python-version: '3.10'
           cache: pip
+      - name: Validate pyproject
+        run: |
+          python - <<'PY'
+          import tomllib, pathlib, sys
+          path = pathlib.Path("pyproject.toml")
+          d = tomllib.loads(path.read_text())
+          if "optional-dependencies" in d.get("project", {}):
+              for k, v in d["project"]["optional-dependencies"].items():
+                  if not isinstance(v, list):
+                      sys.exit(f"[{k}] must be a list, got {type(v).__name__}")
+          PY
       - uses: pre-commit/action@v3.0.0
 
       - name: Download Semgrep rules
