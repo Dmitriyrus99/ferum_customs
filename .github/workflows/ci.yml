@@ -15,7 +15,9 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-    name: Server
+      matrix:
+        type: [unit, integration, e2e]
+    name: Tests (${{ matrix.type }})
 
     services:
       redis-cache:
@@ -109,5 +111,6 @@ jobs:
         run: |
           bench --site test_site set-config allow_tests true
           bench --site test_site run-tests --app ferum_customs
+          ./env/bin/pytest $GITHUB_WORKSPACE/tests/${{ matrix.type }} -ra -q
         env:
           TYPE: server
