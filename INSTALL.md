@@ -2,18 +2,34 @@
 
 This document explains how to install the `ferum_customs` app in your Frappe/ERPNext environment.
 
-1. Ensure you have a working [bench](https://github.com/frappe/bench) setup.
-2. Clone this repository inside your bench directory:
+## Requirements
+
+- Tested with **Frappe/ERPNext 15.0**. Older versions are not officially supported.
+- A working [bench](https://github.com/frappe/bench) setup.
+
+## Steps
+
+1. Clone this repository inside your bench directory:
    ```bash
    bench get-app https://github.com/Dmitriyrus99/ferum_customs.git --branch main
    ```
-3. Install the application on your site:
+2. Install the application on your site:
    ```bash
    bench --site YOUR_SITE_NAME install-app ferum_customs
    ```
-4. Build assets and restart bench:
+3. Build assets and restart bench:
    ```bash
    bench build && bench restart
    ```
 
-After installation, you should see new DocTypes and customizations available in your ERPNext instance.
+If you use Docker images, add `ferum_customs` to `apps.txt` (or `apps.json`) and rebuild the image before running the `install-app` command.
+
+## Configuration
+
+After installation log in as **Administrator** and open **Role List**. Make sure the following roles exist and assign them to appropriate users:
+
+- `Проектный менеджер`
+- `Инженер`
+- `Заказчик` (customers only)
+
+The app also installs a *Service Request Workflow*. Review the workflow states and transitions under **Workflow List** and adjust them if required.
