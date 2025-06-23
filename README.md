@@ -131,6 +131,18 @@ folder. See [backup.md](backup.md) for details.
 
 Release notes are tracked in [CHANGELOG.md](CHANGELOG.md).
 
+### Обновление образа
+
+1. Проверьте доступность нового тега:
+
+   ```bash
+   docker pull frappe/erpnext-worker:<new-tag>
+   ```
+
+2. Обновите тег в `docker-compose.test.yml`.
+3. Запустите `pytest` локально и убедитесь, что тесты проходят.
+4. Создайте PR и проверьте, что CI зелёный.
+
 
 ### License
 

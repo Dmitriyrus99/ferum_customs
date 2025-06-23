@@ -20,7 +20,7 @@ services:
       retries: 10
 
   frappe:
-    image: frappe/erpnext-worker:v16.21.1
+    image: frappe/erpnext-worker:v16.24.2
     depends_on:
       mariadb:
         condition: service_healthy
