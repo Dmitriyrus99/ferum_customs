@@ -9,7 +9,7 @@ This document explains how to install the `ferum_customs` app in your Frappe/ERP
 - ERPNext branch must match your Frappe version (e.g. `version-15`).
 - A working [bench](https://github.com/frappe/bench) setup.
 
-## Steps
+## Bare-metal
 
 1. Clone this repository inside your bench directory:
    ```bash
@@ -23,6 +23,13 @@ This document explains how to install the `ferum_customs` app in your Frappe/ERP
    ```bash
    bench build && bench restart
    ```
+## Docker
+
+Run the stack with:
+```bash
+docker compose up -d --build
+```
+
 
 If you use Docker images, add `ferum_customs` to `apps.txt` (or `apps.json`) and rebuild the image before running the `install-app` command.
 
