@@ -1,0 +1,6 @@
+pre-commit
+ruff
+pytest
+frappe-bench
+pip-audit
+semgrep

@@ -1,4 +1,4 @@
-# ferum_customs/ferum_customs/custom_logic/payroll_entry_hooks.py
+# ferum_customs/custom_logic/payroll_entry_hooks.py
 """Хуки для DocType *PayrollEntryCustom* (расширение штатного Payroll Entry)."""
 
 from __future__ import annotations

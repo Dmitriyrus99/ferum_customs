@@ -1,4 +1,4 @@
-# ferum_customs/ferum_customs/doctype/service_report/service_report.py
+# ferum_customs/doctype/service_report/service_report.py
 """
 Python-контроллер для DocType "Service Report".
 """

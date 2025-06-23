@@ -1,4 +1,4 @@
-# ferum_customs/ferum_customs/doctype/custom_attachment/custom_attachment.py
+# ferum_customs/doctype/custom_attachment/custom_attachment.py
 """
 Python-контроллер для DocType "Custom Attachment".
 """

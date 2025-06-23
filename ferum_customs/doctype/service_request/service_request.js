@@ -1,4 +1,4 @@
-// ferum_customs/ferum_customs/doctype/service_request/service_request.js
+// ferum_customs/doctype/service_request/service_request.js
 /**
  * Клиентский скрипт для DocType "Service Request".
  * Содержит общую логику фильтрации инженеров и специфичные действия формы.

@@ -1,4 +1,4 @@
-# ferum_customs/ferum_customs/doctype/service_request/service_request.py
+# ferum_customs/doctype/service_request/service_request.py
 """
 Python-контроллер для DocType "Service Request".
 """

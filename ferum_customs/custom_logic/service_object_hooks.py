@@ -1,4 +1,4 @@
-# ferum_customs/ferum_customs/custom_logic/service_object_hooks.py
+# ferum_customs/custom_logic/service_object_hooks.py
 """Хуки для DocType *Service Object* – оборудование / объект обслуживания."""
 
 from __future__ import annotations

@@ -1,4 +1,4 @@
-# ferum_customs/ferum_customs/custom_logic/service_request_hooks.py
+# ferum_customs/custom_logic/service_request_hooks.py
 """Хуки для DocType *Service Request*."""
 
 from __future__ import annotations

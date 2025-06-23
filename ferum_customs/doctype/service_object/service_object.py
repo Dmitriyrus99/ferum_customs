@@ -1,4 +1,4 @@
-# ferum_customs/ferum_customs/doctype/service_object/service_object.py
+# ferum_customs/doctype/service_object/service_object.py
 """
 Python-контроллер для DocType "Service Object".
 """

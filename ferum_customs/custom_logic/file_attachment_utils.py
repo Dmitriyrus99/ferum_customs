@@ -1,4 +1,4 @@
-# ferum_customs/ferum_customs/custom_logic/file_attachment_utils.py
+# ferum_customs/custom_logic/file_attachment_utils.py
 """Утилиты для работы с файлами вложений.
 
 Содержит функцию для безопасного удаления файлов вложений.

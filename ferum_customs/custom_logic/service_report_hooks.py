@@ -1,4 +1,4 @@
-# ferum_customs/ferum_customs/custom_logic/service_report_hooks.py
+# ferum_customs/custom_logic/service_report_hooks.py
 """Хуки для DocType *ServiceReport*.
 
 * Проверяем корректность привязки к заявке (validate).
