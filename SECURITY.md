@@ -38,3 +38,11 @@ ferum_customs
 ```
 
 After rebuilding, run `bench --site <your-site> install-app ferum_customs` inside the container.
+
+## Backup and Recovery
+
+To recover from a failure you need the application source code of the same version,
+a SQL dump of your site and the contents of the `files` directory. The app does not
+store data outside the database except for user attachments. Keep regular backups
+of both the database and attachments. Detailed steps are described in
+[backup.md](backup.md).

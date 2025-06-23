@@ -99,6 +99,17 @@ If you prefer using bench:
 bench --site <your-site> run-tests apps/ferum_customs
 ```
 
+### Backup
+
+Regularly export a SQL dump of your site and copy the `files` directory from the
+bench. To restore, deploy the same version of the app from GitHub, import the
+database dump and place the attachments back into the `sites/<site-name>/public/files`
+folder. See [backup.md](backup.md) for details.
+
+### Changelog
+
+Release notes are tracked in [CHANGELOG.md](CHANGELOG.md).
+
 
 ### License
 
