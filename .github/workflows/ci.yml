@@ -58,7 +58,7 @@ jobs:
         run: docker compose -f docker-compose.test.yml up -d
 
       - name: Allow git access to workspace
-        run: docker compose exec -T frappe bash -c 'if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then git config --global --add safe.directory /home/frappe/frappe-bench/apps/ferum_customs; fi'
+        run: docker compose exec -T frappe bash -c 'cd apps/ferum_customs && git config --global --add safe.directory $(pwd)'
 
       - name: Install apps and dependencies
         run: |
@@ -72,7 +72,11 @@ jobs:
                 cd apps/erpnext && git fetch --depth=1 origin "${ERPNEXT_TAG}" && git checkout -q "${ERPNEXT_TAG}" && cd -
             fi
             bench setup requirements --node --python
-            bench get-app --branch "$GITHUB_REF_NAME" ferum_customs https://github.com/${{ github.repository }}.git
+            if [ -d apps/ferum_customs/.git ]; then
+                echo "ferum_customs уже смонтирован – пропускаю bench get-app"
+            else
+                bench get-app --branch "$GITHUB_REF_NAME" --overwrite ferum_customs https://github.com/${{ github.repository }}.git
+            fi
             bench new-site --db-root-password "$DB_ROOT_PASSWORD" --admin-password "$ADMIN_PASSWORD" "$FRAPPE_SITE_NAME"
             bench --site "$FRAPPE_SITE_NAME" install-app erpnext
             bench --site "$FRAPPE_SITE_NAME" install-app ferum_customs
