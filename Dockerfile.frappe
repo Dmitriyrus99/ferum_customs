@@ -7,10 +7,17 @@ ARG PYTHON_VERSION=3.11
 # RUN /usr/local/bin/pyenv install -s ${PYTHON_VERSION} \
 #  && pyenv global ${PYTHON_VERSION}
 
+# The base image already contains a non-root user `frappe` (uid 1000)
+USER frappe
+WORKDIR /home/frappe
+
+# Initialize bench as the frappe user
+RUN bench init --skip-assets frappe-bench --python $(which python)
+WORKDIR /home/frappe/frappe-bench
+
 # Clone applications
-WORKDIR /workspace
 RUN bench get-app --branch version-16 erpnext https://github.com/frappe/erpnext
 
-# ferum_customs -> copy local app (container build from repo root)
-COPY . /workspace/apps/ferum_customs
+# Add the local app during build
+COPY --chown=frappe:frappe . /home/frappe/frappe-bench/apps/ferum_customs
 RUN bench setup requirements --yes
