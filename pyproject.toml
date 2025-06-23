@@ -62,3 +62,7 @@ typing-modules = ["frappe.types.DF"]
 quote-style = "double"
 indent-style = "tab"
 docstring-code-format = true
+
+[tool.pytest.ini_options]
+addopts = "-ra"
+testpaths = ["tests"]
