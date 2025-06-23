@@ -18,11 +18,11 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Set up compose v2.27
+      - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
         with:
           install: true
-          version: v2.27.0
+          version: v0.14.0      # ✅ существующий релиз
 
       - name: Cache pip packages
         uses: actions/cache@v4
