@@ -5,7 +5,9 @@ on: [push, pull_request]
 jobs:
   server:
     runs-on: ubuntu-22.04
-    env-file: .env
+    env:
+      SITE_NAME: test_site
+      ADMIN_PASSWORD: admin
     steps:
       - uses: actions/checkout@v4
 
