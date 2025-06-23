@@ -11,20 +11,14 @@ app_license = "MIT"
 doc_events = DOC_EVENTS
 get_notification_config = "ferum_customs.notifications.notifications.get_notification_config"
 
-# ── порядок фикстур: сначала DocType, затем поля/права, затем данные ──
+# ── актуальный список фикстур: только данные, без описаний DocType ──
 fixtures = [
-	"service_request.json",
-	"service_object.json",
-	"service_project.json",
 	"custom_fields.json",
 	"custom_docperm.json",
-	"audit_log.json",
 	"workflow_service_request.json",
 	"portal_menu_item.json",
 	"role.json",
 	"notification.json",
-	"users.json",
-	"customer.json",
 ]
 
 
