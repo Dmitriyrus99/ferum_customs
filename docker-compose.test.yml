@@ -31,4 +31,8 @@ services:
       - .:/home/frappe/frappe-bench/apps/ferum_customs
     user: "${UID:-1000}:${GID:-1000}"
     working_dir: /home/frappe/frappe-bench
+    entrypoint: >
+      bash -c "
+        git config --global --add safe.directory /home/frappe/frappe-bench/apps/ferum_customs &&
+        exec docker-entrypoint.sh"
     command: sleep infinity
