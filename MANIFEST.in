@@ -1,0 +1,8 @@
+# Include JSON fixtures
+recursive-include ferum_customs/fixtures *.json
+
+# Include static files such as DocType definitions, reports, workflows, etc.
+recursive-include ferum_customs *.json *.js *.html
+
+# Include any public assets
+recursive-include ferum_customs/public *
