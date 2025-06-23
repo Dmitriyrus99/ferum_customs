@@ -1,4 +1,4 @@
-FROM frappe/bench:v5.26.0
+FROM frappe/bench:v5.25.4
 
 # Install Python 3.11 and dev dependencies if needed
 ARG PYTHON_VERSION=3.11
