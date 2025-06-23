@@ -48,6 +48,10 @@ jobs:
             set -e
             source /workspace/.env
 
+            # --- 1. Fix ownership so user frappe can write bench dir ---
+            echo "Fixing ownership for frappe-bench …"
+            sudo chown -R frappe:frappe /home/frappe/frappe-bench
+
             # --- ERPNext ----------------------------------------------------
             if [ ! -d apps/erpnext ]; then
                 echo "ERPNext not found — cloning..."
