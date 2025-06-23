@@ -63,6 +63,10 @@ jobs:
             ${{ runner.os }}-pip-
             ${{ runner.os }}-
 
+      - name: Install Python dev dependencies
+        run: |
+          pip install -r requirements-dev.txt
+
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
         run: 'echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT'
