@@ -18,7 +18,7 @@ services:
       retries: 10
 
   frappe:
-    image: frappe/erpnext-worker:${ERPNEXT_TAG}
+    image: frappe/erpnext:v15
     depends_on:
       mariadb:
         condition: service_healthy
