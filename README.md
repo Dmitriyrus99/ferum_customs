@@ -24,6 +24,7 @@ You can install this app using the [bench](https://github.com/frappe/bench) CLI:
 ```bash
 cd $PATH_TO_YOUR_BENCH
 bench get-app $URL_OF_THIS_REPO --branch main
+bench get-app erpnext --branch version-15 https://github.com/frappe/erpnext
 bench install-app ferum_customs
 # Run all bench commands from within your bench directory so that the correct
 # Python environment is used
