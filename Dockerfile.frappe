@@ -1,9 +1,11 @@
 FROM frappe/bench:latest
 
 # Install Python 3.11 and dev dependencies if needed
-ARG PYTHON_VERSION
-RUN /usr/local/bin/pyenv install -s ${PYTHON_VERSION} \
- && pyenv global ${PYTHON_VERSION}
+ARG PYTHON_VERSION=3.11
+# The base image already includes Python 3.11 so
+# we don't need to install it via pyenv.
+# RUN /usr/local/bin/pyenv install -s ${PYTHON_VERSION} \
+#  && pyenv global ${PYTHON_VERSION}
 
 # Clone applications
 WORKDIR /workspace
