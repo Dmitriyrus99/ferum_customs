@@ -1,76 +1,55 @@
 # .github/workflows/ci.yml
 
-# Имя рабочего процесса, которое будет отображаться в GitHub Actions
 name: CI/CD Pipeline
 
-# Динамическое имя для каждого конкретного запуска
 run-name: >-
   🛠️ ${{ github.actor }} запустил CI для ветки ${{ github.ref_name }}
 
-# --- ТРИГГЕРЫ ЗАПУСКА ---
 on:
-  # При push в основные ветки
   push:
     branches: [main, develop]
-  # При создании Pull Request в основные ветки
   pull_request:
     branches: [main, develop]
-  # Для ручного запуска из интерфейса GitHub
   workflow_dispatch:
-  # Еженедельный запуск для проверки стабильности
   schedule:
-    - cron: '0 4 * * 1' # Каждый понедельник в 04:00 UTC
+    - cron: '0 4 * * 1'
 
-# --- УПРАВЛЕНИЕ ПАРАЛЛЕЛЬНЫМИ ЗАПУСКАМИ ---
-# Отменяет предыдущие запуски для того же PR или ветки при новом коммите
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-# --- РАЗРЕШЕНИЯ ---
-# Устанавливаем минимально необходимые права для повышения безопасности
 permissions:
   contents: read
 
 jobs:
-  # =======================================================
-  #  ЗАДАНИЕ 1: ПРОВЕРКА КАЧЕСТВА КОДА (ЛИНТЕРЫ)
-  # =======================================================
   lint:
     runs-on: ubuntu-22.04
-    timeout-minutes: 10 # Ограничение времени выполнения
-
+    timeout-minutes: 10
     steps:
-      # Шаг 1: Клонирование кода из репозитория
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Шаг 2: Настройка окружения Python
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
-      # Шаг 3: Кэширование хуков pre-commit для ускорения последующих запусков
       - name: Cache pre-commit hooks
         uses: actions/cache@v4
         with:
           path: ~/.cache/pre-commit
           key: ${{ runner.os }}-precommit-${{ hashFiles('.pre-commit-config.yaml') }}
 
-      # Шаг 4: Установка зависимостей для проверок
-      - name: Install dependencies
-        run: pip install -r dev-requirements.txt
+      - name: Install lint dependencies
+        run: |
+          if [ -f requirements-dev.txt ]; then pip install -r requirements-dev.txt; \
+          elif [ -f dev-requirements.txt ]; then pip install -r dev-requirements.txt; \
+          else pip install -r requirements.txt; fi
 
-      # Шаг 5: Запуск всех хуков pre-commit, включая pytest
       - name: Run pre-commit hooks
         run: pre-commit run --all-files --show-diff-on-failure
 
-  # =======================================================
-  #  ЗАДАНИЕ 2: ИНТЕГРАЦИОННОЕ ТЕСТИРОВАНИЕ
-  # =======================================================
   tests:
-    # Запускается только после успешного завершения 'lint'
     needs: lint
     runs-on: ubuntu-22.04
     timeout-minutes: 30
@@ -79,93 +58,54 @@ jobs:
       ADMIN_PASSWORD: admin
 
     steps:
-      # Шаг 1: Клонирование кода
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Кэш Docker layer'ов для ускорения сборки
       - name: Restore Docker build cache
         uses: actions/cache@v4
         with:
           path: ~/.cache/buildkit
           key: ${{ runner.os }}-buildkit-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildkit-
+          restore-keys: ${{ runner.os }}-buildkit-
 
-      - name: Upgrade Docker Compose (>= 2.10)
+      - name: Upgrade Docker Compose
         run: |
-          sudo curl -L https://github.com/docker/compose/releases/download/v2.23.3/docker-compose-linux-x86_64 \
-          -o /usr/local/bin/docker-compose
+          sudo curl -L https://github.com/docker/compose/releases/download/v2.23.3/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose
           sudo chmod +x /usr/local/bin/docker-compose
-          docker compose version   # вывод версии для контроля
+          docker compose version
 
-      # Шаг 2: Сборка и запуск Docker-стека в фоновом режиме
       - name: Build and start Frappe Stack
         run: DOCKER_BUILDKIT=1 docker compose -f docker-compose.yml up -d --build
 
       - name: Create Frappe test site
         run: |
           docker compose exec -T frappe bench new-site $SITE_NAME \
-            --admin-password $ADMIN_PASSWORD \
-            --no-mariadb-socket \
-            --install-app erpnext \
-            --install-app ferum_customs
+            --admin-password $ADMIN_PASSWORD --no-mariadb-socket \
+            --install-app erpnext --install-app ferum_customs
         env:
           SITE_NAME: test_site
           ADMIN_PASSWORD: admin
 
-
-      # --- Tests ----------------------------------------------------------
-      - name: Run pytest
+      - name: Wait for site to be ready
         run: |
-          echo "Waiting for Frappe site to become available..."
-          timeout=600 # Увеличенный таймаут 10 минут
-          start_time=$(date +%s)
-          # Имя хоста и порт должны соответствовать настройкам в docker-compose.yml
-          SITE_HOST="http://localhost:8000"
-
-          while true; do
-            current_time=$(date +%s)
-            elapsed=$((current_time - start_time))
-            if [ $elapsed -ge $timeout ]; then
-              echo "::error::Timeout: Site did not become ready in ${timeout} seconds."
-              docker compose logs mariadb
-              docker compose logs frappe # Выводим логи для отладки
-              exit 1
-            fi
-            
-            # Отправляем запрос к стандартному эндпоинту Frappe для проверки доступности
-            status_code=$(curl -s -o /dev/null -w "%{http_code}" $SITE_HOST/api/method/ping || echo "000")
-            
-            if [ "$status_code" -eq 200 ]; then
-              echo "Site is ready! Status code: $status_code."
-              break
-            else
-              echo "Site not ready yet (status: $status_code). Retrying in 15 seconds..."
-              sleep 15
-            fi
+          echo "Waiting for Frappe site..."
+          timeout=600
+          until $(curl -sSf http://localhost:8000/api/method/ping > /dev/null); do
+            sleep 15; timeout=$((timeout-15)); [ $timeout -le 0 ] && exit 1;
           done
 
-      # Шаг 4: Запуск тестов pytest внутри работающего контейнера
-      # Имя сервиса 'frappe' и имя сайта берутся из docker-compose.yml
-      - name: Run tests inside container
-        run: >
-          docker compose exec -T frappe
-          bench --site "$SITE_NAME" run-tests --app ferum_customs
+      - name: Run tests in container
+        run: docker compose exec -T frappe bench --site "$SITE_NAME" run-tests --app ferum_customs
 
-      # Шаг 5 (опционально): Загрузка артефактов (отчетов о тестировании)
-      # Если ваши тесты генерируют отчеты (например, в формате JUnit),
-      # вы можете раскомментировать этот шаг для их сохранения.
       - name: Upload test reports
-        if: always() # Выполняется всегда, даже если тесты упали
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: pytest-reports
-          path: ./reports # Укажите путь к вашим отчетам
+          path: ./reports
 
-      # Шаг 6: Остановка контейнеров для очистки ресурсов
       - name: Stop Frappe Stack
-        if: always() # Выполняется всегда
+        if: always()
         run: docker compose down -v
 
       - name: Save Docker build cache
