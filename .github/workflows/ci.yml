@@ -17,6 +17,24 @@ jobs:
       # 1. Получаем код
       - uses: actions/checkout@v4
 
+      # Cache Python packages
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/pyproject.toml', '**/*requirements.txt', '**/setup.py') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      # Cache Node packages
+      - name: Cache npm
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json', '**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-
+
       # 2. Создаём .env для docker-compose
       - name: Generate .env
         run: |
@@ -56,11 +74,11 @@ jobs:
             # --- ERPNext ----------------------------------------------------
             if [ ! -d apps/erpnext ]; then
                 echo "ERPNext not found — cloning..."
-                bench get-app --branch "${ERPNEXT_TAG}" erpnext https://github.com/frappe/erpnext
+                bench get-app --branch "${ERPNEXT_TAG}" --depth 1 erpnext https://github.com/frappe/erpnext
             elif [ ! -d apps/erpnext/.git ]; then
                 echo "ERPNext present but not a git repo — replacing..."
                 rm -rf apps/erpnext
-                bench get-app --branch "${ERPNEXT_TAG}" erpnext https://github.com/frappe/erpnext
+                bench get-app --branch "${ERPNEXT_TAG}" --depth 1 erpnext https://github.com/frappe/erpnext
             else
                 echo "ERPNext git repo detected — switching to tag ${ERPNEXT_TAG}"
                 cd apps/erpnext
