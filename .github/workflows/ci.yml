@@ -31,7 +31,7 @@ jobs:
         run: |
           docker compose exec -T frappe bash -c "
             source /workspace/.env &&
-            bench get-app --branch develop erpnext https://github.com/frappe/erpnext &&
+            bench get-app --branch version-16 erpnext https://github.com/frappe/erpnext &&
             bench get-app ferum_customs /workspace &&
             bench setup requirements --dev &&
             bench new-site --db-root-password root --admin-password $ADMIN_PASSWORD $SITE_NAME &&
