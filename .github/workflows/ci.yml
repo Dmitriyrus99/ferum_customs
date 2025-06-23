@@ -22,6 +22,7 @@ jobs:
       ADMIN_PASSWORD: admin
       BENCH_PATH: $HOME/frappe-bench
       ERPNEXT_BRANCH: develop
+      BENCH_ALLOW_ROOT: "yes"
 
     services:
       redis-cache:
