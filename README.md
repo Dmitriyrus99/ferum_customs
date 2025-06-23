@@ -38,6 +38,14 @@ Run the stack with:
 docker compose up -d
 ```
 
+To replicate the CI environment locally run:
+```bash
+docker compose -f docker-compose.test.yml up -d
+```
+
+When Frappe releases a new minor version, update the `image` tag in
+`docker-compose.test.yml` to that version and rebuild the containers.
+
 
 ### Contributing
 
