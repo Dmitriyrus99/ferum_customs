@@ -10,13 +10,16 @@ jobs:
     env:
       SITE_NAME: test_site
       ADMIN_PASSWORD: admin
-      ERPNEXT_TAG: v15.65.4
+      ERPNEXT_TAG: v15.65.4 # Убедитесь, что тег актуален
       DB_ROOT_PASSWORD: root
+      CUSTOM_APP_NAME: ferum_customs
 
     steps:
+      # 1. Получаем код
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      # 2. Кэшируем зависимости для ускорения последующих сборок
       - name: Cache pip packages
         uses: actions/cache@v4
         with:
@@ -33,6 +36,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-npm-
 
+      # 3. Создаём .env для docker-compose
       - name: Generate .env file
         run: |
           {
@@ -42,46 +46,79 @@ jobs:
             echo "DB_ROOT_PASSWORD=${{ env.DB_ROOT_PASSWORD }}"
           } > .env
 
-      - name: Validate ERPNext Docker tag
-        run: docker manifest inspect frappe/erpnext:${{ env.ERPNEXT_TAG }} >/dev/null
-
-      - name: Pull Docker images
-        run: docker compose -f docker-compose.test.yml pull || { echo "::error::Image pull failed"; exit 1; }
-
-      - name: Start Docker stack
+      # 4. Поднимаем сервисы в фоновом режиме для настройки
+      - name: Start Background Services
         run: docker compose -f docker-compose.test.yml up -d
 
-      - name: Install apps and dependencies
+      # 5. Устанавливаем приложения и настраиваем окружение
+      - name: Install Apps and Dependencies
         run: |
-          docker compose exec -T --user root frappe chown -R frappe:frappe /home/frappe/frappe-bench
+          # Исправляем права на рабочую директорию и bench (от root)
+          docker compose exec -T --user root frappe \
+            chown -R frappe:frappe /home/frappe/frappe-bench /workspace
+
+          # Выполняем установку и настройку (от frappe)
           docker compose exec -T frappe bash -eo pipefail -c '
             set -e
+            
+            # Добавляем /workspace в safe.directory для Git
+            git config --global --add safe.directory /workspace
+            
             source /workspace/.env
+            
+            # Устанавливаем ERPNext
             if [ ! -d apps/erpnext ]; then
                 bench get-app --branch "${ERPNEXT_TAG}" --depth 1 erpnext https://github.com/frappe/erpnext
-            else
-                cd apps/erpnext && git fetch --depth=1 origin "${ERPNEXT_TAG}" && git checkout -q "${ERPNEXT_TAG}" && cd -
             fi
+            
+            # Устанавливаем кастомное приложение, используя правильный синтаксис для локального пути
+            bench get-app --branch main "${CUSTOM_APP_NAME}" file:///workspace
+            
             bench setup requirements --node --python
-            bench get-app ferum_customs /workspace
+            
             bench new-site --db-root-password "$DB_ROOT_PASSWORD" --admin-password "$ADMIN_PASSWORD" "$SITE_NAME"
             bench --site "$SITE_NAME" install-app erpnext
-            bench --site "$SITE_NAME" install-app ferum_customs
-            bench pip install -q pytest pytest-cov
+            bench --site "$SITE_NAME" install-app "${CUSTOM_APP_NAME}"
+            
+            # Устанавливаем зависимости для тестов
+            bench pip install -q --use-pep517 pytest pytest-cov
           '
+      
+      # 6. Останавливаем фоновые сервисы перед запуском тестов
+      - name: Shutdown Background Services
+        if: always()
+        run: docker compose -f docker-compose.test.yml down
 
-      - name: Run Pytest
+      # 7. Запускаем тесты с помощью `docker compose up`
+      - name: Build and Run Tests
         run: |
-          docker compose run --rm frappe bash -c '
-            set -e
-            bench --site "$SITE_NAME" set-config allow_tests true
-            cd /workspace
-            pytest -m "not slow" --cov=ferum_customs --cov-report=xml
-          '
+          # Создаем override-файл, чтобы заменить команду "sleep infinity" на команду для запуска тестов
+          cat > docker-compose.override.yml <<-EOF
+          services:
+            frappe:
+              command: >
+                bash -c "
+                  set -e
+                  bench --site ${{ env.SITE_NAME }} set-config allow_tests true
+                  cd /workspace
+                  pytest -m 'not slow' --cov=${{ env.CUSTOM_APP_NAME }} --cov-report=xml
+                "
+          EOF
 
-      - name: Upload coverage report
+          # Запускаем стек: он соберется, запустится, выполнит тесты в контейнере frappe,
+          # после чего все контейнеры остановятся, а код выхода frappe станет кодом шага.
+          docker compose \
+            -f docker-compose.test.yml \
+            -f docker-compose.override.yml \
+            up \
+            --build \
+            --abort-on-container-exit \
+            --exit-code-from frappe
+
+      # 8. Публикуем отчет о покрытии
+      - name: Upload Coverage Report
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: coverage-report
           path: coverage.xml
-
