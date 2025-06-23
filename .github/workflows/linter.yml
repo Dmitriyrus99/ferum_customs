@@ -23,6 +23,12 @@ jobs:
         with:
           python-version: '3.12'
           cache: pip
+      - name: Validate Docker tag
+        run: |
+          TAG=$(grep 'erpnext-worker:' docker-compose.test.yml | cut -d':' -f3)
+          if ! curl -fsSL "https://registry.hub.docker.com/v2/repositories/frappe/erpnext-worker/tags/$TAG" >/dev/null; then
+            echo "::error::Tag $TAG does not exist on Docker Hub"; exit 1
+          fi
       - name: Validate pyproject
         run: |
           python - <<'PY'
