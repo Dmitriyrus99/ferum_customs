@@ -99,12 +99,30 @@ jobs:
         env:
           CI: 'Yes'
 
+      - name: Detect Frappe major version
+        id: frappe_ver
+        working-directory: /home/runner/frappe-bench
+        run: |
+          FRAPPE_VERSION=$(python - <<'PY'
+import importlib.metadata, re
+v = importlib.metadata.version("frappe")
+print(re.match(r"(\d+)", v).group(1))
+PY
+          )
+          echo "major=${FRAPPE_VERSION}" >> "$GITHUB_OUTPUT"
+
+      - name: Cache ERPNext app
+        uses: actions/cache@v4
+        with:
+          path: ~/frappe-bench/apps/erpnext
+          key: ${{ runner.os }}-erpnext-${{ steps.frappe_ver.outputs.major }}-${{ hashFiles('**/ci.yml') }}
+
       - name: Get & install ERPNext
         working-directory: /home/runner/frappe-bench
         run: |
-          # Скачиваем ERPNext той же версии, что и Frappe (пример: v15)
-          bench get-app erpnext --branch version-15 https://github.com/frappe/erpnext
-          # Устанавливаем ERPNext в сайт
+          ERP_BRANCH="version-${{ steps.frappe_ver.outputs.major }}"
+          echo "Installing ERPNext branch $ERP_BRANCH"
+          bench get-app erpnext --branch "$ERP_BRANCH" https://github.com/frappe/erpnext
           bench --site test_site install-app erpnext
         env:
           CI: 'Yes'
