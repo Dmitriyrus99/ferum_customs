@@ -1,0 +1,28 @@
+version: "3.9"
+
+services:
+  mariadb:
+    image: mariadb:10.6
+    environment:
+      MARIADB_ROOT_PASSWORD: root
+    healthcheck:
+      test: ["CMD", "mariadb-admin", "ping", "-h", "127.0.0.1", "-uroot", "-proot"]
+      interval: 5s
+      timeout: 2s
+      retries: 10
+
+  redis:
+    image: redis:alpine
+
+  frappe:
+    image: frappe/erpnext-worker:v16
+    depends_on:
+      mariadb:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    volumes:
+      - ./sites:/home/frappe/frappe-bench/sites
+      - .:/workspace
+    working_dir: /home/frappe/frappe-bench
+    command: sleep infinity
