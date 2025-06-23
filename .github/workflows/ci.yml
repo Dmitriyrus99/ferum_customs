@@ -1,12 +1,12 @@
-name: tests
+name: CI Tests
 
 on: [push, pull_request]
 
 jobs:
-  server:
+  server-tests:
     runs-on: ubuntu-22.04
+    name: Run Server-Side Tests
 
-    # Базовые переменные — их же пишем в .env
     env:
       SITE_NAME: test_site
       ADMIN_PASSWORD: admin
@@ -14,20 +14,18 @@ jobs:
       DB_ROOT_PASSWORD: root
 
     steps:
-      # 1. Получаем код
-      - uses: actions/checkout@v4
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-      # Cache Python packages
-      - name: Cache pip
+      - name: Cache pip packages
         uses: actions/cache@v4
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/pyproject.toml', '**/*requirements.txt', '**/setup.py') }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/pyproject.toml', '**/*requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
 
-      # Cache Node packages
-      - name: Cache npm
+      - name: Cache npm packages
         uses: actions/cache@v4
         with:
           path: ~/.npm
@@ -35,8 +33,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-npm-
 
-      # 2. Создаём .env для docker-compose
-      - name: Generate .env
+      - name: Generate .env file
         run: |
           {
             echo "SITE_NAME=${{ env.SITE_NAME }}"
@@ -45,83 +42,46 @@ jobs:
             echo "DB_ROOT_PASSWORD=${{ env.DB_ROOT_PASSWORD }}"
           } > .env
 
-      # 3. Проверяем, что указанный тег ERPNext существует в Docker Hub
-      - name: Validate ERPNext tag
+      - name: Validate ERPNext Docker tag
         run: docker manifest inspect frappe/erpnext:${{ env.ERPNEXT_TAG }} >/dev/null
 
-      # 4. Загружаем образы (если не скачались — явно завершаем job)
-      - name: Pull images
+      - name: Pull Docker images
+        run: docker compose -f docker-compose.test.yml pull || { echo "::error::Image pull failed"; exit 1; }
+
+      - name: Start Docker stack
+        run: docker compose -f docker-compose.test.yml up -d
+
+      - name: Install apps and dependencies
         run: |
-          docker compose --env-file .env -f docker-compose.test.yml pull \
-          || { echo "::error::Image pull failed"; exit 1; }
-
-      # 5. Поднимаем стек
-      - name: Start stack
-        run: docker compose --env-file .env -f docker-compose.test.yml up -d
-
-      # 6. Устанавливаем приложения и зависимости внутрь контейнера frappe
-      - name: Install app + ERPNext + deps
-        run: |
-          # 1) починили права (root внутри контейнера)
-          docker compose exec -T --user root frappe \
-            chown -R frappe:frappe /workspace
-
-          # 2) теперь обычный сценарий (под пользователем frappe)
+          docker compose exec -T --user root frappe chown -R frappe:frappe /home/frappe/frappe-bench
           docker compose exec -T frappe bash -eo pipefail -c '
             set -e
             source /workspace/.env
-
-            # --- ERPNext ----------------------------------------------------
             if [ ! -d apps/erpnext ]; then
-                echo "ERPNext not found — cloning..."
-                bench get-app --branch "${ERPNEXT_TAG}" erpnext https://github.com/frappe/erpnext
-            elif [ ! -d apps/erpnext/.git ]; then
-                echo "ERPNext present but not a git repo — replacing..."
-                rm -rf apps/erpnext
-                bench get-app --branch "${ERPNEXT_TAG}" erpnext https://github.com/frappe/erpnext
+                bench get-app --branch "${ERPNEXT_TAG}" --depth 1 erpnext https://github.com/frappe/erpnext
             else
-                echo "ERPNext git repo detected — switching to tag ${ERPNEXT_TAG}"
-                cd apps/erpnext
-                git fetch --depth=1 origin "${ERPNEXT_TAG}"
-                git checkout -q "${ERPNEXT_TAG}"
-                cd -
+                cd apps/erpnext && git fetch --depth=1 origin "${ERPNEXT_TAG}" && git checkout -q "${ERPNEXT_TAG}" && cd -
             fi
-
-            # обновляем зависимости под актуальный код
-            # начиная с bench 5.25 флаг --overwrite больше не нужен
             bench setup requirements --node --python
-
-            # --- Ваша кастомная аппка -------------------------------------------
             bench get-app ferum_customs /workspace
-
-            # --- dev-зависимости и сайт -----------------------------------------
-            bench new-site \
-              --db-host mariadb \
-              --db-port 3306 \
-              --no-mariadb-socket \
-              --db-root-password "$DB_ROOT_PASSWORD" \
-              --admin-password "$ADMIN_PASSWORD" \
-              "$SITE_NAME"
+            bench new-site --db-root-password "$DB_ROOT_PASSWORD" --admin-password "$ADMIN_PASSWORD" "$SITE_NAME"
             bench --site "$SITE_NAME" install-app erpnext
             bench --site "$SITE_NAME" install-app ferum_customs
-
-            # pytest
             bench pip install -q pytest pytest-cov
           '
 
-      # 7. Запускаем тесты
-      - name: Run tests
+      - name: Run Pytest
         run: |
-          docker compose --env-file .env -f docker-compose.test.yml run --exit-code-from frappe --rm frappe bash -c '
+          docker compose run --rm frappe bash -c '
             set -e
             bench --site "$SITE_NAME" set-config allow_tests true
             cd /workspace
             pytest -m "not slow" --cov=ferum_customs --cov-report=xml
           '
 
-      # 8. Публикуем отчёт о покрытии
-      - name: Upload coverage
+      - name: Upload coverage report
         uses: actions/upload-artifact@v4
         with:
-          name: coverage
+          name: coverage-report
           path: coverage.xml
+
