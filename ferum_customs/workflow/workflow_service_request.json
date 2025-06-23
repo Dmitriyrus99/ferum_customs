@@ -8,10 +8,15 @@
   "send_email_alert": 0,
   "states": [
     { "state": "Открыта",   "doc_status": 1, "allow_edit": "Проектный менеджер" },
+    { "state": "Открыта",   "doc_status": 1, "allow_edit": "System Manager" },
     { "state": "В работе",  "doc_status": 0, "allow_edit": "Проектный менеджер" },
+    { "state": "В работе",  "doc_status": 0, "allow_edit": "System Manager" },
     { "state": "Выполнена", "doc_status": 0, "allow_edit": "Проектный менеджер" },
+    { "state": "Выполнена", "doc_status": 0, "allow_edit": "System Manager" },
     { "state": "Закрыта",   "doc_status": 1, "allow_edit": "Проектный менеджер" },
-    { "state": "Отменена",  "doc_status": 2, "allow_edit": "Проектный менеджер" }
+    { "state": "Закрыта",   "doc_status": 1, "allow_edit": "System Manager" },
+    { "state": "Отменена",  "doc_status": 2, "allow_edit": "Проектный менеджер" },
+    { "state": "Отменена",  "doc_status": 2, "allow_edit": "System Manager" }
   ],
   "transitions": [
     {
@@ -22,15 +27,33 @@
     },
     {
       "state": "Открыта",
+      "action": "Назначить",
+      "next_state": "В работе",
+      "allowed": "System Manager"
+    },
+    {
+      "state": "Открыта",
       "action": "Отменить Заявку",
       "next_state": "Отменена",
       "allowed": "Проектный менеджер"
+    },
+    {
+      "state": "Открыта",
+      "action": "Отменить Заявку",
+      "next_state": "Отменена",
+      "allowed": "System Manager"
     },
     {
       "state": "В работе",
       "action": "Завершить Работу",
       "next_state": "Выполнена",
       "allowed": "Проектный менеджер"
+    },
+    {
+      "state": "В работе",
+      "action": "Завершить Работу",
+      "next_state": "Выполнена",
+      "allowed": "System Manager"
     },
     {
       "state": "Выполнена",
@@ -40,15 +63,33 @@
     },
     {
       "state": "Выполнена",
+      "action": "Вернуть в Работу",
+      "next_state": "В работе",
+      "allowed": "System Manager"
+    },
+    {
+      "state": "Выполнена",
       "action": "Закрыть Заявку",
       "next_state": "Закрыта",
       "allowed": "Проектный менеджер"
+    },
+    {
+      "state": "Выполнена",
+      "action": "Закрыть Заявку",
+      "next_state": "Закрыта",
+      "allowed": "System Manager"
     },
     {
       "state": "Закрыта",
       "action": "Переоткрыть Заявку",
       "next_state": "Выполнена",
       "allowed": "Проектный менеджер"
+    },
+    {
+      "state": "Закрыта",
+      "action": "Переоткрыть Заявку",
+      "next_state": "Выполнена",
+      "allowed": "System Manager"
     }
   ]
 }
