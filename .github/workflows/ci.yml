@@ -27,11 +27,18 @@ jobs:
         run: |
           docker compose --env-file .env -f docker-compose.test.yml up -d
 
+      - name: Derive ERPNext branch from Docker tag
+        id: erpnext_branch
+        run: |
+          TAG=$(grep 'erpnext-worker:' docker-compose.test.yml | cut -d':' -f3)
+          MAJOR=$(echo "$TAG" | sed 's/^v\([0-9]*\).*/\1/')
+          echo "branch=version-$MAJOR" >> "$GITHUB_OUTPUT"
+
       - name: Install app + ERPNext + deps
         run: |
           docker compose exec -T frappe bash -c "
             source /workspace/.env &&
-            bench get-app --branch version-16 erpnext https://github.com/frappe/erpnext &&
+            bench get-app --branch ${{ steps.erpnext_branch.outputs.branch }} erpnext https://github.com/frappe/erpnext &&
             bench get-app ferum_customs /workspace &&
             bench setup requirements --dev &&
             bench new-site --db-root-password root --admin-password $ADMIN_PASSWORD $SITE_NAME &&

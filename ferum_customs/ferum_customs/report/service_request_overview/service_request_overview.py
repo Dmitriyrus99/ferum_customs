@@ -3,16 +3,18 @@ from __future__ import annotations
 import frappe
 from frappe import _
 
+from ferum_customs.constants import STATUS_OTMENENA, STATUS_ZAKRYTA
+
 
 def execute(filters=None):
 	open_count = frappe.db.count(
 		"service_request",
-		{"status": ["not in", ("Закрыта", "Отменена")]},
+		{"status": ["not in", (STATUS_ZAKRYTA, STATUS_OTMENENA)]},
 	)
 	overdue_count = frappe.db.count(
 		"service_request",
 		{
-			"status": ["not in", ("Закрыта", "Отменена")],
+			"status": ["not in", (STATUS_ZAKRYTA, STATUS_OTMENENA)],
 			"planned_end_datetime": ("<", frappe.utils.now_datetime()),
 		},
 	)
