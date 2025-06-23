@@ -25,6 +25,10 @@
     },
     { "fieldname": "start_date", "label": "Дата начала", "fieldtype": "Date" },
     { "fieldname": "end_date", "label": "Дата окончания", "fieldtype": "Date" }
+  ],
+  "permissions": [
+    { "role": "System Manager", "read": 1, "write": 1, "create": 1, "delete": 1, "submit": 1, "cancel": 1, "amend": 1 },
+    { "role": "Administrator", "read": 1, "write": 1, "create": 1, "delete": 1, "submit": 1, "cancel": 1, "amend": 1 }
   ]
 }
 ]
