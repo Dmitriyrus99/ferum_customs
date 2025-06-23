@@ -96,6 +96,22 @@ jobs:
           bench get-app ferum_customs $GITHUB_WORKSPACE
           bench setup requirements --dev
           bench new-site --db-root-password root --admin-password admin test_site
+        env:
+          CI: 'Yes'
+
+      - name: Get & install ERPNext
+        working-directory: /home/runner/frappe-bench
+        run: |
+          # Скачиваем ERPNext той же версии, что и Frappe (пример: v15)
+          bench get-app erpnext --branch version-15 https://github.com/frappe/erpnext
+          # Устанавливаем ERPNext в сайт
+          bench --site test_site install-app erpnext
+        env:
+          CI: 'Yes'
+
+      - name: Install ferum_customs
+        working-directory: /home/runner/frappe-bench
+        run: |
           bench --site test_site install-app ferum_customs
           bench build
         env:
