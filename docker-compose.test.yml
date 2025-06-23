@@ -1,8 +1,3 @@
-version: "3.9"
-
-x-erpnext-tag: &erp_tag ${ERPNEXT_TAG:-version-15}
-x-erpnext-worker-image: &erpnext_worker_image "frappe/erpnext-worker:${ERPNEXT_TAG:-version-15}"
-
 services:
   mariadb:
     image: mariadb:10.6
@@ -23,7 +18,7 @@ services:
       retries: 10
 
   frappe:
-    image: *erpnext_worker_image
+    image: frappe/erpnext-worker:${ERPNEXT_TAG}
     depends_on:
       mariadb:
         condition: service_healthy
