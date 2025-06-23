@@ -44,13 +44,14 @@ jobs:
       # 6. Устанавливаем приложения и зависимости внутрь контейнера frappe
       - name: Install app + ERPNext + deps
         run: |
+          # 1) починили права (root внутри контейнера)
+          docker compose exec -T --user root frappe \
+            chown -R frappe:frappe /home/frappe/frappe-bench
+
+          # 2) теперь обычный сценарий (под пользователем frappe)
           docker compose exec -T frappe bash -eo pipefail -c '
             set -e
             source /workspace/.env
-
-            # --- 1. Fix ownership so user frappe can write bench dir ---
-            echo "Fixing ownership for frappe-bench …"
-            sudo chown -R frappe:frappe /home/frappe/frappe-bench
 
             # --- ERPNext ----------------------------------------------------
             if [ ! -d apps/erpnext ]; then
