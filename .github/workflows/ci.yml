@@ -61,7 +61,6 @@ jobs:
 
       - name: Install apps and dependencies
         run: |
-          docker compose exec -T --user root frappe chown -R frappe:frappe /home/frappe/frappe-bench
           docker compose exec -T -e GITHUB_REF_NAME=$GITHUB_REF_NAME frappe bash -eo pipefail -c '
             set -e
             source apps/ferum_customs/.env
@@ -76,7 +75,11 @@ jobs:
             else
                 bench get-app --branch "$GITHUB_REF_NAME" --overwrite ferum_customs https://github.com/${{ github.repository }}.git
             fi
-            bench new-site --db-root-password "$DB_ROOT_PASSWORD" --admin-password "$ADMIN_PASSWORD" "$FRAPPE_SITE_NAME"
+            if bench --site "$FRAPPE_SITE_NAME" exist >/dev/null 2>&1; then
+                bench drop-site "$FRAPPE_SITE_NAME" --root-password "$DB_ROOT_PASSWORD" --force
+            fi
+            bench new-site --db-root-password "$DB_ROOT_PASSWORD" \
+               --admin-password "$ADMIN_PASSWORD" "$FRAPPE_SITE_NAME"
             bench --site "$FRAPPE_SITE_NAME" install-app erpnext
             bench --site "$FRAPPE_SITE_NAME" install-app ferum_customs
             bench pip install -q pytest pytest-cov
