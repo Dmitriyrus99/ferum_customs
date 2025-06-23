@@ -109,6 +109,21 @@ This app can use GitHub Actions for CI. The following workflows are configured:
 - CI: Spins up official Frappe containers via `docker-compose.test.yml` and runs unit tests.
 - Linters: Runs [Frappe Semgrep Rules](https://github.com/frappe/semgrep-rules) and [pip-audit](https://pypi.org/project/pip-audit/) on every pull request.
 
+#### Быстрый чек-лист
+
+Перед запуском workflow убедитесь, что:
+
+1. В `.env` указан существующий тег ERPNext. Проверьте его командой:
+
+   ```bash
+   docker pull frappe/erpnext:${ERPNEXT_TAG}
+   ```
+
+2. Первый шаг `chown` в CI использует `docker compose exec -T --user root frappe chown ...`.
+3. Значение `ERPNEXT_TAG` в логе совпадает с переменной в workflow, иначе будет «tag not found».
+4. В стадии «Install app + deps» уже запущен корректный образ Frappe, поэтому `bench` доступен внутри контейнера.
+5. Тесты выполняются через `docker compose run --rm frappe ... pytest` и должны проходить так же, как локально при `pytest -m "not slow"`.
+
 ### Testing
 
 Unit tests can be run locally with `pytest` or through bench. From the
