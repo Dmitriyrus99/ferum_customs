@@ -95,12 +95,15 @@ jobs:
         run: |
           bench get-app ferum_customs $GITHUB_WORKSPACE
           bench setup requirements --dev
-          bench pip install pytest pytest-cov
           bench new-site --db-root-password root --admin-password admin test_site
           bench --site test_site install-app ferum_customs
           bench build
         env:
           CI: 'Yes'
+
+      - name: Install test deps
+        working-directory: /home/frappe/frappe-bench
+        run: bench pip install pytest pytest-cov
 
       - name: Run Tests
         working-directory: /home/runner/frappe-bench

@@ -26,6 +26,7 @@ services:
       dockerfile: Dockerfile.frappe
       args:
         - PYTHON_VERSION=3.11
+    user: "1000:1000"
     depends_on:
       mariadb:
         condition: service_healthy
@@ -38,7 +39,7 @@ services:
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin}
       DB_ROOT_PASSWORD: root
     volumes:
-      - ./sites:/workspace/sites
+      - ./sites:/home/frappe/frappe-bench/sites
     command: >
       bash -c "
         bench new-site $SITE_NAME
