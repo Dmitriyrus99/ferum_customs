@@ -78,3 +78,6 @@ docstring-code-format = true
 addopts = "-ra -q"
 testpaths = ["tests"]
 python_files = "test_*.py"
+markers = [
+    "slow: marks tests as slow",
+]
