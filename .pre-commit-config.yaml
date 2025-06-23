@@ -62,6 +62,14 @@ repos:
                 ferum_customs/templates/includes/.*|
                 ferum_customs/public/js/lib/.*
             )$
+  - repo: local
+    hooks:
+      - id: check-fixture-doctype
+        name: Check fixture JSON for doctype
+        entry: python scripts/check_fixtures_doctype.py
+        language: python
+        files: ^ferum_customs/fixtures/.*\.json$
+
 
 ci:
     autoupdate_schedule: weekly
