@@ -72,13 +72,11 @@ jobs:
 
       - name: Install test dependencies
         run: |
-          docker compose run --rm frappe \
-            pip install -q pytest pytest-cov
+          docker compose run --rm frappe pip install -q pytest pytest-cov
 
       - name: Run tests
         run: |
-          docker compose --env-file .env -f docker-compose.test.yml \
-            run --rm frappe bash -c "pytest -q --cov"
+          docker compose --env-file .env -f docker-compose.test.yml run --rm frappe bash -c "pytest -q --cov"
 
       - name: Cleanup
         run: docker compose -f docker-compose.test.yml down -v
