@@ -24,7 +24,7 @@ RUN bench init --skip-assets frappe-bench --python $(which python)
 WORKDIR /home/frappe/frappe-bench
 
 # Clone applications
-RUN bench get-app --branch version-16 erpnext https://github.com/frappe/erpnext
+RUN bench get-app --branch develop erpnext https://github.com/frappe/erpnext
 
 # Add the local app during build
 COPY --chown=frappe:frappe . /home/frappe/frappe-bench/apps/ferum_customs
