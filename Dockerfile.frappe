@@ -28,4 +28,4 @@ RUN bench get-app --branch develop erpnext https://github.com/frappe/erpnext
 
 # Add the local app during build
 COPY --chown=frappe:frappe . /home/frappe/frappe-bench/apps/ferum_customs
-RUN bench setup requirements --yes
+RUN bench setup requirements
