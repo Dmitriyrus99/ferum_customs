@@ -9,7 +9,7 @@ from typing import Union
 
 import frappe
 
-from ..constants import ROLE_ZAKAZCHIK
+from ..constants import ROLE_CUSTOMER, ROLE_ZAKAZCHIK
 
 PQCConditionValue = str | list[str | list[str]] | dict[str, str] | tuple[str, str]
 PQCConditions = dict[str, PQCConditionValue]
@@ -40,7 +40,9 @@ def get_service_request_pqc(user: str | None = None) -> PQCConditions | None:
         "customer"
     )  # Предполагаем, что в User есть поле 'customer' (Link to Customer)
 
-    is_customer_role = frappe.has_role(ROLE_ZAKAZCHIK, user)
+    is_customer_role = frappe.has_role(ROLE_ZAKAZCHIK, user) or frappe.has_role(
+        ROLE_CUSTOMER, user
+    )
 
     if is_customer_role and user_linked_customer:
         # Пользователь с ролью "Заказчик" и привязанным клиентом видит только заявки своего клиента.
