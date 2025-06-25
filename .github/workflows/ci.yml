@@ -1,89 +1,56 @@
-name: CI Tests
+name: Run Server-Side Tests
 
-on: [push, pull_request]
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  SITE_NAME: tests.local
+  FRAPPE_SITE_NAME: tests.local
+  ADMIN_PASSWORD: admin
+  ERPNEXT_TAG: v15.65.4
+  DB_ROOT_PASSWORD: root
 
 jobs:
-  server-tests:
-    runs-on: ubuntu-22.04
+  test:
     name: Run Server-Side Tests
-
-    env:
-      SITE_NAME: tests.local
-      FRAPPE_SITE_NAME: tests.local
-      ADMIN_PASSWORD: admin
-      ERPNEXT_TAG: v15.65.4
-      BENCH_TAG: v5.25.4
-      DB_ROOT_PASSWORD: root
+    runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Docker Buildx
+      - name: Setup Docker Buildx
         uses: docker/setup-buildx-action@v3
-        with:
-          install: true
-          version: v0.14.0      # ✅ существующий релиз
 
-      - name: Cache pip packages
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/pyproject.toml', '**/*requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
-
-      - name: Cache npm packages
-        uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json', '**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-npm-
-
-      - name: Generate .env file
+      - name: Create .env file for testing
         run: |
           {
-            echo "FRAPPE_SITE_NAME=${{ env.FRAPPE_SITE_NAME }}"
-            echo "SITE_NAME=${{ env.FRAPPE_SITE_NAME }}"
+            echo "FRAPPE_SITE_NAME=${FRAPPE_SITE_NAME}"
+            echo "SITE_NAME=${SITE_NAME}"
             echo "DB_ROOT_USER=root"
-            echo "MYSQL_ROOT_PASSWORD=${{ env.DB_ROOT_PASSWORD }}"
-            echo "ADMIN_PASSWORD=${{ env.ADMIN_PASSWORD }}"
+            echo "MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}"
+            echo "ADMIN_PASSWORD=${ADMIN_PASSWORD}"
             echo "INSTALL_APPS=erpnext,ferum_customs"
-            echo "ERPNEXT_TAG=${{ env.ERPNEXT_TAG }}"
-            echo "DB_ROOT_PASSWORD=${{ env.DB_ROOT_PASSWORD }}"
+            echo "ERPNEXT_TAG=${ERPNEXT_TAG}"
+            echo "DB_ROOT_PASSWORD=${DB_ROOT_PASSWORD}"
           } > .env
 
-      - name: Validate ERPNext Docker tag
-        run: docker manifest inspect frappe/erpnext:${{ env.ERPNEXT_TAG }} >/dev/null
+      - name: Pull test images
+        run: docker compose -f docker-compose.test.yml pull
 
-      - name: Sanity-check Bench tag
-        run: |
-          TAG=${{ env.BENCH_TAG }}
-          if ! docker manifest inspect frappe/bench:$TAG > /dev/null 2>&1; then
-            echo "::error::frappe/bench:$TAG not found on Docker Hub"; exit 1
-          fi
-
-      - name: Pull Docker images
-        run: docker compose -f docker-compose.test.yml pull || { echo "::error::Image pull failed"; exit 1; }
-
-      - name: Start Database and Cache
+      - name: Start background services
         run: docker compose -f docker-compose.test.yml up -d mariadb redis
 
       - name: Install test dependencies
-        run: |
-          docker compose run --rm frappe pip install -q pytest pytest-cov
+        run: docker compose -f docker-compose.test.yml run --rm frappe pip install -q pytest pytest-cov
 
-      - name: Run tests
-        run: |
-          docker compose --env-file .env -f docker-compose.test.yml run --rm frappe bash -c "pytest -q --cov"
+      - name: Run Frappe tests
+        run: docker compose -f docker-compose.test.yml run --rm frappe pytest --app ferum_customs -vs --cov
 
-      - name: Cleanup
-        run: docker compose -f docker-compose.test.yml down -v
-
-      - name: Upload coverage report
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-report
-          path: coverage.xml
+      - name: Stop services
+        if: always()
+        run: docker compose -f docker-compose.test.yml down
 
