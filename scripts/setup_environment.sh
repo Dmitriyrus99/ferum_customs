@@ -25,6 +25,25 @@ else
   DC_COMMAND="docker-compose"
 fi
 
+# --- Проверка и загрузка .env файла ---
+if [ -f .env ]; then
+  echo "Найден .env файл, загружаем переменные..."
+  export $(grep -v '^#' .env | xargs)
+else
+  echo "Ошибка: .env файл не найден."
+  echo "Пожалуйста, скопируйте .env.example в .env и заполните его перед запуском."
+  exit 1
+fi
+
+# Проверяем, что ключевые переменные загружены
+if [ -z "${ADMIN_PASSWORD}" ] || [ -z "${DB_ROOT_PASSWORD}" ]; then
+    echo "Ошибка: Переменные ADMIN_PASSWORD или DB_ROOT_PASSWORD не установлены в .env файле."
+    exit 1
+fi
+
+echo "Переменные окружения успешно загружены."
+echo "---"
+
 echo "Начало установки ERPNext (Frappe/ERPNext ${FRAPPE_VERSION}) с использованием Docker..."
 echo "Будет создан сайт: ${SITE_NAME}"
 echo "Пароль администратора: ${ADMIN_PASSWORD}"
