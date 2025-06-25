@@ -191,7 +191,10 @@ def on_custom_attachment_trash(doc: FrappeDocument, method: str | None = None):
             file_doc_name = frappe.db.get_value("File", {"file_url": file_url})
             if file_doc_name:
                 frappe.delete_doc(
-                    "File", file_doc_name, ignore_permissions=True, force_delete=True
+                    "File",
+                    file_doc_name,
+                    ignore_permissions=True,
+                    force=True,
                 )
                 logger.info(
                     f"Deleted File DocType record '{file_doc_name}' for CustomAttachment '{doc.name}' (URL: {file_url})."
