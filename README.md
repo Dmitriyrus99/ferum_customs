@@ -113,7 +113,7 @@ This app can use GitHub Actions for CI. The following workflows are configured:
 
 Перед запуском workflow убедитесь, что:
 
-1. В `.env` указан существующий тег ERPNext. Проверьте его командой:
+1. Скопируйте `.env.example` в `.env` и убедитесь, что указан существующий тег ERPNext. Проверьте его командой:
 
    ```bash
    docker pull frappe/erpnext:${ERPNEXT_TAG}
