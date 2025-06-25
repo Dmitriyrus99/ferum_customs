@@ -124,12 +124,12 @@ This app can use GitHub Actions for CI. The following workflows are configured:
 4. В стадии «Install app + deps» уже запущен корректный образ Frappe, поэтому `bench` доступен внутри контейнера.
 5. Тесты выполняются через `docker compose run --rm frappe ... pytest` и должны проходить так же, как локально при `pytest -m "not slow"`.
 
-Чтобы передавать собственные команды и при этом использовать сценарий запуска образа, в `docker-compose.test.yml` указан явный путь к скрипту запуска:
+Чтобы передавать собственные команды и при этом использовать сценарий запуска образа, в `docker-compose.test.yml` указан явный путь к скрипту `nginx-entrypoint.sh`:
 
 ```yaml
 services:
   frappe:
-    entrypoint: ["/usr/local/bin/docker-entrypoint.py"]
+    entrypoint: ["/usr/local/bin/nginx-entrypoint.sh"]
 ```
 
 ### Testing
