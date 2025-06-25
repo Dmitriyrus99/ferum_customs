@@ -1,5 +1,7 @@
 from typing import Optional
 
+from .constants import STATUS_OTKRYTA
+
 import frappe
 from frappe import _, whitelist
 from frappe.exceptions import PermissionError
@@ -100,3 +102,61 @@ def create_invoice_from_report(service_report: str) -> str:
 
     invoice.insert(ignore_permissions=True)
     return invoice.name
+
+
+@whitelist()
+def bot_create_service_request(
+    subject: str,
+    customer: str | None = None,
+    description: str | None = None,
+) -> str:
+    """Create a Service Request document on behalf of the Telegram bot."""
+
+    doc = frappe.get_doc(
+        {
+            "doctype": "Service Request",
+            "subject": subject,
+            "status": STATUS_OTKRYTA,
+            "custom_customer": customer,
+            "description": description,
+        }
+    )
+    doc.insert(ignore_permissions=True)
+    return doc.name
+
+
+@whitelist()
+def bot_update_service_request_status(docname: str, status: str) -> None:
+    """Update the status of a Service Request from the bot."""
+
+    sr = frappe.get_doc("Service Request", docname)
+    sr.status = status
+    sr.save(ignore_permissions=True)
+
+
+@whitelist()
+def bot_upload_attachment(docname: str, file_url: str, attachment_type: str) -> str:
+    """Create a Custom Attachment linked to a Service Request."""
+
+    ca = frappe.get_doc(
+        {
+            "doctype": "Custom Attachment",
+            "parent_reference_sr": docname,
+            "attachment_file": file_url,
+            "attachment_type": attachment_type,
+        }
+    )
+    ca.insert(ignore_permissions=True)
+    return ca.name
+
+
+@whitelist()
+def bot_get_service_requests(status: str | None = None) -> list[dict]:
+    """Return a list of Service Requests filtered by status."""
+
+    filters = {"status": status} if status else {}
+    return frappe.get_all(
+        "Service Request",
+        filters=filters,
+        fields=["name", "subject", "status"],
+    )
