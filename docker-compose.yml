@@ -1,54 +1,69 @@
 services:
   mariadb:
     image: mariadb:10.6
+    container_name: mariadb
+    restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: root
-    command: >
-      --character-set-server=utf8mb4
-      --collation-server=utf8mb4_unicode_ci
+      MYSQL_ROOT_PASSWORD: password
     volumes:
-      - dbdata:/var/lib/mysql
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-proot"]
-      interval: 10s
-      retries: 5
+      - mariadb-data:/var/lib/mysql
 
   redis:
-    image: redis:6
+    image: redis:6.2-alpine
+    container_name: redis
+    restart: unless-stopped
     volumes:
-      - redisdata:/data
+      - redis-data:/data
 
   frappe:
-    build:
-      context: .
-      dockerfile: Dockerfile.frappe
-      args:
-        - PYTHON_VERSION=3.11
-    user: "${UID:-1000}:${GID:-1000}"
+    image: frappe/erpnext:v15.25.0           # стабильный готовый образ
+    container_name: frappe
+    restart: unless-stopped
     depends_on:
-      mariadb:
-        condition: service_healthy
-      redis:
-        condition: service_started
-    ports:
-      - "8000:8000"
+      - mariadb
+      - redis
+
     environment:
-      SITE_NAME: ${SITE_NAME:-test_site}
-      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin}
-      DB_ROOT_PASSWORD: root
+      SITE_NAME: erp.ferumrus.ru             # ← поменяйте, если нужно
+      ADMIN_PASSWORD: fFeRu1011#f               # ← задайте свой пароль
+
+    # все команды выполняются ОДНИМ bash-скриптом
+    command: |
+      bash -eux -c '
+        cd /home/frappe/frappe-bench
+
+        echo "⏳ Ждём 30 с, пока MariaDB поднимется…"
+        sleep 30
+        pip install --no-cache-dir -U "frappe-bench==5.25.7"
+
+        echo "📦 Клонируем приложение ferum_customs…"
+        bench get-app --branch main --overwrite https://github.com/Dmitriyrus99/ferum_customs.git
+
+        echo "⚙️  Создаём сайт и ставим ERPNext + кастом-приложение…"
+        bench new-site "$SITE_NAME" \
+          --admin-password "$ADMIN_PASSWORD" \
+          --db-root-password password \
+          --no-mariadb-socket \
+          --db-host mariadb --db-port 3306 \
+          --install-app erpnext && \
+        bench --site "$SITE_NAME" install-app ferum_customs
+
+        echo "🚀 Запускаем Frappe (bench start)…"
+        bench setup procfile
+      '
+
+    # данные складываем в тома, чтобы не возиться с правами на хосте
     volumes:
-      - ./sites:/home/frappe/frappe-bench/sites
-    command: >
-      bash -c "
-        bench new-site $SITE_NAME
-          --admin-password $ADMIN_PASSWORD
-          --mariadb-root-password $DB_ROOT_PASSWORD
-          --no-mariadb-socket &&
-        bench --site $SITE_NAME install-app erpnext &&
-        bench --site $SITE_NAME install-app ferum_customs &&
-        bench start
-      "
+      - frappe-sites:/home/frappe/frappe-bench/sites
+      - frappe-apps:/home/frappe/frappe-bench/apps
+
+    ports:
+      - "8001:8000"   # веб-интерфейс
+      - "9001:9000"   # socket.io (опционально)
 
 volumes:
-  dbdata:
-  redisdata:
+  mariadb-data:
+  redis-data:
+  frappe-sites:
+  frappe-apps:
+
