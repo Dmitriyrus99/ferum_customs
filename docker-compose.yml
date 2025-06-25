@@ -1,69 +1,45 @@
+
 services:
+  app:
+    # Собираем образ из Dockerfile, который мы создали
+    build:
+      context: .
+      dockerfile: Dockerfile
+    # Команда, которая не дает контейнеру завершиться
+    command: sleep infinity
+
   mariadb:
     image: mariadb:10.6
-    container_name: mariadb
-    restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-    volumes:
-      - mariadb-data:/var/lib/mysql
+      - MYSQL_ROOT_PASSWORD=123
 
   redis:
-    image: redis:6.2-alpine
-    container_name: redis
-    restart: unless-stopped
-    volumes:
-      - redis-data:/data
+    image: redis:6.2
 
-  frappe:
-    image: frappe/erpnext:${ERPNEXT_TAG}           # стабильный готовый образ
-    container_name: frappe
-    restart: unless-stopped
-    depends_on:
-      - mariadb
-      - redis
+```
 
-    environment:
-      SITE_NAME: ${SITE_NAME}             # ← поменяйте, если нужно
-      ADMIN_PASSWORD: ${ADMIN_PASSWORD}               # ← задайте свой пароль
+### Шаг 3: Включение Prebuilds в настройках
 
-    # все команды выполняются ОДНИМ bash-скриптом
-    command: |
-      bash -eux -c '
-        cd /home/frappe/frappe-bench
+1.  Закоммитьте и отправьте папку `.devcontainer` с тремя новыми файлами в ваш репозиторий на ветку `main`.
+2.  Перейдите в `Settings` > `Codespaces` (в меню слева).
+3.  Найдите раздел "Prebuild configuration" и нажмите `Configure prebuilds`.
+4.  Выберите ветку `main`.
+5.  GitHub автоматически обнаружит вашу конфигурацию (`.devcontainer/devcontainer.json`). Просто проверьте, что все верно, и нажмите `Create`.
 
-        echo "⏳ Ждём 30 с, пока MariaDB поднимется…"
-        sleep 30
-        pip install --no-cache-dir -U "frappe-bench==${BENCH_TAG}"
+Готово! GitHub начнет создавать вашу первую предварительную сборку. Этот процесс может занять 15-20 минут. После его завершения каждый новый Codespace для ветки `main` будет запускаться за ~30 секунд.
 
-        echo "📦 Клонируем приложение ferum_customs…"
-        bench get-app --branch main --overwrite https://github.com/Dmitriyrus99/ferum_customs.git
+### Что делает эта конфигурация?
 
-        echo "⚙️  Создаём сайт и ставим ERPNext + кастом-приложение…"
-        bench new-site "$SITE_NAME" \
-          --admin-password "$ADMIN_PASSWORD" \
-          --db-root-password ${DB_ROOT_PASSWORD} \
-          --no-mariadb-socket \
-          --db-host mariadb --db-port 3306 \
-          --install-app erpnext && \
-        bench --site "$SITE_NAME" install-app ferum_customs
+*   **Dockerfile:** Берет готовый образ Frappe, добавляет в него `bench` и копирует код вашего приложения.
+*   **docker-compose.yml:** Запускает три сервиса: ваше приложение (`app`), базу данных (`mariadb`) и кэш (`redis`), связывая их вместе.
+*   **devcontainer.json:**
+   *   **`postCreateCommand`:** Это "сердце" prebuild. Он инициализирует `bench`, скачивает ваше приложение `ferum_customs` из репозитория и создает тестовый сайт `dev.site`, устанавливая на него ваше приложение.
+   *   **`postStartCommand`:** Автоматически запускает `bench start` каждый раз, когда вы открываете Codespace, так что вам не нужно делать это вручную.
+   *   **`forwardPorts`:** Автоматически открывает порт `8000` в браузере, чтобы вы сразу увидели свой работающий сайт.
 
-        echo "🚀 Запускаем Frappe (bench start)…"
-        bench setup procfile
-      '
+Теперь ваша разработка в облаке будет невероятно быстрой и удобной.
 
-    # данные складываем в тома, чтобы не возиться с правами на хосте
-    volumes:
-      - frappe-sites:/home/frappe/frappe-bench/sites
-      - frappe-apps:/home/frappe/frappe-bench/apps
-
-    ports:
-      - "8001:8000"   # веб-интерфейс
-      - "9001:9000"   # socket.io (опционально)
-
-volumes:
-  mariadb-data:
-  redis-data:
-  frappe-sites:
-  frappe-apps:
-
+<!--
+[PROMPT_SUGGESTION]Как я могу отладить ошибки в `postCreateCommand`?[/PROMPT_SUGGESTION]
+[PROMPT_SUGGESTION]Объясни, как работает `docker-compose.yml` в этой конфигурации.[/PROMPT_SUGGESTION]
+->
