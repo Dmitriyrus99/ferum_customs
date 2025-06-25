@@ -4,7 +4,7 @@ services:
     container_name: mariadb
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     volumes:
       - mariadb-data:/var/lib/mysql
 
@@ -16,7 +16,7 @@ services:
       - redis-data:/data
 
   frappe:
-    image: frappe/erpnext:v15.25.0           # стабильный готовый образ
+    image: frappe/erpnext:${ERPNEXT_TAG}           # стабильный готовый образ
     container_name: frappe
     restart: unless-stopped
     depends_on:
@@ -24,8 +24,8 @@ services:
       - redis
 
     environment:
-      SITE_NAME: erp.ferumrus.ru             # ← поменяйте, если нужно
-      ADMIN_PASSWORD: fFeRu1011#f               # ← задайте свой пароль
+      SITE_NAME: ${SITE_NAME}             # ← поменяйте, если нужно
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}               # ← задайте свой пароль
 
     # все команды выполняются ОДНИМ bash-скриптом
     command: |
@@ -34,7 +34,7 @@ services:
 
         echo "⏳ Ждём 30 с, пока MariaDB поднимется…"
         sleep 30
-        pip install --no-cache-dir -U "frappe-bench==5.25.7"
+        pip install --no-cache-dir -U "frappe-bench==${BENCH_TAG}"
 
         echo "📦 Клонируем приложение ferum_customs…"
         bench get-app --branch main --overwrite https://github.com/Dmitriyrus99/ferum_customs.git
@@ -42,7 +42,7 @@ services:
         echo "⚙️  Создаём сайт и ставим ERPNext + кастом-приложение…"
         bench new-site "$SITE_NAME" \
           --admin-password "$ADMIN_PASSWORD" \
-          --db-root-password password \
+          --db-root-password ${DB_ROOT_PASSWORD} \
           --no-mariadb-socket \
           --db-host mariadb --db-port 3306 \
           --install-app erpnext && \
