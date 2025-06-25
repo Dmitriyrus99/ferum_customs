@@ -9,6 +9,9 @@ app_email = "support@ferum.ru"
 app_license = "MIT"
 
 doc_events = DOC_EVENTS
+permission_query_conditions = {
+    "Service Request": "ferum_customs.permissions.permissions.get_service_request_pqc",
+}
 get_notification_config = (
     "ferum_customs.notifications.notifications.get_notification_config"
 )
