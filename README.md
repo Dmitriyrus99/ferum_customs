@@ -56,6 +56,49 @@ Roles required:
 - **Service Engineer** — update assigned requests and submit reports.
 - **Customer** — view their own requests and related reports.
 
+### Role workflows
+
+**Project Manager**
+
+1. Register new *Service Objects* and assign responsible engineers.
+2. Create and triage *Service Requests*.
+3. Move requests through the workflow: **Открыта → В работе → Выполнена → Закрыта**.
+4. Review submitted *Service Reports* and generate invoices if required.
+
+**Office Manager**
+
+1. Log incoming calls or emails as *Service Requests*.
+2. Track due dates and follow up with engineers or clients.
+3. Update customer information and schedule visits.
+
+**Service Engineer**
+
+1. Check assigned *Service Requests* from the desk or via the Telegram bot.
+2. Record work details in a *Service Report* and attach photos or documents.
+3. Mark the request as **Выполнена** when done.
+
+**Client/Customer**
+
+1. Submit new requests through the portal or the Telegram bot.
+2. Monitor request status and view related reports.
+3. Receive invoices and close completed work.
+
+## Telegram Bot
+
+The optional bot simplifies field updates through Telegram. Set the bot token in
+the ``TELEGRAM_BOT_TOKEN`` environment variable and run ``telegram_bot.bot_service``.
+
+Available commands (example syntax):
+
+```
+/new_request <subject> - create a service request
+/my_requests - list your open requests
+/upload_photo <request_id> - attach a photo
+/set_status <request_id> <status> - update request status
+```
+
+The bot internally calls whitelisted functions from ``ferum_customs.api``.
+
 ## Development
 
 Pre‑commit hooks format and lint the code. Enable them inside the app directory:
