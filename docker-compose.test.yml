@@ -37,4 +37,4 @@ services:
     user: "${UID:-1000}:${GID:-1000}"
     working_dir: /home/frappe/frappe-bench
     # Use image's entrypoint script directly for custom commands
-    entrypoint: ["/usr/local/bin/docker-entrypoint.py"]
+    entrypoint: ["/usr/local/bin/nginx-entrypoint.sh"]
