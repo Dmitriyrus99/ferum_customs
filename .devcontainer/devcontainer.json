@@ -1,0 +1,43 @@
+{
+  "name": "Frappe / Ferum Customs Dev Environment",
+  // Указываем, что нужно использовать Dockerfile из этой же папки
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+
+  // Настройки для VS Code внутри Codespace
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "visualstudioexptteam.vscodeintellicode"
+      ]
+    }
+  },
+
+  // Перенаправляем порты, чтобы получить доступ к сайту Frappe
+  "forwardPorts": [8000, 9000],
+  "portsAttributes": {
+    "8000": {
+      "label": "Frappe Web",
+      "onAutoForward": "openBrowser"
+    },
+    "9000": {
+      "label": "Frappe SocketIO"
+    }
+  },
+
+  // Эта команда выполнится ОДИН РАЗ при создании Prebuild
+  // Это самая важная часть для ускорения
+  "postCreateCommand": "bench init --skip-redis-config-generation frappe-bench && cd frappe-bench && bench get-app https://github.com/${repositoryOwner}/ferum_customs && bench new-site --no-mariadb-socket --db-host mariadb --db-port 3306 --db-root-username root --db-root-password 123 --admin-password admin --install-app ferum_customs dev.site",
+
+  // Эта команда будет выполняться КАЖДЫЙ РАЗ при запуске Codespace
+  "postStartCommand": "cd frappe-bench && bench start",
+
+  // Запускаем окружение с помощью Docker Compose для подключения базы данных
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "app",
+  "workspaceFolder": "/workspaces/${localWorkspaceFolder}"
+}
+
