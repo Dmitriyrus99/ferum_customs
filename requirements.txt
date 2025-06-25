@@ -1,1 +1,3 @@
 requests-oauthlib==2.0.0  # satisfies frappe 16.x
+fastapi==0.110.0
+aiogram==3.5.0
