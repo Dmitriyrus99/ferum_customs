@@ -65,7 +65,7 @@ echo "--> Этап 3: Создание нового сайта и установ
 echo "Это может занять значительное время..."
 
 echo "Создание сайта ${SITE_NAME}..."
-$DC_COMMAND -f pwd.yml exec frappe bench new-site "${SITE_NAME}" --no-mariadb-socket --mariadb-root-password 123 --admin-password "${ADMIN_PASSWORD}"
+$DC_COMMAND -f pwd.yml exec frappe bench new-site "${SITE_NAME}" --no-mariadb-socket --mariadb-root-password "${DB_ROOT_PASSWORD}" --admin-password "${ADMIN_PASSWORD}"
 if [ $? -ne 0 ]; then
     echo "Ошибка: Не удалось создать новый сайт."
     exit 1
