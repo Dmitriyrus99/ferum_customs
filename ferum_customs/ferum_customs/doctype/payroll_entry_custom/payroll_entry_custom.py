@@ -21,6 +21,8 @@ from frappe.model.document import Document
 
 class PayrollEntryCustom(Document):
     total_payable: float | None
+    total_deductions: float | None
+    net_payable: float | None
     """
     Класс документа PayrollEntryCustom.
     """
@@ -35,6 +37,8 @@ class PayrollEntryCustom(Document):
         Здесь можно добавить специфичные для класса валидации.
         """
         self._round_total_payable()
+        self._round_total_deductions()
+        self._calculate_net_payable()
 
         # Логика из оригинального файла (payroll_entry_custom.py):
         # if self.total_payable is not None:
@@ -55,6 +59,23 @@ class PayrollEntryCustom(Document):
                 # В данном случае, просто не изменяем значение, если оно не числовое.
                 # Это может быть обработано другими валидациями (например, тип поля Currency).
                 pass  # Или frappe.log_error(...)
+
+    def _round_total_deductions(self) -> None:
+        if self.get("total_deductions") is not None:
+            try:
+                deductions_float = float(self.total_deductions or 0.0)
+                self.total_deductions = round(deductions_float, 2)
+            except (ValueError, TypeError):
+                pass
+
+    def _calculate_net_payable(self) -> None:
+        try:
+            pay = float(self.total_payable or 0.0)
+            ded = float(self.total_deductions or 0.0)
+            self.net_payable = round(pay - ded, 2)
+        except (ValueError, TypeError):
+            # Если не удалось привести к числам, не задаем значение
+            self.net_payable = None
 
     # Другие методы жизненного цикла (before_save, on_submit, etc.) могут быть добавлены по необходимости.
     # before_save: Логика расчета total_payable находится в custom_logic.payroll_entry_hooks.before_save

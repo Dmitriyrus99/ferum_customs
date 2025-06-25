@@ -24,7 +24,14 @@
       "in_list_view": 1
     },
     { "fieldname": "start_date", "label": "Дата начала", "fieldtype": "Date" },
-    { "fieldname": "end_date", "label": "Дата окончания", "fieldtype": "Date" }
+    { "fieldname": "end_date", "label": "Дата окончания", "fieldtype": "Date" },
+    {
+      "fieldname": "budget",
+      "label": "Budget",
+      "fieldtype": "Currency",
+      "precision": 2,
+      "options": "RUB"
+    }
   ],
   "permissions": [
     { "role": "System Manager", "read": 1, "write": 1, "create": 1, "delete": 1, "submit": 1, "cancel": 1, "amend": 1 },
