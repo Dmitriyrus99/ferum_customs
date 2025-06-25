@@ -1,45 +1,23 @@
+version: "3.9"
 
 services:
   app:
-    # Собираем образ из Dockerfile, который мы создали
-    build:
-      context: .
-      dockerfile: Dockerfile
-    # Команда, которая не дает контейнеру завершиться
     command: sleep infinity
+    depends_on:
+      - mariadb
+      - redis
+    volumes:
+      - frappe-sites:/home/frappe/frappe-bench/sites
+      - frappe-apps:/home/frappe/frappe-bench/apps
 
   mariadb:
     image: mariadb:10.6
     environment:
-      - MYSQL_ROOT_PASSWORD=123
+      MYSQL_ROOT_PASSWORD: 123
 
   redis:
     image: redis:6.2
 
-```
-
-### Шаг 3: Включение Prebuilds в настройках
-
-1.  Закоммитьте и отправьте папку `.devcontainer` с тремя новыми файлами в ваш репозиторий на ветку `main`.
-2.  Перейдите в `Settings` > `Codespaces` (в меню слева).
-3.  Найдите раздел "Prebuild configuration" и нажмите `Configure prebuilds`.
-4.  Выберите ветку `main`.
-5.  GitHub автоматически обнаружит вашу конфигурацию (`.devcontainer/devcontainer.json`). Просто проверьте, что все верно, и нажмите `Create`.
-
-Готово! GitHub начнет создавать вашу первую предварительную сборку. Этот процесс может занять 15-20 минут. После его завершения каждый новый Codespace для ветки `main` будет запускаться за ~30 секунд.
-
-### Что делает эта конфигурация?
-
-*   **Dockerfile:** Берет готовый образ Frappe, добавляет в него `bench` и копирует код вашего приложения.
-*   **docker-compose.yml:** Запускает три сервиса: ваше приложение (`app`), базу данных (`mariadb`) и кэш (`redis`), связывая их вместе.
-*   **devcontainer.json:**
-   *   **`postCreateCommand`:** Это "сердце" prebuild. Он инициализирует `bench`, скачивает ваше приложение `ferum_customs` из репозитория и создает тестовый сайт `dev.site`, устанавливая на него ваше приложение.
-   *   **`postStartCommand`:** Автоматически запускает `bench start` каждый раз, когда вы открываете Codespace, так что вам не нужно делать это вручную.
-   *   **`forwardPorts`:** Автоматически открывает порт `8000` в браузере, чтобы вы сразу увидели свой работающий сайт.
-
-Теперь ваша разработка в облаке будет невероятно быстрой и удобной.
-
-<!--
-[PROMPT_SUGGESTION]Как я могу отладить ошибки в `postCreateCommand`?[/PROMPT_SUGGESTION]
-[PROMPT_SUGGESTION]Объясни, как работает `docker-compose.yml` в этой конфигурации.[/PROMPT_SUGGESTION]
-->
+volumes:
+  frappe-sites:
+  frappe-apps:
