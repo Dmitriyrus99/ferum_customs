@@ -27,15 +27,9 @@ STATUS_REJECTED: str = "Rejected"
 # Русскоязычные варианты (основные для UI и бизнес-логики в данном приложении)
 STATUS_OTKRYTA: str = "Открыта"  # Соответствует "Open" или начальному статусу
 STATUS_V_RABOTE: str = "В работе"  # Соответствует "In Progress" / "Working"
-STATUS_VYPOLNENA: str = (
-    "Выполнена"  # Соответствует "Completed" (работа завершена инженером)
-)
-STATUS_ZAKRYTA: str = (
-    "Закрыта"  # Соответствует "Closed" (финальный статус, подтверждено)
-)
-STATUS_OTMENENA: str = (
-    "Отменена"  # Соответствует "Cancelled" (отменена инициатором или системой)
-)
+STATUS_VYPOLNENA: str = "Выполнена"  # Соответствует "Completed" (работа завершена инженером)
+STATUS_ZAKRYTA: str = "Закрыта"  # Соответствует "Closed" (финальный статус, подтверждено)
+STATUS_OTMENENA: str = "Отменена"  # Соответствует "Cancelled" (отменена инициатором или системой)
 
 
 # --- Роли Пользователей ---
@@ -78,45 +72,45 @@ FIELD_CUSTOM_LINKED_REPORT: str = "custom_linked_report"
 # Помогает инструментам анализа и улучшает ясность относительно того,
 # какие константы предназначены для использования в других частях приложения.
 __all__ = [
-    # Статусы
-    "STATUS_OPEN",
-    "STATUS_IN_PROGRESS",
-    "STATUS_ON_HOLD",
-    "STATUS_COMPLETED",
-    "STATUS_CLOSED",
-    "STATUS_CANCELLED",
-    "STATUS_REJECTED",
-    "STATUS_OTKRYTA",
-    "STATUS_V_RABOTE",
-    "STATUS_VYPOLNENA",
-    "STATUS_ZAKRYTA",
-    "STATUS_OTMENENA",
-    # Роли
-    "ROLE_SYSTEM_MANAGER",
-    "ROLE_ADMINISTRATOR",
-    "ROLE_PROJECT_MANAGER",
-    "ROLE_SERVICE_ENGINEER",
-    "ROLE_CUSTOMER",
-    "ROLE_PROEKTNYJ_MENEDZHER",
-    "ROLE_INZHENER",
-    "ROLE_ZAKAZCHIK",
-    # Типы вложений
-    "ATTACHMENT_TYPE_PHOTO",
-    "ATTACHMENT_TYPE_DOCUMENT",
-    "ATTACHMENT_TYPE_OTHER",
-    # Имена кастомных полей
-    "FIELD_CUSTOM_CUSTOMER",
-    "FIELD_CUSTOM_SERVICE_OBJECT_LINK",
-    "FIELD_CUSTOM_ASSIGNED_ENGINEER",
-    "FIELD_CUSTOM_PROJECT",
-    "FIELD_CUSTOM_LINKED_REPORT",
-    # Другие
-    # "DEFAULT_COMPANY", "MAX_LOGIN_ATTEMPTS",
+	# Статусы
+	"STATUS_OPEN",
+	"STATUS_IN_PROGRESS",
+	"STATUS_ON_HOLD",
+	"STATUS_COMPLETED",
+	"STATUS_CLOSED",
+	"STATUS_CANCELLED",
+	"STATUS_REJECTED",
+	"STATUS_OTKRYTA",
+	"STATUS_V_RABOTE",
+	"STATUS_VYPOLNENA",
+	"STATUS_ZAKRYTA",
+	"STATUS_OTMENENA",
+	# Роли
+	"ROLE_SYSTEM_MANAGER",
+	"ROLE_ADMINISTRATOR",
+	"ROLE_PROJECT_MANAGER",
+	"ROLE_SERVICE_ENGINEER",
+	"ROLE_CUSTOMER",
+	"ROLE_PROEKTNYJ_MENEDZHER",
+	"ROLE_INZHENER",
+	"ROLE_ZAKAZCHIK",
+	# Типы вложений
+	"ATTACHMENT_TYPE_PHOTO",
+	"ATTACHMENT_TYPE_DOCUMENT",
+	"ATTACHMENT_TYPE_OTHER",
+	# Имена кастомных полей
+	"FIELD_CUSTOM_CUSTOMER",
+	"FIELD_CUSTOM_SERVICE_OBJECT_LINK",
+	"FIELD_CUSTOM_ASSIGNED_ENGINEER",
+	"FIELD_CUSTOM_PROJECT",
+	"FIELD_CUSTOM_LINKED_REPORT",
+	# Другие
+	# "DEFAULT_COMPANY", "MAX_LOGIN_ATTEMPTS",
 ]
 
 # Проверка, чтобы убедиться, что все экспортируемые имена действительно определены
 # Это необязательно, но может помочь на этапе разработки
 if __debug__:
-    for _name in __all__:
-        if _name not in globals():
-            raise NameError(f"Constant '{_name}' listed in __all__ but not defined.")
+	for _name in __all__:
+		if _name not in globals():
+			raise NameError(f"Constant '{_name}' listed in __all__ but not defined.")
