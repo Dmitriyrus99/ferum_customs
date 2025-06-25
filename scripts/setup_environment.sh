@@ -17,6 +17,9 @@ SITE_NAME=${SITE_NAME:-"dev.localhost"}
 ADMIN_PASSWORD=${ADMIN_PASSWORD:-"admin"}
 FRAPPE_VERSION="v15"
 ERPNext_VERSION="v15"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+APP_ROOT="$(dirname "$SCRIPT_DIR")"
+FERUM_CUSTOMS_PATH="${FERUM_CUSTOMS_PATH:-$APP_ROOT}"
 
 # --- Функция для определения команды docker compose ---
 if docker compose version &> /dev/null; then
@@ -108,6 +111,19 @@ echo "Установка приложения ERPNext на сайт ${SITE_NAME}
 $DC_COMMAND -f pwd.yml exec frappe bench --site "${SITE_NAME}" install-app erpnext
 if [ $? -ne 0 ]; then
     echo "Ошибка: Не удалось установить приложение ERPNext на сайт."
+    exit 1
+fi
+
+echo "Добавление и установка приложения ferum_customs..."
+$DC_COMMAND -f pwd.yml exec frappe bench get-app "$FERUM_CUSTOMS_PATH"
+if [ $? -ne 0 ]; then
+    echo "Ошибка: Не удалось добавить приложение ferum_customs."
+    exit 1
+fi
+
+$DC_COMMAND -f pwd.yml exec frappe bench --site "${SITE_NAME}" install-app ferum_customs
+if [ $? -ne 0 ]; then
+    echo "Ошибка: Не удалось установить приложение ferum_customs."
     exit 1
 fi
 
