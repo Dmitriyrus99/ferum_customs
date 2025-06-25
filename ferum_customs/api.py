@@ -70,6 +70,13 @@ def create_invoice_from_report(service_report: str) -> str:
         frappe.throw(_("Sales Invoice already exists for this Service Report."))
 
     sr = frappe.get_doc("Service Report", service_report)
+    try:
+        sr.calculate_totals()
+    except Exception as exc:
+        frappe.logger(__name__).warning(
+            f"Failed recalculating totals for Service Report '{service_report}': {exc}",
+            exc_info=True,
+        )
 
     invoice = frappe.get_doc(
         {
