@@ -140,3 +140,10 @@ class ServiceReport(Document):
 
         self.total_quantity = round(total_qty, 2)
         self.total_payable = round(total_pay, 2)
+
+    def create_sales_invoice(self) -> str:
+        """Create a Sales Invoice draft for this report."""
+        from .. import api
+
+        self.calculate_totals()
+        return api.create_invoice_from_report(self.name)

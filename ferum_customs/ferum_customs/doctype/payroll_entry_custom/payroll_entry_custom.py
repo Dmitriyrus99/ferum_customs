@@ -5,9 +5,9 @@ Python-контроллер для DocType "Payroll Entry Custom".
 
 from __future__ import annotations
 
-# import frappe # Не используется напрямую в этом файле, кроме как для frappe.model.document.Document
 from typing import Optional
 
+import frappe
 from frappe.model.document import Document
 
 # from typing import TYPE_CHECKING
@@ -76,6 +76,45 @@ class PayrollEntryCustom(Document):
         except (ValueError, TypeError):
             # Если не удалось привести к числам, не задаем значение
             self.net_payable = None
+
+    def before_save(self) -> None:
+        """Расчитывает ``total_payable`` с учетом бонусов из Service Report."""
+        total_bonus = 0.0
+        try:
+            if self.get("employee") and self.get("start_date") and self.get("end_date"):
+                reports = frappe.get_all(
+                    "ServiceReport",
+                    filters={
+                        "custom_assigned_engineer": self.employee,
+                        "posting_date": ["between", [self.start_date, self.end_date]],
+                        "docstatus": 1,
+                    },
+                    fields=["custom_bonus_amount"],
+                )
+                for r in reports:
+                    try:
+                        total_bonus += float(r.get("custom_bonus_amount") or 0)
+                    except (TypeError, ValueError):
+                        frappe.logger(__name__).warning(
+                            f"Invalid bonus value in ServiceReport '{r}' while calculating payroll"
+                        )
+        except Exception as exc:
+            frappe.logger(__name__).error(
+                f"Error fetching ServiceReport bonuses for '{self.name}': {exc}",
+                exc_info=True,
+            )
+
+        base_salary = float(self.get("base_salary", 0.0) or 0.0)
+        additional_pay = float(self.get("additional_pay", 0.0) or 0.0)
+        total_deduction = float(self.get("total_deduction", 0.0) or 0.0)
+
+        self.total_payable = base_salary + additional_pay + total_bonus - total_deduction
+
+        if self.total_payable is None:
+            self.total_payable = 0.0
+
+        if isinstance(self.total_payable, float | int):
+            self.total_payable = round(self.total_payable, 2)
 
     # Другие методы жизненного цикла (before_save, on_submit, etc.) могут быть добавлены по необходимости.
     # before_save: Логика расчета total_payable находится в custom_logic.payroll_entry_hooks.before_save
