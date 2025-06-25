@@ -92,7 +92,13 @@ docker compose -f docker-compose.test.yml up -d
 
 ## Backup and Recovery
 
-Export SQL dumps of your site and copy the `files` directory from the bench. To restore, deploy the same version of the app, import the database dump and place attachments back into `sites/<site-name>/public/files`. Details are in [backup.md](backup.md).
+Export SQL dumps of your site and copy the `files` directory from the bench. Automate this with
+
+```bash
+bench backup --with-files
+```
+
+run via `cron` or a systemd timer. To restore, deploy the same version of the app, import the database dump and place attachments back into `sites/<site-name>/public/files`. Details are in [backup.md](backup.md).
 
 ## Updating images
 
@@ -109,6 +115,14 @@ Release notes live in [CHANGELOG.md](CHANGELOG.md).
 ## Security
 
 Report vulnerabilities via [support@ferum.ru](mailto:support@ferum.ru). Do not disclose issues publicly until patched.
+
+For production deployments use
+
+```bash
+bench setup production <frappe-user>
+```
+
+to configure Nginx and Supervisor. Obtain TLS certificates (for example with Certbot) and update the generated config so the site is served via HTTPS.
 
 ## License
 

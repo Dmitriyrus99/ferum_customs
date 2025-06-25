@@ -42,3 +42,23 @@ After installation log in as **Administrator** and open **Role List**. Make sure
 - `Заказчик` (customers only)
 
 The app also installs a *Service Request Workflow*. Review the workflow states and transitions under **Workflow List** and adjust them if required.
+
+## Backup
+
+To protect your data run daily backups:
+
+```bash
+bench backup --with-files
+```
+
+Use `cron` or a systemd timer and copy archives to external storage.
+
+## Production Setup
+
+For production deployments run:
+
+```bash
+bench setup production <frappe-user>
+```
+
+The command configures Nginx and Supervisor. After obtaining TLS certificates (e.g. via Certbot), edit the generated Nginx config to reference your `fullchain.pem` and `privkey.pem` files so the site is served over HTTPS.
