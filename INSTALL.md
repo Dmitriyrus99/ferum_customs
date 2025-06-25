@@ -11,15 +11,19 @@ This document explains how to install the `ferum_customs` app in your Frappe/ERP
 
 ## Bare-metal
 
-1. Clone this repository inside your bench directory:
+1. Install the bench CLI if you don't have it yet:
+   ```bash
+   pipx install frappe-bench
+   ```
+2. Clone this repository inside your bench directory:
    ```bash
    bench get-app https://github.com/Dmitriyrus99/ferum_customs.git --branch main
    ```
-2. Install the application on your site:
+3. Install the application on your site:
    ```bash
    bench --site YOUR_SITE_NAME install-app ferum_customs
    ```
-3. Build assets and restart bench:
+4. Build assets and restart bench:
    ```bash
    bench build && bench restart
    ```
