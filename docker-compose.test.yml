@@ -36,5 +36,5 @@ services:
       - .:/home/frappe/frappe-bench/apps/ferum_customs
     user: "${UID:-1000}:${GID:-1000}"
     working_dir: /home/frappe/frappe-bench
-  # Use image's entrypoint script directly for custom commands
-  entrypoint: ["/usr/local/bin/docker-entrypoint.py"]
+    # Use image's entrypoint script directly for custom commands
+    entrypoint: ["/usr/local/bin/docker-entrypoint.py"]
