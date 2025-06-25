@@ -10,7 +10,19 @@ from typing import TYPE_CHECKING
 import frappe
 from frappe import _
 from frappe.model.document import Document
-from frappe.utils import get_datetime
+from frappe.utils import get_datetime, now
+
+from ..constants import (
+    FIELD_CUSTOM_CUSTOMER,
+    FIELD_CUSTOM_LINKED_REPORT,
+    FIELD_CUSTOM_PROJECT,
+    FIELD_CUSTOM_SERVICE_OBJECT_LINK,
+    STATUS_OTKRYTA,
+    STATUS_OTMENENA,
+    STATUS_V_RABOTE,
+    STATUS_VYPOLNENA,
+    STATUS_ZAKRYTA,
+)
 
 if TYPE_CHECKING:
     from frappe.types import DF
@@ -35,11 +47,15 @@ class ServiceRequest(Document):
         """Валидация документа перед сохранением."""
         self._clean_fields()
         self._validate_dates()
+        self._set_customer_from_links()
+        self._validate_status_requirements()
+        self._validate_workflow_transition()
 
     def before_save(self) -> None:
         """Действия перед сохранением документа."""
         self._calculate_duration()
         self._autofill_project_from_service_object()
+        self._set_customer_from_links()
 
     def on_submit(self) -> None:
         """Действия при отправке документа."""
@@ -95,3 +111,55 @@ class ServiceRequest(Document):
             )
             if project:
                 self.custom_project = project
+
+    def _set_customer_from_links(self) -> None:
+        """Заполняет ``custom_customer`` из проекта или объекта обслуживания."""
+        if self.custom_customer:
+            return
+
+        if self.custom_project:
+            customer = frappe.db.get_value("Service Project", self.custom_project, "customer")
+            if customer:
+                self.custom_customer = customer
+            else:
+                frappe.throw(
+                    _("У выбранного проекта ({0}) отсутствует связанный клиент.").format(self.custom_project)
+                )
+        elif self.custom_service_object_link:
+            customer = frappe.db.get_value(
+                "Service Object",
+                self.custom_service_object_link,
+                "customer",
+            )
+            if customer:
+                self.custom_customer = customer
+
+    def _validate_status_requirements(self) -> None:
+        """Проверяет бизнес-правила, связанные со статусом заявки."""
+        if self.status == STATUS_VYPOLNENA:
+            if not self.get(FIELD_CUSTOM_LINKED_REPORT):
+                frappe.throw(_("Нельзя отметить заявку выполненной без связанного отчёта."))
+            if not self.get("completed_on"):
+                self.completed_on = now()
+
+        if self.status == STATUS_ZAKRYTA and not self.get(FIELD_CUSTOM_LINKED_REPORT):
+            frappe.throw(_("Нельзя закрыть заявку без связанного отчёта."))
+
+    def _validate_workflow_transition(self) -> None:
+        """Проверяет корректность перехода статусов согласно workflow."""
+        previous = self.get_doc_before_save()
+        if not previous:
+            return
+        allowed = {
+            STATUS_OTKRYTA: {STATUS_V_RABOTE, STATUS_OTMENENA},
+            STATUS_V_RABOTE: {STATUS_VYPOLNENA},
+            STATUS_VYPOLNENA: {STATUS_V_RABOTE, STATUS_ZAKRYTA},
+            STATUS_ZAKRYTA: {STATUS_VYPOLNENA},
+        }
+        if previous.status != self.status:
+            if self.status not in allowed.get(previous.status, set()):
+                frappe.throw(
+                    _("Недопустимый переход статуса: {0} → {1}").format(previous.status, self.status)
+                )
+
+
