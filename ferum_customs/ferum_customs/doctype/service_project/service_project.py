@@ -27,6 +27,7 @@ class ServiceProject(Document):  # Имя класса в CamelCase
         Валидация данных документа.
         """
         self._validate_dates()
+        self._validate_budget()
         self._format_dates_to_iso()  # Форматируем после валидации, чтобы валидация работала с объектами дат
 
         # Логика из оригинального файла (service_project.py):
@@ -108,3 +109,13 @@ class ServiceProject(Document):  # Имя класса в CamelCase
                     pass  # Оставляем как есть, если не парсится или уже в нужном формате
 
     # Другие методы могут быть добавлены по необходимости.
+
+    def _validate_budget(self) -> None:
+        """Проверяет, что бюджет неотрицательный."""
+        if self.get("budget") is not None:
+            try:
+                budget_val = float(self.budget)
+                if budget_val < 0:
+                    frappe.throw(_("Бюджет проекта не может быть отрицательным."))
+            except (ValueError, TypeError):
+                frappe.throw(_("Некорректное значение бюджета проекта."))
