@@ -1,0 +1,39 @@
+version: "3.9"
+
+services:
+  frappe:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        BENCH_TAG: ${BENCH_TAG}
+    environment:
+      SITE_NAME: ${SITE_NAME}
+      DB_HOST: db
+      REDIS_CACHE: redis-cache:6379
+      REDIS_QUEUE: redis-queue:6379
+    ports:
+      - "8000:8000"
+    volumes:
+      - sites:/home/frappe/frappe-bench/sites
+    depends_on:
+      - db
+      - redis-cache
+      - redis-queue
+
+  db:
+    image: mariadb:${MARIADB_TAG}
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+    volumes:
+      - db-data:/var/lib/mysql
+
+  redis-cache:
+    image: redis:${REDIS_TAG}
+
+  redis-queue:
+    image: redis:${REDIS_TAG}
+
+volumes:
+  sites:
+  db-data:
