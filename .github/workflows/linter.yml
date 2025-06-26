@@ -18,6 +18,8 @@ jobs:
     if: github.event_name == 'pull_request'
     env:
       ERPNEXT_TAG: version-15
+      MARIADB_TAG: 10.6
+      REDIS_TAG: 6.2
 
     steps:
       - uses: actions/checkout@v4
