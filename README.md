@@ -16,6 +16,7 @@ Ferum Customs extends ERPNext with a service management layer. It keeps a regist
 ## Documentation
 
 - [Документация на русском](docs/overview_ru.md)
+- [Frappe/ERPNext Docker Setup](docs/docker_setup_ru.md)
 
 ## Requirements
 
