@@ -1,4 +1,4 @@
-name: CI / CD
+name: CI
 
 on:
   push:
@@ -7,59 +7,166 @@ on:
     branches: [develop, main]
 
 concurrency:
-  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  group: ci-ferum_customs-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
-  run-tests:
-    name: Run Docker-based Tests
+  bench-tests:                       # прогоняем только на develop
+    name: Bench Tests (develop)
+    if: github.ref == 'refs/heads/develop' || github.event.pull_request.base.ref == 'develop'
     runs-on: ubuntu-latest
-
+    strategy:
+      fail-fast: false
     env:
-      # Переменные для Docker Compose и сборки
-      FRAPPE_SITE_NAME: tests.local
+      SITE_NAME: test_site
       ADMIN_PASSWORD: admin
-      DB_ROOT_PASSWORD: root
-      ERPNEXT_TAG: v15.30.0 # Убедитесь, что этот тег существует в Docker Hub
-      MARIADB_TAG: '10.6'
-      REDIS_TAG: '6.2-alpine'
+      BENCH_PATH: $HOME/frappe-bench
+      ERPNEXT_BRANCH: develop
+      BENCH_ALLOW_ROOT: 'yes'
+
+    services:
+      redis-cache:
+        image: redis:alpine
+        ports: [13000:6379]
+      redis-queue:
+        image: redis:alpine
+        ports: [11000:6379]
+      mariadb:
+        image: mariadb:10.6
+        env:
+          MYSQL_ROOT_PASSWORD: root
+        ports: [3306:3306]
+        options: >-
+          --health-cmd="mariadb-admin ping"
+          --health-interval=5s
+          --health-timeout=2s
+          --health-retries=3
 
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v3
 
-      - name: Setup Docker Buildx
-        uses: docker/setup-buildx-action@v3
+      - name: Find tests
+        run: grep -rn "def test" > /dev/null
 
-      - name: Build Custom Image
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          check-latest: true
+
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/*requirements.txt', '**/pyproject.toml', '**/setup.py', '**/setup.cfg') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+            ${{ runner.os }}-
+
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "dir=$(yarn cache dir)" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/cache@v4
+        id: yarn-cache
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: Install MariaDB client
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y mariadb-client
+
+      - name: Setup Bench
+        run: |
+          pip install frappe-bench
+          bench init --skip-redis-config-generation --skip-assets --python "$(which python)" "$HOME/frappe-bench"
+          echo "BENCH_PATH=$HOME/frappe-bench" >> "$GITHUB_ENV"
+          mariadb --host 127.0.0.1 -u root -proot -e "SET GLOBAL character_set_server='utf8mb4'"
+          mariadb --host 127.0.0.1 -u root -proot -e "SET GLOBAL collation_server='utf8mb4_unicode_ci'"
+
+      - name: Install apps
+        working-directory: ${{ env.BENCH_PATH }}
+        run: |
+          bench get-app erpnext --branch "$ERPNEXT_BRANCH" https://github.com/frappe/erpnext
+          bench get-app ferum_customs "$GITHUB_WORKSPACE"
+          bench setup requirements --dev
+          bench new-site --db-root-password root --admin-password "$ADMIN_PASSWORD" "$SITE_NAME"
+          bench --site "$SITE_NAME" install-app erpnext
+          bench --site "$SITE_NAME" install-app ferum_customs
+          bench build
+          bench --site "$SITE_NAME" list-apps
+        env:
+          CI: 'Yes'
+
+      - name: Install test deps
+        working-directory: ${{ env.BENCH_PATH }}
+        run: bench pip install pytest pytest-cov
+
+      - name: Run Bench tests
+        working-directory: ${{ env.BENCH_PATH }}
+        run: |
+          bench --site "$SITE_NAME" set-config allow_tests true
+          bench --site "$SITE_NAME" run-tests --app ferum_customs
+
+  docker-tests:                      # прогоняем только на main
+    name: Docker Tests (main)
+    if: github.ref == 'refs/heads/main' || github.event.pull_request.base.ref == 'main'
+    runs-on: ubuntu-latest
+    env:
+      SITE_NAME: tests.local
+      FRAPPE_SITE_NAME: tests.local
+      ADMIN_PASSWORD: admin
+      ERPNEXT_TAG: v15.65.4          # используем и для сборки образа
+      DB_ROOT_PASSWORD: root
+      MARIADB_TAG: 10.6
+      REDIS_TAG: 6.2
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v5
+
+      - name: Build ferum_customs image
         uses: docker/build-push-action@v5
         with:
           context: .
-          file: ./Dockerfile
           load: true
           tags: ferum-customs-app:latest
           build-args: |
             ERP_TAG=${{ env.ERPNEXT_TAG }}
 
-      # Запускаем фоновые сервисы (БД, Redis)
-      - name: Start Background Services
-        run: docker compose -f docker-compose.test.yml up -d mariadb redis-queue redis-cache redis-socketio
+      - name: Create .env for tests
+        run: |
+          cat > .env <<EOF
+          FRAPPE_SITE_NAME=${FRAPPE_SITE_NAME}
+          SITE_NAME=${SITE_NAME}
+          DB_ROOT_USER=root
+          ADMIN_PASSWORD=${ADMIN_PASSWORD}
+          INSTALL_APPS=erpnext,ferum_customs
+          ERPNEXT_TAG=${ERPNEXT_TAG}
+          DB_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
+          MARIADB_TAG=${MARIADB_TAG}
+          REDIS_TAG=${REDIS_TAG}
+          EOF
 
-      # Запускаем сервис-конфигуратор, который создаст сайт и установит приложения
-      - name: Setup Site and Install Apps
-        run: docker compose -f docker-compose.test.yml up configurator
+      - name: Pull DB-и Redis-образы
+        run: docker compose -f docker-compose.test.yml pull mariadb redis
 
-      # Устанавливаем зависимости для тестов (pytest, etc.)
-      - name: Install Test Dependencies
+      - name: Start background services
+        run: docker compose -f docker-compose.test.yml up -d mariadb redis
+
+      - name: Install test dependencies
         run: docker compose -f docker-compose.test.yml run --rm frappe pip install pytest pytest-cov
 
-      # Запускаем тесты каноничным для Frappe способом
-      - name: Run Bench Tests
-        run: >
-          docker compose -f docker-compose.test.yml exec -T frappe
-          bench --site ${{ env.FRAPPE_SITE_NAME }} run-tests --app ferum_customs --coverage
+      - name: Run Frappe tests
+        run: docker compose -f docker-compose.test.yml run --rm frappe pytest --app ferum_customs -vs --cov
 
-      # Останавливаем все сервисы в любом случае
-      - name: Stop Services
+      - name: Stop services
         if: always()
-        run: docker compose -f docker-compose.test.yml down -v --remove-orphans
+        run: docker compose -f docker-compose.test.yml down -v --remove-orphans || true
