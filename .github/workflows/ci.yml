@@ -1,11 +1,3 @@
-# ======================================================================================
-# Оптимизированный CI Workflow для "ferum_customs"
-#
-# Этот воркфлоу использует Docker Compose для создания консистентной среды
-# и запускает тесты, следуя лучшим практикам Frappe Framework.
-# Он работает для pull-реквестов и пушей в ветки develop и main.
-# ======================================================================================
-
 name: CI / CD
 
 on:
@@ -15,88 +7,59 @@ on:
     branches: [develop, main]
 
 concurrency:
-  # Группируем запуски, чтобы отменять предыдущие для того же PR или ветки
   group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
-  # --- Задание для запуска тестов с использованием Docker ---
   run-tests:
-    name: Run Frappe Tests
+    name: Run Docker-based Tests
     runs-on: ubuntu-latest
 
-    # Определение переменных окружения для docker-compose
     env:
-      # Имя сайта для тестов
+      # Переменные для Docker Compose и сборки
       FRAPPE_SITE_NAME: tests.local
-      # Пароль администратора
       ADMIN_PASSWORD: admin
-      # Пароль root для базы данных
       DB_ROOT_PASSWORD: root
-      # Версия Frappe/ERPNext для использования
-      FRAPPE_VERSION: v15.15.0
-      ERPNEXT_VERSION: v15.15.0
-      # Версия MariaDB
+      ERPNEXT_TAG: v15.30.0 # Убедитесь, что этот тег существует в Docker Hub
       MARIADB_TAG: '10.6'
+      REDIS_TAG: '6.2-alpine'
 
     steps:
-      # 1. Получаем код из репозитория
-      - name: Checkout code
+      - name: Checkout Code
         uses: actions/checkout@v4
 
-      # 2. Устанавливаем Buildx для сборки Docker-образов (лучшая практика)
-      - name: Set up Docker Buildx
+      - name: Setup Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      # 3. Кэшируем Docker-слои для ускорения последующих сборок
-      - name: Cache Docker layers
-        uses: actions/cache@v4
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-
-
-      # 4. Собираем кастомный образ с нашим приложением, используя Dockerfile
-      # Если вы хотите тестировать без пересборки, можно использовать готовые образы
-      # и монтировать код, как в вашем docker-compose.test.yml
-      - name: Build custom Frappe image
+      - name: Build Custom Image
         uses: docker/build-push-action@v5
         with:
           context: .
-          # Указываем путь к нашему Dockerfile
-          file: ./Dockerfile  # Предполагается, что Dockerfile из Canvas лежит в корне
+          file: ./Dockerfile
           load: true
-          # Присваиваем тег, чтобы docker-compose мог его использовать
           tags: ferum-customs-app:latest
-          # Используем кэш для ускорения
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
+          build-args: |
+            ERP_TAG=${{ env.ERPNEXT_TAG }}
 
-      # Этот шаг нужен, если кэш был обновлен
-      - name: Move cache
-        run: |
-          rm -rf /tmp/.buildx-cache
-          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+      # Запускаем фоновые сервисы (БД, Redis)
+      - name: Start Background Services
+        run: docker compose -f docker-compose.test.yml up -d mariadb redis-queue redis-cache redis-socketio
 
-      # 5. Запускаем сервисы (БД, Redis) в фоновом режиме
-      - name: Start background services
-        run: docker compose -f docker-compose.test.yml up -d mariadb redis-cache redis-queue
-
-      # 6. Создаем новый сайт и устанавливаем приложения
-      # Используем контейнер create-site, который выполнит нужные команды и завершится
+      # Запускаем сервис-конфигуратор, который создаст сайт и установит приложения
       - name: Setup Site and Install Apps
-        run: docker compose -f docker-compose.test.yml run --rm create-site
+        run: docker compose -f docker-compose.test.yml up configurator
 
-      # 7. Запускаем тесты с помощью стандартной команды bench
-      # Это предпочтительный способ, так как он корректно инициализирует окружение Frappe.
+      # Устанавливаем зависимости для тестов (pytest, etc.)
+      - name: Install Test Dependencies
+        run: docker compose -f docker-compose.test.yml run --rm frappe pip install pytest pytest-cov
+
+      # Запускаем тесты каноничным для Frappe способом
       - name: Run Bench Tests
-        run: |
-          docker compose -f docker-compose.test.yml exec -T frappe bench --site ${{ env.FRAPPE_SITE_NAME }} set-config allow_tests true
-          docker compose -f docker-compose.test.yml exec -T frappe bench --site ${{ env.FRAPPE_SITE_NAME }} run-tests --app ferum_customs --coverage
+        run: >
+          docker compose -f docker-compose.test.yml exec -T frappe
+          bench --site ${{ env.FRAPPE_SITE_NAME }} run-tests --app ferum_customs --coverage
 
-      # 8. Останавливаем все сервисы после завершения тестов
-      - name: Stop services
+      # Останавливаем все сервисы в любом случае
+      - name: Stop Services
         if: always()
         run: docker compose -f docker-compose.test.yml down -v --remove-orphans
-
