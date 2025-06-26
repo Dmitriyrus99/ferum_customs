@@ -1,44 +1,60 @@
 services:
+  # Сервис базы данных
   mariadb:
     image: mariadb:${MARIADB_TAG:-10.6}
-    env_file:
-      - .env
     environment:
-      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
     healthcheck:
-      test: ["CMD", "mariadb-admin", "ping", "-h", "127.0.0.1", "-uroot", "-proot"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_ROOT_PASSWORD}"]
       interval: 5s
       timeout: 2s
-      retries: 10
+      retries: 20
 
-  redis:
-    image: redis:${REDIS_TAG:-alpine}
-    env_file:
-      - .env
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 5s
-      timeout: 2s
-      retries: 10
+  # Сервисы Redis
+  redis-queue:
+    image: redis:${REDIS_TAG:-6.2-alpine}
+  redis-cache:
+    image: redis:${REDIS_TAG:-6.2-alpine}
+  redis-socketio:
+    image: redis:${REDIS_TAG:-6.2-alpine}
 
+  # Основной сервис с нашим приложением (используется для запуска тестов)
   frappe:
-    image: frappe/erpnext:${ERPNEXT_TAG}
+    # Используем образ, который мы собираем на лету в CI
+    image: ferum-customs-app:latest
     depends_on:
       mariadb:
         condition: service_healthy
-      redis:
+      redis-queue:
+        condition: service_started
+      redis-cache:
+        condition: service_started
+      redis-socketio:
         condition: service_started
     environment:
-      FRAPPE_PATHS_APPEND: ""
-      SITE_NAME: ${FRAPPE_SITE_NAME}
-      DB_ROOT_USER: root
-      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
-      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
-      INSTALL_APPS: "erpnext,ferum_customs"
+      - DB_HOST=mariadb
+      - REDIS_CACHE=redis-cache:6379
+      - REDIS_QUEUE=redis-queue:6379
+      - REDIS_SOCKETIO=redis-socketio:6379
+      - FRAPPE_SITE_NAME_HEADER=${FRAPPE_SITE_NAME}
     volumes:
-      - ./sites:/home/frappe/frappe-bench/sites
+      # Монтируем код для тестов, чтобы он был доступен
       - .:/home/frappe/frappe-bench/apps/ferum_customs
-    user: "${UID:-1000}:${GID:-1000}"
-    working_dir: /home/frappe/frappe-bench
-    # Use image's entrypoint script directly for custom commands
-    entrypoint: ["/usr/local/bin/nginx-entrypoint.sh"]
+
+  # Сервис-конфигуратор для создания сайта и установки приложений
+  configurator:
+    image: ferum-customs-app:latest
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    environment:
+      - DB_HOST=mariadb
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - INSTALL_APPS=erpnext,ferum_customs
+    command: >
+      bash -c "
+        bench wait-for-services &&
+        bench new-site ${FRAPPE_SITE_NAME} --no-mariadb-socket --db-root-password ${DB_ROOT_PASSWORD} --admin-password ${ADMIN_PASSWORD} --install-app erpnext &&
+        bench --site ${FRAPPE_SITE_NAME} install-app ferum_customs &&
+        bench --site ${FRAPPE_SITE_NAME} set-config allow_tests true
+      "
