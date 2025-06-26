@@ -1,6 +1,8 @@
 services:
   mariadb:
-    image: mariadb:10.6
+    image: mariadb:${MARIADB_TAG:-10.6}
+    env_file:
+      - .env
     environment:
       MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
     healthcheck:
@@ -10,7 +12,9 @@ services:
       retries: 10
 
   redis:
-    image: redis:alpine
+    image: redis:${REDIS_TAG:-alpine}
+    env_file:
+      - .env
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s

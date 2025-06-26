@@ -12,6 +12,8 @@ env:
   ADMIN_PASSWORD: admin
   ERPNEXT_TAG: v15.65.4
   DB_ROOT_PASSWORD: root
+  MARIADB_TAG: 10.6
+  REDIS_TAG: 6.2
 
 jobs:
   test:
@@ -31,11 +33,12 @@ jobs:
             echo "FRAPPE_SITE_NAME=${FRAPPE_SITE_NAME}"
             echo "SITE_NAME=${SITE_NAME}"
             echo "DB_ROOT_USER=root"
-            echo "MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}"
             echo "ADMIN_PASSWORD=${ADMIN_PASSWORD}"
             echo "INSTALL_APPS=erpnext,ferum_customs"
             echo "ERPNEXT_TAG=${ERPNEXT_TAG}"
             echo "DB_ROOT_PASSWORD=${DB_ROOT_PASSWORD}"
+            echo "MARIADB_TAG=${MARIADB_TAG:-10.6}"
+            echo "REDIS_TAG=${REDIS_TAG:-6.2}"
           } > .env
 
       - name: Pull test images
