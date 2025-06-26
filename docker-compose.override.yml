@@ -1,7 +1,9 @@
 
 services:
   web:
-    image: frappe/erpnext:v15.25.0
+    image: frappe/erpnext:${ERPNEXT_TAG:-v15.25.0}
+    env_file:
+      - .env
     container_name: frappe-web
     restart: unless-stopped
     depends_on:
@@ -18,7 +20,9 @@ services:
       - frappe-apps:/home/frappe/frappe-bench/apps
 
   worker:
-    image: frappe/erpnext:v15.25.0
+    image: frappe/erpnext:${ERPNEXT_TAG:-v15.25.0}
+    env_file:
+      - .env
     container_name: frappe-worker
     restart: unless-stopped
     depends_on:
@@ -33,7 +37,9 @@ services:
       - frappe-apps:/home/frappe/frappe-bench/apps
 
   schedule:
-    image: frappe/erpnext:v15.25.0
+    image: frappe/erpnext:${ERPNEXT_TAG:-v15.25.0}
+    env_file:
+      - .env
     container_name: frappe-schedule
     restart: unless-stopped
     depends_on:
@@ -48,7 +54,9 @@ services:
       - frappe-apps:/home/frappe/frappe-bench/apps
 
   socketio:
-    image: frappe/erpnext:v15.25.0
+    image: frappe/erpnext:${ERPNEXT_TAG:-v15.25.0}
+    env_file:
+      - .env
     container_name: frappe-socketio
     restart: unless-stopped
     depends_on:
