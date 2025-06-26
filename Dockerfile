@@ -5,8 +5,8 @@
 # 1. Используем официальный образ Frappe v15 в качестве основы.
 # Это гарантирует, что все системные зависимости, Python, Node.js, redis и bench
 # уже установлены и сконфигурированы правильно.
-# Выбираем '-dev' тэг, так как он содержит полезные для разработки утилиты.
-FROM frappe/frappe-worker:v15-dev
+# Используем корректный тег для 15-й версии.
+FROM frappe/bench:latest
 
 # 2. Переключаемся на пользователя root для установки дополнительных системных пакетов.
 # Например, git (если его нет) или другие инструменты отладки.
@@ -25,34 +25,37 @@ USER frappe
 
 # 4. Устанавливаем рабочую директорию.
 # Это домашняя директория пользователя frappe, где обычно располагается bench.
-WORKDIR /home/frappe
+WORKDIR /workspace/development
 
-# 5. Копируем requirements.txt вашего приложения.
+# 5. Инициализируем bench для 15-й версии Frappe
+RUN bench init --frappe-branch version-15 frappe-bench
+
+# 6. Устанавливаем рабочую директорию внутрь созданного bench
+WORKDIR /workspace/development/frappe-bench
+
+# 7. Копируем requirements.txt вашего приложения.
 # Это позволит установить зависимости до копирования всего кода,
 # что лучше использует кэширование слоев Docker.
 COPY --chown=frappe:frappe ./requirements.txt /tmp/requirements.txt
 
-# 6. Устанавливаем Python-зависимости вашего приложения.
-# Frappe-bench уже создан в базовом образе, мы просто используем его pip.
-# Обратите внимание, что FastAPI и Aiogram будут установлены в окружение bench.
-RUN bench/bin/pip install --no-cache-dir -r /tmp/requirements.txt
+# 8. Устанавливаем Python-зависимости вашего приложения.
+# Используем pip из виртуального окружения bench.
+RUN ./env/bin/pip install --no-cache-dir -r /tmp/requirements.txt
 
-# 7. Копируем все приложение в директорию apps внутри frappe-bench.
-# Этот шаг делает образ самодостаточным. Для локальной разработки этот шаг
-# можно заменить монтированием тома в docker-compose.yml для "живой" перезагрузки кода.
-COPY --chown=frappe:frappe . /home/frappe/frappe-bench/apps/ferum_customs
+# 9. Копируем все приложение в директорию apps внутри frappe-bench.
+COPY --chown=frappe:frappe . ./apps/ferum_customs
 
-# 8. Устанавливаем приложение на сайт по умолчанию (frontend).
-# Эта команда регистрирует DocTypes, хуки и другую логику в базе данных.
-# После этого шага приложение становится "видимым" для Frappe.
-RUN cd /home/frappe/frappe-bench && \
-    bench --site frontend install-app ferum_customs
+# 10. Устанавливаем приложение на сайт по умолчанию (frontend).
+# Сначала нужно создать сайт.
+# ПРИМЕЧАНИЕ: Для CI этот шаг лучше вынести в docker-compose, так как он требует подключения к БД.
+# Но для создания самодостаточного образа мы можем его оставить здесь,
+# предполагая, что БД будет доступна при запуске.
+# Для упрощения CI, мы пропустим создание сайта здесь, оно будет в `docker-compose`.
+# RUN bench new-site frontend
+# RUN bench --site frontend install-app ferum_customs
 
-# 9. Собираем фронтенд-ассеты (JS/CSS).
-# Эта команда необходима, чтобы ваши кастомные JS-скрипты и стили
-# были скомпилированы и подключены к интерфейсу Frappe.
-RUN cd /home/frappe/frappe-bench && \
-    bench build --app ferum_customs
+# 11. Собираем фронтенд-ассеты (JS/CSS).
+RUN bench build --app ferum_customs
 
 # КОНЕЦ Dockerfile.
-# ENTRYPOINT и CMD наследуются из базового образа frappe/frappe-worker.
+# ENTRYPOINT и CMD наследуются из базового образа.
