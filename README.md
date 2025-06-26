@@ -117,8 +117,48 @@ Project source lives inside the `ferum_customs` package. Key folders include `cu
 Quick unit tests can be executed with bench:
 
 ```bash
-bench --site <site> run-tests --app ferum_customs --tests-path tests/unit
+bench --site <site> run-tests --app ferum_customs --test tests/unit
 ```
+
+#### Test site setup
+
+If you do not have a site yet, follow these steps inside your bench directory:
+
+1. Switch to the `frappe` user:
+
+   ```bash
+   su frappe -s /bin/bash
+   ```
+
+2. Change into the bench folder (for example `frappe-bench`):
+
+   ```bash
+   cd /home/frappe/frappe-bench
+   ```
+
+3. Create a test site if it does not exist:
+
+   ```bash
+   bench new-site test_site --force --admin-password admin --db-name test_site_db
+   ```
+
+4. Install the app on the site:
+
+   ```bash
+   bench --site test_site install-app ferum_customs
+   ```
+
+5. Run the unit tests:
+
+   ```bash
+   bench --site test_site run-tests --app ferum_customs --test tests/unit
+   ```
+
+6. *(Optional)* Remove the site when finished:
+
+   ```bash
+   bench drop-site test_site --force
+   ```
 
 You can also run the whole suite with `pytest`:
 
