@@ -1,38 +1,31 @@
-# =============================================================================
-# Dockerfile: сборочный образ для приложения "ferum_customs" поверх ERPNext v15
-# =============================================================================
-ARG ERP_TAG=v15.65.4                # можно переопределять через build-arg
-FROM frappe/erpnext-worker:${ERP_TAG}
+ARG BENCH_TAG=v5.25.4
+FROM frappe/bench:${BENCH_TAG}
 
-# ──────────────────────────────────────────────────────────────────────────────
-# 1. Доп. пакеты (опционально)
-# ──────────────────────────────────────────────────────────────────────────────
+# Install redis-server so bench init succeeds during image build
 USER root
 RUN apt-get update \
- && apt-get install -y --no-install-recommends vim git \
- && rm -rf /var/lib/apt/lists/*
+    && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends redis-server \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# ──────────────────────────────────────────────────────────────────────────────
-# 2. Работаем от пользователя frappe
-# ──────────────────────────────────────────────────────────────────────────────
 USER frappe
+WORKDIR /home/frappe
+
+# Install Python 3.11 and dev dependencies if needed
+ARG PYTHON_VERSION=3.11
+# The base image already includes Python 3.11 so
+# we don't need to install it via pyenv.
+# RUN /usr/local/bin/pyenv install -s ${PYTHON_VERSION} \
+#  && pyenv global ${PYTHON_VERSION}
+
+# The base image already contains a non-root user `frappe` (uid 1000)
+
+# Initialize bench as the frappe user
+RUN bench init --skip-assets frappe-bench --python $(which python)
 WORKDIR /home/frappe/frappe-bench
 
-# ──────────────────────────────────────────────────────────────────────────────
-# 3. Python-зависимости приложения
-# ──────────────────────────────────────────────────────────────────────────────
-COPY --chown=frappe:frappe requirements.txt /tmp/requirements.txt
-RUN if [ -s /tmp/requirements.txt ]; then ./env/bin/pip install --no-cache-dir -r /tmp/requirements.txt; fi
+# Clone applications
+RUN bench get-app --branch develop erpnext https://github.com/frappe/erpnext
 
-# ──────────────────────────────────────────────────────────────────────────────
-# 4. Код приложения
-# ──────────────────────────────────────────────────────────────────────────────
-COPY --chown=frappe:frappe . ./apps/ferum_customs
-
-# ──────────────────────────────────────────────────────────────────────────────
-# 5. Установка приложения на дефолтный сайт (site1.local)
-# ──────────────────────────────────────────────────────────────────────────────
-RUN bench --site site1.local install-app ferum_customs \
- && bench build --app ferum_customs
-
-# ENTRYPOINT остаётся тем, что задан в базовом образе ("bench")
+# Add the local app during build
+COPY --chown=frappe:frappe . /home/frappe/frappe-bench/apps/ferum_customs
+RUN bench setup requirements
