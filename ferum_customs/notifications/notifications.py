@@ -21,7 +21,7 @@ def get_notification_config() -> dict:
 	return {
 		"Service Request": {
 			# Отправлять уведомление, только если статус изменился.
-			"condition": ("doc.get_doc_before_save() and " "doc.status != doc.get_doc_before_save().status"),
+			"condition": ("doc.get_doc_before_save() and doc.status != doc.get_doc_before_save().status"),
 			# Получатели уведомлений
 			"send_to_roles": [ROLE_PROEKTNYJ_MENEDZHER],
 			# Темы и сообщения можно шаблонизировать через Jinja
