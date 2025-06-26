@@ -1,0 +1,7 @@
+version: "3.9"
+
+services:
+  frappe:
+    volumes:
+      - ./ferum_customs:/home/frappe/frappe-bench/apps/ferum_customs
+      - ./sites:/home/frappe/frappe-bench/sites
