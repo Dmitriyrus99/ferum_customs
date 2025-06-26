@@ -36,13 +36,13 @@ def after_install() -> None:
 	# Пример: Создание начальных данных
 	# create_initial_data()
 
-        frappe.db.commit()  # Финальный коммит
-        frappe.clear_cache()  # Очистка кэша после установки
-        frappe.msgprint(
-                _("Ferum Customs application installed successfully. Please check system settings and user roles."),
-                title=_("Installation Complete"),
-                indicator="green",
-        )
+	frappe.db.commit()  # Финальный коммит
+	frappe.clear_cache()  # Очистка кэша после установки
+	frappe.msgprint(
+		_("Ferum Customs application installed successfully. Please check system settings and user roles."),
+		title=_("Installation Complete"),
+		indicator="green",
+	)
 
 
 # Пример функции для добавления Custom Fields (не рекомендуется, лучше фикстуры)
