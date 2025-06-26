@@ -31,33 +31,14 @@ if TYPE_CHECKING:
 
 
 def validate(doc: ServiceRequest, method: str | None = None) -> None:
-	"""
-	Вызывается Frappe перед сохранением `Service Request`.
-	Проверяем бизнес-правила.
-	"""
+	"""Validate ``Service Request`` before saving."""
 	if doc.status == STATUS_VYPOLNENA and not doc.get(FIELD_CUSTOM_LINKED_REPORT):
 		frappe.throw(_("Нельзя отметить заявку выполненной без связанного отчёта."))
 
 	if doc.status == STATUS_VYPOLNENA and not doc.get("completed_on"):
 		doc.completed_on = now()
 
-	if doc.get(FIELD_CUSTOM_PROJECT) and not doc.get(FIELD_CUSTOM_CUSTOMER):
-		customer = frappe.db.get_value("Service Project", doc.get(FIELD_CUSTOM_PROJECT), "customer")
-		if customer:
-			doc.custom_customer = customer
-		else:
-			frappe.throw(
-				_("У выбранного проекта ({0}) отсутствует связанный клиент.").format(
-					doc.get(FIELD_CUSTOM_PROJECT)
-				)
-			)
-
-	if not doc.get(FIELD_CUSTOM_CUSTOMER) and doc.get(FIELD_CUSTOM_SERVICE_OBJECT_LINK):
-		customer = frappe.db.get_value(
-			"Service Object", doc.get(FIELD_CUSTOM_SERVICE_OBJECT_LINK), "customer"
-		)
-		if customer:
-			doc.custom_customer = customer
+	_ensure_customer(doc)
 
 
 def on_update_after_submit(doc: ServiceRequest, method: str | None = None) -> None:
@@ -74,6 +55,27 @@ def prevent_deletion_with_links(doc: ServiceRequest, method: str | None = None) 
 				doc.name, linked_report
 			)
 		)
+
+
+def _ensure_customer(doc: ServiceRequest) -> None:
+	"""Populate ``custom_customer`` field from project or service object."""
+	if doc.get(FIELD_CUSTOM_CUSTOMER):
+		return
+
+	project = doc.get(FIELD_CUSTOM_PROJECT)
+	if project:
+		customer = frappe.db.get_value("Service Project", project, "customer")
+		if customer:
+			doc.custom_customer = customer
+		else:
+			frappe.throw(_("У выбранного проекта ({0}) отсутствует связанный клиент.").format(project))
+		return
+
+	service_object = doc.get(FIELD_CUSTOM_SERVICE_OBJECT_LINK)
+	if service_object:
+		customer = frappe.db.get_value("Service Object", service_object, "customer")
+		if customer:
+			doc.custom_customer = customer
 
 
 # --------------------------------------------------------------------------- #
