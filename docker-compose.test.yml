@@ -1,17 +1,17 @@
-version: "3.9"
-
 services:
   frappe:
     build:
       context: .
       dockerfile: Dockerfile
       args:
-        BENCH_TAG: ${BENCH_TAG}
+        BENCH_TAG: ${BENCH_TAG:-v5.25.4}
     environment:
       SITE_NAME: test.localhost
       DB_HOST: db
       REDIS_CACHE: redis-cache:6379
       REDIS_QUEUE: redis-queue:6379
+      DB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin}
     volumes:
       - sites:/home/frappe/frappe-bench/sites
       - ./ferum_customs:/home/frappe/frappe-bench/apps/ferum_customs
@@ -26,17 +26,17 @@ services:
                pytest -q"
 
   db:
-    image: mariadb:${MARIADB_TAG}
+    image: mariadb:${MARIADB_TAG:-10.6}
     environment:
-      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root}
     volumes:
       - db-data:/var/lib/mysql
 
   redis-cache:
-    image: redis:${REDIS_TAG}
+    image: redis:${REDIS_TAG:-6.2}
 
   redis-queue:
-    image: redis:${REDIS_TAG}
+    image: redis:${REDIS_TAG:-6.2}
 
 volumes:
   sites:
