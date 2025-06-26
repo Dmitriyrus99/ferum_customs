@@ -4,7 +4,7 @@ import frappe
 from frappe import _, whitelist
 from frappe.exceptions import PermissionError
 
-from .constants import STATUS_OTKRYTA
+from .constants import SERVICE_REQUEST_STATUSES, STATUS_OTKRYTA
 
 
 @whitelist()
@@ -126,6 +126,9 @@ def bot_create_service_request(
 @whitelist()
 def bot_update_service_request_status(docname: str, status: str) -> None:
 	"""Update the status of a Service Request from the bot."""
+
+	if status not in SERVICE_REQUEST_STATUSES:
+		frappe.throw(_("Invalid status: {0}").format(status))
 
 	sr = frappe.get_doc("Service Request", docname)
 	sr.status = status

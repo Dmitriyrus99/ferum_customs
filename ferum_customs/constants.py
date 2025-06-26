@@ -31,6 +31,15 @@ STATUS_VYPOLNENA: str = "Выполнена"  # Соответствует "Comp
 STATUS_ZAKRYTA: str = "Закрыта"  # Соответствует "Closed" (финальный статус, подтверждено)
 STATUS_OTMENENA: str = "Отменена"  # Соответствует "Cancelled" (отменена инициатором или системой)
 
+# Ordered list of valid statuses for Service Request workflow
+SERVICE_REQUEST_STATUSES: tuple[str, ...] = (
+	STATUS_OTKRYTA,
+	STATUS_V_RABOTE,
+	STATUS_VYPOLNENA,
+	STATUS_ZAKRYTA,
+	STATUS_OTMENENA,
+)
+
 
 # --- Роли Пользователей ---
 # Эти значения должны совпадать с именами ролей, определенными в системе
@@ -85,6 +94,7 @@ __all__ = [
 	"STATUS_VYPOLNENA",
 	"STATUS_ZAKRYTA",
 	"STATUS_OTMENENA",
+	"SERVICE_REQUEST_STATUSES",
 	# Роли
 	"ROLE_SYSTEM_MANAGER",
 	"ROLE_ADMINISTRATOR",
