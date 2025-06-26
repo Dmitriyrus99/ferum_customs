@@ -12,6 +12,11 @@ Ferum Customs extends ERPNext with a service management layer. It keeps a regist
 - **Service Report** — a record of work done for a request.
 - **Service Project** — optional container to group multiple requests.
 
+
+## Documentation
+
+- [Документация на русском](docs/overview_ru.md)
+
 ## Requirements
 
 - Frappe + ERPNext 16.x or later.
