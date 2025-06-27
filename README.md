@@ -48,6 +48,7 @@ Ferum Customs extends ERPNext with a service management layer. It keeps a regist
 ```bash
 pipx install frappe-bench  # install bench CLI if not already present
 bench get-app https://github.com/Dmitriyrus99/ferum_customs.git --branch main
+pip install -r requirements.txt
 bench --site YOUR_SITE_NAME install-app ferum_customs
 bench build && bench restart
 ```
