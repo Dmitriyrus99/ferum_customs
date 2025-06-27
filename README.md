@@ -45,6 +45,7 @@ docker compose up -d --build
 
 The helper script `scripts/setup_environment.sh` can bootstrap a development bench in Docker and install the app automatically.
 The helper script `scripts/setup_codex.sh` installs Docker and builds the Codex CLI image for local use.
+The lightweight `scripts/quick_setup.sh` script simply runs `docker compose` with the provided configuration.
 
 Add `ferum_customs` to `apps.txt` (or `apps.json`) if you build custom images.
 
