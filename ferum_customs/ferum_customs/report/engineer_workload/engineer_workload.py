@@ -7,8 +7,8 @@ from ferum_customs.constants import STATUS_OTMENENA, STATUS_ZAKRYTA
 
 
 def execute(filters=None):
-    rows = frappe.db.sql(
-        """
+	rows = frappe.db.sql(
+		"""
         select custom_assigned_engineer as engineer, count(*) as total
         from `tabservice_request`
         where status not in (%s, %s)
@@ -16,24 +16,24 @@ def execute(filters=None):
         group by custom_assigned_engineer
         order by total desc
         """,
-        (STATUS_ZAKRYTA, STATUS_OTMENENA),
-        as_dict=True,
-    )
+		(STATUS_ZAKRYTA, STATUS_OTMENENA),
+		as_dict=True,
+	)
 
-    columns = [
-        {
-            "label": _("Engineer"),
-            "fieldname": "engineer",
-            "fieldtype": "Link",
-            "options": "User",
-            "width": 250,
-        },
-        {
-            "label": _("Open Requests"),
-            "fieldname": "total",
-            "fieldtype": "Int",
-            "width": 120,
-        },
-    ]
+	columns = [
+		{
+			"label": _("Engineer"),
+			"fieldname": "engineer",
+			"fieldtype": "Link",
+			"options": "User",
+			"width": 250,
+		},
+		{
+			"label": _("Open Requests"),
+			"fieldname": "total",
+			"fieldtype": "Int",
+			"width": 120,
+		},
+	]
 
-    return columns, rows
+	return columns, rows
