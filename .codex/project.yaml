@@ -1,11 +1,12 @@
 name: ferum_customs
 description: >
-  Анализ и сопровождение Python-проекта с FastAPI, Telegram FSM и модульными тестами.
+  Внутренний проект для управления сервисными заявками, FSM-ботом и API.
+  Цель задачи — устранить выявленные недостатки: улучшить структуру тестов, стилистику кода и подготовить CI.
 
 image: universal
 
 workspace:
-  root: /ferum_customs-main
+  root: /ferum_customs_codex_task_ready
 
 setup:
   script: ./setup.sh
