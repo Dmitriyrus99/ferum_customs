@@ -174,6 +174,15 @@ You can also run the whole suite with `pytest`:
 pytest
 ```
 
+### Local linting
+
+Install development dependencies and run pre-commit hooks:
+
+```bash
+pip install -r requirements-dev.txt
+pre-commit run --all-files
+```
+
 ## CI
 
 GitHub Actions start containers defined in `docker-compose.test.yml` and run unit tests. The same stack can be started locally with:

@@ -1,5 +1,8 @@
 import pytest
 
+from telegram_bot.fsm.states import SomeState
+
 
 def test_dummy_fsm():
-    assert True, "FSM тест-заглушка"
+    # Ensure FSM states are accessible
+    assert hasattr(SomeState, "waiting")
