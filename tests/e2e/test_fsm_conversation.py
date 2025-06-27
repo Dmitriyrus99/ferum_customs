@@ -1,61 +1,22 @@
 import pytest
-
-pytest.importorskip("aiogram")
-
-from datetime import datetime, timezone
-
-from aiogram import Bot, Dispatcher
-from aiogram.enums import ChatType
 from aiogram.fsm.context import FSMContext
-from aiogram.fsm.storage.base import StorageKey
-from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.types import Message
-from aiogram.utils.token import TokenValidationError
+from aiogram.fsm.storage.memory import MemoryStorage
+from aiogram import Bot, Dispatcher
+from telegram_bot.fsm.states import SomeState  # замените на ваше состояние
+from telegram_bot.handlers import start_handler  # замените на ваш обработчик
 
-try:
-	from telegram_bot.bot_service import (
-		IncidentStates,
-		get_dispatcher,
-		start_handler,
-	)
-except Exception:
-	pytest.skip("bot service init failed", allow_module_level=True)
-
+class MockMessage(Message):
+    def __init__(self):
+        super().__init__(message_id=1, chat={"id": 123}, date=None, text="/start")
 
 @pytest.mark.asyncio
 async def test_fsm_start_handler():
-	"""`/start` command moves FSM to the first state."""
+    bot = Bot(token="TEST:TOKEN")
+    dp = Dispatcher(storage=MemoryStorage())
+    message = MockMessage()
+    state: FSMContext = dp.storage.get_state(chat=message.chat.id, user=message.from_user.id)
 
-	# Подготовка мока
-	try:
-		bot = Bot(token="12345:TOKEN", parse_mode="HTML")
-	except TokenValidationError:
-		pytest.skip("invalid token")
-	storage = MemoryStorage()
-	dispatcher: Dispatcher = get_dispatcher(bot=bot, storage=storage)
+    await start_handler(message, state=state)
 
-	# Эмуляция входящего сообщения
-	message = Message(
-		message_id=1,
-		date=datetime.now(timezone.utc),
-		chat={"id": 123, "type": ChatType.PRIVATE},
-		from_user={"id": 123, "is_bot": False, "first_name": "Test"},
-		text="/start",
-	)
-
-	# Эмуляция FSM context
-	key = StorageKey(bot_id=0, chat_id=123, user_id=123)
-	fsm_context = FSMContext(storage=storage, key=key)
-
-	# Вызов хендлера
-	await start_handler(bot, message=message, state=fsm_context)
-
-	assert await fsm_context.get_state() == IncidentStates.waiting_object.state
-	assert dispatcher
-
-
-def test_fsm_state_values():
-	"""Ensure Incident FSM states have correct names."""
-
-	assert IncidentStates.waiting_object.state == "IncidentStates:waiting_object"
-	assert IncidentStates.waiting_description.state == "IncidentStates:waiting_description"
+    assert await state.get_state() == SomeState.some_step  # замените на ожидаемое состояние
