@@ -1,10 +1,23 @@
 from typing import Optional
 
 import frappe
+from fastapi import FastAPI
 from frappe import _, whitelist
 from frappe.exceptions import PermissionError
 
 from ferum_customs.constants import SERVICE_REQUEST_STATUSES, STATUS_OTKRYTA
+
+app = FastAPI()
+
+
+@app.get("/")
+def root() -> dict[str, bool]:
+    return {"ok": True}
+
+
+@app.get("/health")
+def health() -> dict[str, str]:
+    return {"status": "ok"}
 
 
 @whitelist()
