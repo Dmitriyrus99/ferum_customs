@@ -1,4 +1,7 @@
 import pytest
+
+pytest.importorskip("aiogram")
+
 from aiogram import Bot, Dispatcher
 from aiogram.enums import ChatType
 from aiogram.fsm.context import FSMContext

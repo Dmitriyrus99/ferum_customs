@@ -16,7 +16,7 @@ class DummyLog:
 
 
 @pytest.fixture
-def frappe_stub(monkeypatch):
+def frappe_stub(monkeypatch, tmp_path):
     frappe = types.SimpleNamespace()
     frappe.db = types.SimpleNamespace(
         exists=lambda *a, **k: None,
@@ -41,6 +41,8 @@ def frappe_stub(monkeypatch):
     frappe._ = lambda s: s
     frappe.logger = lambda name=None: DummyLog()
     frappe.utils = types.SimpleNamespace(now=lambda: "now")
+    frappe.get_site_path = lambda *parts: str(tmp_path.joinpath(*parts))
+    frappe.session = types.SimpleNamespace(user="test-user")
     frappe.whitelist = lambda *args, **kwargs: (lambda f: f)
     frappe.get_doc = lambda *a, **k: None
     frappe.get_all = lambda *a, **k: []
