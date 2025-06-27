@@ -11,23 +11,29 @@
 from frappe import _  # Для перевода возможных строк в будущем
 
 # Импорт констант для статусов, если они используются в условиях
-from ..constants import ROLE_PROEKTNYJ_MENEDZHER, STATUS_OTKRYTA, STATUS_V_RABOTE
+from ferum_customs.constants import (
+    ROLE_PROEKTNYJ_MENEDZHER,
+    STATUS_OTKRYTA,
+    STATUS_V_RABOTE,
+)
 
 
 def get_notification_config() -> dict:
-	"""
-	Возвращает конфигурацию для стандартных уведомлений Frappe.
-	"""
-	return {
-		"Service Request": {
-			# Отправлять уведомление, только если статус изменился.
-			"condition": ("doc.get_doc_before_save() and doc.status != doc.get_doc_before_save().status"),
-			# Получатели уведомлений
-			"send_to_roles": [ROLE_PROEKTNYJ_MENEDZHER],
-			# Темы и сообщения можно шаблонизировать через Jinja
-			"subject": _("Статус заявки {{ doc.name }} изменён на {{ doc.status }}"),
-			"message": _(
-				"""
+    """
+    Возвращает конфигурацию для стандартных уведомлений Frappe.
+    """
+    return {
+        "Service Request": {
+            # Отправлять уведомление, только если статус изменился.
+            "condition": (
+                "doc.get_doc_before_save() and doc.status != doc.get_doc_before_save().status"
+            ),
+            # Получатели уведомлений
+            "send_to_roles": [ROLE_PROEKTNYJ_MENEDZHER],
+            # Темы и сообщения можно шаблонизировать через Jinja
+            "subject": _("Статус заявки {{ doc.name }} изменён на {{ doc.status }}"),
+            "message": _(
+                """
 Здравствуйте!
 
 Заявка <strong>{{ doc.name }}</strong> изменила статус на
@@ -40,12 +46,12 @@ def get_notification_config() -> dict:
 --
 Система Ferum Customs
 """
-			),
-		},
-		# "ServiceReport": { # Пример для другого DocType
-		#     "condition": "doc.docstatus == 1", # Отправлять при отправке (submit) ServiceReport
-		#     "send_to_roles": [ROLE_PROEKTNYJ_MENEDZHER],
-		#     "subject": _("Отчет о выполненных работах {{ doc.name }} был отправлен"),
-		#     "message": _("Отчет {{ doc.name }} для заявки {{ doc.service_request }} был отправлен.") # service_request - стандартное поле в ServiceReport
-		# }
-	}
+            ),
+        },
+        # "ServiceReport": { # Пример для другого DocType
+        #     "condition": "doc.docstatus == 1", # Отправлять при отправке (submit) ServiceReport
+        #     "send_to_roles": [ROLE_PROEKTNYJ_MENEDZHER],
+        #     "subject": _("Отчет о выполненных работах {{ doc.name }} был отправлен"),
+        #     "message": _("Отчет {{ doc.name }} для заявки {{ doc.service_request }} был отправлен.") # service_request - стандартное поле в ServiceReport
+        # }
+    }

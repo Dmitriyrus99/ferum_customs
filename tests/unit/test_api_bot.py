@@ -35,3 +35,26 @@ def test_bot_create_and_update(frappe_stub):
 
     api.bot_update_service_request_status(sr_name, STATUS_OTKRYTA)
     assert calls["status"] == STATUS_OTKRYTA
+
+
+def test_bot_upload_attachment(frappe_stub):
+    api = importlib.reload(importlib.import_module("ferum_customs.api"))
+
+    recorded = {}
+
+    def get_doc(arg1, arg2=None):
+        if isinstance(arg1, dict):
+            doc = SimpleNamespace(name="CA001")
+
+            def insert(ignore_permissions=True):
+                recorded["doc"] = arg1
+
+            doc.insert = insert
+            return doc
+        raise AssertionError("unexpected get_doc args")
+
+    frappe_stub.get_doc = get_doc
+
+    ca_name = api.bot_upload_attachment("SR001", "file.jpg", "photo")
+    assert ca_name == "CA001"
+    assert recorded["doc"]["parent_reference_sr"] == "SR001"
