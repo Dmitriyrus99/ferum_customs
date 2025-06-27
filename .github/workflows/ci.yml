@@ -40,4 +40,4 @@ jobs:
           black --check .
 
       - name: Run tests
-        run: pytest -q tests
+        run: pytest --cov=ferum_customs --cov-report=term-missing -q tests

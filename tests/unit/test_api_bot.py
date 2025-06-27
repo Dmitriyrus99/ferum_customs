@@ -1,0 +1,37 @@
+import importlib
+from types import SimpleNamespace
+
+from ferum_customs.constants import STATUS_OTKRYTA
+
+
+def test_bot_create_and_update(frappe_stub):
+    api = importlib.reload(importlib.import_module("ferum_customs.api"))
+
+    calls = {}
+
+    def get_doc(arg1, arg2=None):
+        if isinstance(arg1, dict):
+            doc = SimpleNamespace(name="SR001")
+
+            def insert(ignore_permissions=True):
+                calls["insert"] = arg1
+
+            doc.insert = insert
+            return doc
+        if arg1 == "Service Request":
+            doc = SimpleNamespace(status=None)
+
+            def save(ignore_permissions=True):
+                calls["status"] = doc.status
+
+            doc.save = save
+            return doc
+        raise AssertionError("unexpected get_doc args")
+
+    frappe_stub.get_doc = get_doc
+    sr_name = api.bot_create_service_request("Subj", customer="Cust")
+    assert sr_name == "SR001"
+    assert calls["insert"]["subject"] == "Subj"
+
+    api.bot_update_service_request_status(sr_name, STATUS_OTKRYTA)
+    assert calls["status"] == STATUS_OTKRYTA
