@@ -5,6 +5,23 @@
 
 Ferum Customs extends ERPNext with a service management layer. It keeps a registry of serviced equipment, tracks incoming requests and stores reports about performed work.
 
+## Ferum Customs
+
+Кастомное приложение для ERPNext/Frappe, предназначенное для автоматизации работы сервисной компании
+в области противопожарной безопасности.
+
+### Основные возможности:
+- Управление заявками и проектами
+- Автоматизация актов, маршрутов, графиков обслуживания
+- Поддержка FSM-бота для Telegram
+- Расширения DocType, Workflow, Permission
+- Интеграция с Google Drive, аналитикой, CI/CD
+
+### Требования:
+- Frappe >= 14
+- PostgreSQL / MariaDB
+- Python 3.10+
+
 ## Key DocTypes
 
 - **Service Object** — equipment or a site that requires maintenance.
