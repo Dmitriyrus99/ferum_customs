@@ -1,5 +1,6 @@
 pytest>=8,<9
 pytest-cov  # optional, for coverage
+pytest-asyncio>=0.23
 ruff
 pre-commit
 

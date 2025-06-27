@@ -1,5 +1,5 @@
 repos:
-  - repo: https://github.com/astral-sh/ruff
+  - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.4.4
     hooks:
       - id: ruff
