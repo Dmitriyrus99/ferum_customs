@@ -1,0 +1,20 @@
+name: ferum_customs
+description: >
+  Аудит и анализ Python-проекта с использованием FastAPI и Aiogram для настройки CI/CD и тестирования.
+
+image: universal
+
+workspace:
+  root: /ferum_customs/ferum_customs
+
+env: {}
+
+secrets: {}
+
+setup:
+  script: ./setup.sh
+  shell: bash
+  allowNetwork: true
+
+tasks:
+  - task.md
