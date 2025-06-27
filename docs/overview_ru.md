@@ -112,4 +112,3 @@ bench --site frontend run-tests --app ferum_customs
 # Тесты конкретного модуля
 bench --site frontend run-tests --module "Service Request"
 ```
-
