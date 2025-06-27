@@ -8,7 +8,7 @@ from aiogram.fsm.storage.base import StorageKey
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.types import Message, Update
 
-from telegram_bot.bot_service import IncidentStates, start_handler
+from telegram_bot.handlers import IncidentStates, start_handler
 
 
 @pytest.mark.asyncio
