@@ -1,22 +1,32 @@
-import pytest
-from aiogram.fsm.context import FSMContext
-from aiogram.types import Message
-from aiogram.fsm.storage.memory import MemoryStorage
-from aiogram import Bot, Dispatcher
-from telegram_bot.fsm.states import SomeState  # замените на ваше состояние
-from telegram_bot.handlers import start_handler  # замените на ваш обработчик
+from datetime import datetime, timezone
 
-class MockMessage(Message):
-    def __init__(self):
-        super().__init__(message_id=1, chat={"id": 123}, date=None, text="/start")
+import pytest
+from aiogram import Bot
+from aiogram.enums import ChatType
+from aiogram.fsm.context import FSMContext
+from aiogram.fsm.storage.base import StorageKey
+from aiogram.fsm.storage.memory import MemoryStorage
+from aiogram.types import Message, Update
+
+from telegram_bot.bot_service import IncidentStates, start_handler
+
 
 @pytest.mark.asyncio
 async def test_fsm_start_handler():
-    bot = Bot(token="TEST:TOKEN")
-    dp = Dispatcher(storage=MemoryStorage())
-    message = MockMessage()
-    state: FSMContext = dp.storage.get_state(chat=message.chat.id, user=message.from_user.id)
+    bot = Bot(token="12345:TOKEN")
+    storage = MemoryStorage()
+    key = StorageKey(bot_id=bot.id or 0, chat_id=123, user_id=123)
+    state = FSMContext(storage=storage, key=key)
 
-    await start_handler(message, state=state)
+    message = Message(
+        message_id=1,
+        date=datetime.now(timezone.utc),
+        chat={"id": 123, "type": ChatType.PRIVATE},
+        from_user={"id": 123, "is_bot": False, "first_name": "Tester"},
+        text="/start",
+    )
+    update = Update(update_id=1, message=message)
 
-    assert await state.get_state() == SomeState.some_step  # замените на ожидаемое состояние
+    await start_handler(bot=bot, message=update.message, state=state)
+
+    assert await state.get_state() == IncidentStates.waiting_object.state
