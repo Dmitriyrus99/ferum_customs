@@ -19,11 +19,15 @@ This document explains how to install the `ferum_customs` app in your Frappe/ERP
    ```bash
    bench get-app https://github.com/Dmitriyrus99/ferum_customs.git --branch main
    ```
-3. Install the application on your site:
+3. Install Python dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+4. Install the application on your site:
    ```bash
    bench --site YOUR_SITE_NAME install-app ferum_customs
    ```
-4. Build assets and restart bench:
+5. Build assets and restart bench:
    ```bash
    bench build && bench restart
    ```
