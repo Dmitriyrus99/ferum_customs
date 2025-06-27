@@ -10,7 +10,7 @@ ROLES = [
     "Заказчик",
 ]
 
-SERVICE_REQUEST_PERMS = [
+SERVICE_REQUEST_PERMS: list[dict[str, int | str]] = [
     {
         "parent": "Service Request",
         "role": "Проектный менеджер",
