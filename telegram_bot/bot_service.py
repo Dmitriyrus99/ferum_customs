@@ -17,6 +17,7 @@ import os
 
 from aiogram import Bot, Dispatcher
 from aiogram.fsm.state import State, StatesGroup
+from aiogram.fsm.storage.base import BaseStorage
 from aiogram.fsm.storage.memory import MemoryStorage
 from fastapi import FastAPI
 
@@ -46,12 +47,26 @@ class PhotoStates(StatesGroup):
 app = FastAPI(title="Ferum Bot Service")
 
 
-def _create_dispatcher() -> Dispatcher:
-	"""Instantiate dispatcher with in‑memory storage."""
+def _create_dispatcher(
+        bot: Bot | None = None,
+        storage: BaseStorage | None = None,
+) -> Dispatcher:
+        """Instantiate dispatcher with in‑memory storage."""
 
-	token = os.getenv("TELEGRAM_BOT_TOKEN", "")
-	bot = Bot(token)
-	return Dispatcher(storage=MemoryStorage(), bot=bot)
+        if bot is None:
+                token = os.getenv("TELEGRAM_BOT_TOKEN", "0:TOKEN")
+                bot = Bot(token)
+        if storage is None:
+                storage = MemoryStorage()
+        return Dispatcher(storage=storage, bot=bot)
+
+
+def get_dispatcher(
+        *, bot: Bot | None = None, storage: BaseStorage | None = None
+) -> Dispatcher:
+        """Return a dispatcher instance for external usage (e.g. tests)."""
+
+        return _create_dispatcher(bot=bot, storage=storage)
 
 
 dispatcher = _create_dispatcher()
@@ -73,9 +88,10 @@ async def shutdown_event() -> None:  # pragma: no cover - example implementation
 
 
 __all__ = [
-	"app",
-	"dispatcher",
-	"IncidentStates",
-	"TaskStates",
-	"PhotoStates",
+        "app",
+        "dispatcher",
+        "get_dispatcher",
+        "IncidentStates",
+        "TaskStates",
+        "PhotoStates",
 ]
