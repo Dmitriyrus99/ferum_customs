@@ -18,10 +18,11 @@ get_notification_config = (
 
 # ── актуальный список фикстур: только данные, без описаний DocType ──
 fixtures = [
-    {
-        "doctype": "DocType",
-        "filters": [["name", "=", "Service Report Work Item"]],
-    },
+    "Custom Field",
+    "Notification",
+    "Portal Menu Item",
+    "Role",
+    "DocPerm",
 ]
 
 
