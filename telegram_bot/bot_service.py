@@ -16,9 +16,11 @@ from __future__ import annotations
 import os
 
 from aiogram import Bot, Dispatcher
+from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.storage.base import BaseStorage
 from aiogram.fsm.storage.memory import MemoryStorage
+from aiogram.types import Message
 from fastapi import FastAPI
 
 
@@ -48,28 +50,36 @@ app = FastAPI(title="Ferum Bot Service")
 
 
 def _create_dispatcher(
-        bot: Bot | None = None,
-        storage: BaseStorage | None = None,
+	bot: Bot | None = None,
+	storage: BaseStorage | None = None,
 ) -> Dispatcher:
-        """Instantiate dispatcher with in‑memory storage."""
+	"""Instantiate dispatcher with in‑memory storage."""
 
-        if bot is None:
-                token = os.getenv("TELEGRAM_BOT_TOKEN", "0:TOKEN")
-                bot = Bot(token)
-        if storage is None:
-                storage = MemoryStorage()
-        return Dispatcher(storage=storage, bot=bot)
+	if bot is None:
+		token = os.getenv("TELEGRAM_BOT_TOKEN", "0:TOKEN")
+		bot = Bot(token)
+	if storage is None:
+		storage = MemoryStorage()
+	return Dispatcher(storage=storage, bot=bot)
 
 
-def get_dispatcher(
-        *, bot: Bot | None = None, storage: BaseStorage | None = None
-) -> Dispatcher:
-        """Return a dispatcher instance for external usage (e.g. tests)."""
+def get_dispatcher(*, bot: Bot | None = None, storage: BaseStorage | None = None) -> Dispatcher:
+	"""Return a dispatcher instance for external usage (e.g. tests)."""
 
-        return _create_dispatcher(bot=bot, storage=storage)
+	return _create_dispatcher(bot=bot, storage=storage)
 
 
 dispatcher = _create_dispatcher()
+
+
+async def start_handler(bot: Bot, message: Message, state: FSMContext) -> None:
+	"""Simple `/start` command handler.
+
+	It sets the incident FSM to the first state. Network calls are omitted
+	for testing purposes.
+	"""
+
+	await state.set_state(IncidentStates.waiting_object)
 
 
 @app.on_event("startup")
@@ -88,10 +98,11 @@ async def shutdown_event() -> None:  # pragma: no cover - example implementation
 
 
 __all__ = [
-        "app",
-        "dispatcher",
-        "get_dispatcher",
-        "IncidentStates",
-        "TaskStates",
-        "PhotoStates",
+	"app",
+	"dispatcher",
+	"get_dispatcher",
+	"start_handler",
+	"IncidentStates",
+	"TaskStates",
+	"PhotoStates",
 ]
