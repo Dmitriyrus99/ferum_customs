@@ -5,14 +5,14 @@ import pytest
 
 
 class DummyLog:
-    def info(self, *a, **k):
-        pass
+	def info(self, *a, **k):
+		pass
 
-    def warning(self, *a, **k):
-        pass
+	def warning(self, *a, **k):
+		pass
 
-    def error(self, *a, **k):
-        pass
+	def error(self, *a, **k):
+		pass
 
 
 @pytest.fixture
