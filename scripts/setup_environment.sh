@@ -143,4 +143,3 @@ echo "  Пользователь: Administrator"
 echo "  Пароль:       ${ADMIN_PASSWORD}"
 echo
 echo "Для просмотра логов используйте: $DC_COMMAND -f pwd.yml logs -f"
-
