@@ -22,6 +22,8 @@ fixtures = [
     "Notification",
     "Portal Menu Item",
     "Role",
+    "Custom Role",
+    "Client Script",
     "DocPerm",
 ]
 
