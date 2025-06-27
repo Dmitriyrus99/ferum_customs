@@ -20,29 +20,31 @@ from frappe import _  # Для возможных сообщений
 
 
 def after_install() -> None:
-	"""
-	Вызывается один раз после успешной установки приложения.
-	"""
-	frappe.db.commit()  # Коммит предыдущих транзакций перед началом операций в after_install, если необходимо
-	# Создание ролей выполняется через фикстуры (fixtures/role.json).
-	# Дополнительная логика установки может быть добавлена при необходимости.
+    """
+    Вызывается один раз после успешной установки приложения.
+    """
+    frappe.db.commit()  # Коммит предыдущих транзакций перед началом операций в after_install, если необходимо
+    # Создание ролей выполняется через фикстуры (fixtures/role.json).
+    # Дополнительная логика установки может быть добавлена при необходимости.
 
-	# Пример: Добавление пользовательских полей программно (обычно делается через fixtures/custom_field.json)
-	# add_custom_fields()
+    # Пример: Добавление пользовательских полей программно (обычно делается через fixtures/custom_field.json)
+    # add_custom_fields()
 
-	# Пример: Установка прав доступа по умолчанию (обычно делается через fixtures/custom_docperm.json)
-	# setup_default_permissions()
+    # Пример: Установка прав доступа по умолчанию (обычно делается через fixtures/custom_docperm.json)
+    # setup_default_permissions()
 
-	# Пример: Создание начальных данных
-	# create_initial_data()
+    # Пример: Создание начальных данных
+    # create_initial_data()
 
-	frappe.db.commit()  # Финальный коммит
-	frappe.clear_cache()  # Очистка кэша после установки
-	frappe.msgprint(
-		_("Ferum Customs application installed successfully. Please check system settings and user roles."),
-		title=_("Installation Complete"),
-		indicator="green",
-	)
+    frappe.db.commit()  # Финальный коммит
+    frappe.clear_cache()  # Очистка кэша после установки
+    frappe.msgprint(
+        _(
+            "Ferum Customs application installed successfully. Please check system settings and user roles."
+        ),
+        title=_("Installation Complete"),
+        indicator="green",
+    )
 
 
 # Пример функции для добавления Custom Fields (не рекомендуется, лучше фикстуры)
