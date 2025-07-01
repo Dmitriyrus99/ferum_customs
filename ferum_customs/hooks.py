@@ -10,30 +10,28 @@ app_license = "MIT"
 
 doc_events = DOC_EVENTS
 permission_query_conditions = {
-    "Service Request": "ferum_customs.permissions.permissions.get_service_request_pqc",
+	"Service Request": "ferum_customs.permissions.permissions.get_service_request_pqc",
 }
-get_notification_config = (
-    "ferum_customs.notifications.notifications.get_notification_config"
-)
+get_notification_config = "ferum_customs.notifications.notifications.get_notification_config"
 
 # ── актуальный список фикстур: только данные, без описаний DocType ──
 fixtures = [
-    "Custom Field",
-    "Notification",
-    "Portal Menu Item",
-    "Role",
-    "Custom Role",
-    "Client Script",
-    "DocPerm",
+	"Custom Field",
+	"Notification",
+	"Portal Menu Item",
+	"Role",
+	"Custom Role",
+	"Client Script",
+	"DocPerm",
 ]
 
 
 def scheduler_events() -> dict:
-    """Return scheduler events configuration for Frappe."""
-    return {}
+	"""Return scheduler events configuration for Frappe."""
+	return {}
 
 
 try:  # dev-hooks (если есть)
-    from ferum_customs.dev_hooks import *
+	from ferum_customs.dev_hooks import *
 except ImportError:
-    pass
+	pass
