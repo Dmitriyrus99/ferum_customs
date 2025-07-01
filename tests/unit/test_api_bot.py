@@ -5,56 +5,56 @@ from ferum_customs.constants import STATUS_OTKRYTA
 
 
 def test_bot_create_and_update(frappe_stub):
-    api = importlib.reload(importlib.import_module("ferum_customs.api"))
+	api = importlib.reload(importlib.import_module("ferum_customs.api"))
 
-    calls = {}
+	calls = {}
 
-    def get_doc(arg1, arg2=None):
-        if isinstance(arg1, dict):
-            doc = SimpleNamespace(name="SR001")
+	def get_doc(arg1, arg2=None):
+		if isinstance(arg1, dict):
+			doc = SimpleNamespace(name="SR001")
 
-            def insert(ignore_permissions=True):
-                calls["insert"] = arg1
+			def insert(ignore_permissions=True):
+				calls["insert"] = arg1
 
-            doc.insert = insert
-            return doc
-        if arg1 == "Service Request":
-            doc = SimpleNamespace(status=None)
+			doc.insert = insert
+			return doc
+		if arg1 == "Service Request":
+			doc = SimpleNamespace(status=None)
 
-            def save(ignore_permissions=True):
-                calls["status"] = doc.status
+			def save(ignore_permissions=True):
+				calls["status"] = doc.status
 
-            doc.save = save
-            return doc
-        raise AssertionError("unexpected get_doc args")
+			doc.save = save
+			return doc
+		raise AssertionError("unexpected get_doc args")
 
-    frappe_stub.get_doc = get_doc
-    sr_name = api.bot_create_service_request("Subj", customer="Cust")
-    assert sr_name == "SR001"
-    assert calls["insert"]["subject"] == "Subj"
+	frappe_stub.get_doc = get_doc
+	sr_name = api.bot_create_service_request("Subj", customer="Cust")
+	assert sr_name == "SR001"
+	assert calls["insert"]["subject"] == "Subj"
 
-    api.bot_update_service_request_status(sr_name, STATUS_OTKRYTA)
-    assert calls["status"] == STATUS_OTKRYTA
+	api.bot_update_service_request_status(sr_name, STATUS_OTKRYTA)
+	assert calls["status"] == STATUS_OTKRYTA
 
 
 def test_bot_upload_attachment(frappe_stub):
-    api = importlib.reload(importlib.import_module("ferum_customs.api"))
+	api = importlib.reload(importlib.import_module("ferum_customs.api"))
 
-    recorded = {}
+	recorded = {}
 
-    def get_doc(arg1, arg2=None):
-        if isinstance(arg1, dict):
-            doc = SimpleNamespace(name="CA001")
+	def get_doc(arg1, arg2=None):
+		if isinstance(arg1, dict):
+			doc = SimpleNamespace(name="CA001")
 
-            def insert(ignore_permissions=True):
-                recorded["doc"] = arg1
+			def insert(ignore_permissions=True):
+				recorded["doc"] = arg1
 
-            doc.insert = insert
-            return doc
-        raise AssertionError("unexpected get_doc args")
+			doc.insert = insert
+			return doc
+		raise AssertionError("unexpected get_doc args")
 
-    frappe_stub.get_doc = get_doc
+	frappe_stub.get_doc = get_doc
 
-    ca_name = api.bot_upload_attachment("SR001", "file.jpg", "photo")
-    assert ca_name == "CA001"
-    assert recorded["doc"]["parent_reference_sr"] == "SR001"
+	ca_name = api.bot_upload_attachment("SR001", "file.jpg", "photo")
+	assert ca_name == "CA001"
+	assert recorded["doc"]["parent_reference_sr"] == "SR001"
