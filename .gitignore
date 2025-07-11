@@ -26,11 +26,15 @@ MANIFEST
 # Environments
 .env
 .venv
-env/
-venv/
 ENV/
 env.bak/
 venv.bak/
+.venv/
+.venv_dev/
+venv/
+env/
+*.pyc
+__pycache__/
 
 # Dependency directories
 node_modules/
@@ -56,3 +60,14 @@ jspm_packages/
 
 # Local frappe_docker clone
 frappe_docker/
+
+*.log
+*.pot
+*.mo
+.DS_Store
+.vscode/
+.idea/
+/build/
+/dist/
+.pytest_cache/
+.ruff_cache/

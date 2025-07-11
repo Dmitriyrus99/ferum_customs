@@ -1,3 +1,7 @@
+# .pre-commit-config.yaml
+
+# Этот exclude: 'node_modules|.git' является глобальным для pre-commit
+# и не влияет на exclude конкретных хуков.
 exclude: 'node_modules|.git'
 default_stages: [pre-commit]
 fail_fast: false
@@ -5,37 +9,51 @@ fail_fast: false
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.3.0
+    rev: v4.3.0 # Убедитесь, что это ваша текущая версия (возможно, стоит обновить до v4.6.0)
     hooks:
       - id: trailing-whitespace
         files: "erpnext.*"
         exclude: ".*json$|.*txt$|.*csv|.*md"
+        # Для этого хука exclude уже есть, но он специфичен для типов файлов
+        # Если нужно игнорировать .venv_dev/ для него, добавьте:
+        # exclude: ".*json$|.*txt$|.*csv|.*md|^\\.venv_dev/"
       - id: check-yaml
+        exclude: ^\.venv_dev/ # Добавлено
       - id: no-commit-to-branch
         args: ['--branch', 'develop']
+        # Обычно не требует exclude для venv, но можно добавить для консистентности
+        # exclude: ^\.venv_dev/
       - id: check-merge-conflict
+        exclude: ^\.venv_dev/ # Добавлено
       - id: check-ast
+        exclude: ^\.venv_dev/ # Добавлено
       - id: check-json
+        exclude: ^\.venv_dev/ # Добавлено
       - id: check-toml
-      - id: check-yaml
+        exclude: ^\.venv_dev/ # Добавлено
+      - id: check-yaml # Второй check-yaml, тоже добавляем exclude
+        exclude: ^\.venv_dev/ # Добавлено
       - id: debug-statements
+        exclude: ^\.venv_dev/ # ОБЯЗАТЕЛЬНО ДОБАВИТЬ ЭТО!
 
   - repo: https://github.com/pre-commit/mirrors-prettier
     rev: v2.7.1
     hooks:
       - id: prettier
         types_or: [javascript, vue, scss]
-        # Ignore any files that might contain jinja / bundles
+        # Обратите внимание, что здесь уже есть .*node_modules.*
+        # Возможно, вам также нужно добавить сюда .*venv_dev.*
         exclude: |
-            (?x)^(
-                erpnext/public/dist/.*|
-                cypress/.*|
-                .*node_modules.*|
-                .*boilerplate.*|
-                erpnext/public/js/controllers/.*|
-                erpnext/templates/pages/order.js|
-                erpnext/templates/includes/.*
-            )$
+          (?x)^(
+            erpnext/public/dist/.*|
+            cypress/.*|
+            .*node_modules.*|
+            .*venv_dev.*| # <-- Добавлено!
+            .*boilerplate.*|
+            erpnext/public/js/controllers/.*|
+            erpnext/templates/pages/order.js|
+            erpnext/templates/includes/.*
+          )$
 
   - repo: https://github.com/pre-commit/mirrors-eslint
     rev: v8.44.0
@@ -43,30 +61,50 @@ repos:
       - id: eslint
         types_or: [javascript]
         args: ['--quiet']
-        # Ignore any files that might contain jinja / bundles
+        # И здесь тоже, если eslint затрагивает venv
         exclude: |
-            (?x)^(
-                erpnext/public/dist/.*|
-                cypress/.*|
-                .*node_modules.*|
-                .*boilerplate.*|
-                erpnext/public/js/controllers/.*|
-                erpnext/templates/pages/order.js|
-                erpnext/templates/includes/.*
-            )$
+          (?x)^(
+            erpnext/public/dist/.*|
+            cypress/.*|
+            .*node_modules.*|
+            .*venv_dev.*| # <-- Добавлено!
+            .*boilerplate.*|
+            erpnext/public/js/controllers/.*|
+            erpnext/templates/pages/order.js|
+            erpnext/templates/includes/.*
+          )$
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.2.0
+    rev: v0.2.0 # Рекомендую обновить до последней версии (v0.5.2 или выше), если возможно.
     hooks:
       - id: ruff
         name: "Run ruff import sorter"
         args: ["--select=I", "--fix"]
+        # Для сортировки импортов тоже нужно исключить venv
+        exclude: ^\.venv_dev/ # <-- Убедитесь, что это здесь
 
       - id: ruff
         name: "Run ruff linter"
+        exclude: ^\.venv_dev/ # Уже есть, отлично
 
-      - id: ruff-format
-        name: "Run ruff formatter"
+      # - id: ruff-format # Если вы раскомментируете это, добавьте exclude и сюда
+      #   name: "Run ruff formatter"
+      #   exclude: ^\.venv_dev/
+
+  - repo: https://github.com/PyCQA/isort
+    rev: 5.12.0
+    hooks:
+      - id: isort
+        name: isort (python import sorter)
+        args: ["--profile", "black"]
+        exclude: ^\.venv_dev/ # Уже есть, отлично
+
+  - repo: https://github.com/psf/black
+    rev: 23.9.1 # Рекомендую обновить до последней версии (24.4.2 или выше), если возможно.
+    hooks:
+      - id: black
+        language_version: python3
+        exclude: ^\.venv_dev/ # Уже есть, отлично
 
 ci:
     autoupdate_schedule: weekly

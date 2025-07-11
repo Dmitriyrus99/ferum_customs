@@ -8,8 +8,15 @@
 # вашего проекта ferum_customs.
 # ====================================================================================
 
+# Shell settings
 set -eo pipefail
-
+# Check for Docker systemd proxy settings
+if [ -d "/etc/systemd/system/docker.service.d" ] && ls /etc/systemd/system/docker.service.d/*proxy*.conf &>/dev/null; then
+    echo "Ошибка: в настройках Docker systemd обнаружен прокси (http-proxy.conf)."
+    echo "Пожалуйста, удалите или переименуйте этот файл и перезапустите службу Docker:" \
+         "sudo systemctl daemon-reload && sudo systemctl restart docker"
+    exit 1
+fi
 # --- Переменные конфигурации ---
 GIT_REPO="https://github.com/frappe/frappe_docker.git"
 PROJECT_DIR="frappe_docker"
@@ -73,6 +80,7 @@ echo "---"
 
 # --- Этап 2: Запуск контейнеров ---
 echo "--> Этап 2: Запуск Docker-контейнеров для разработки..."
+echo "⚠️ Убедитесь, что в настройках Docker Desktop или файле systemd для демона Docker не указан прокси (например localhost:1080), иначе будет ошибка при загрузке образов."
 $DC_COMMAND -f pwd.yml up -d
 if [ $? -ne 0 ]; then
   echo "Ошибка: Не удалось запустить Docker-контейнеры. Проверьте установку Docker."
@@ -87,41 +95,41 @@ echo "--> Этап 3: Создание нового сайта и установ
 echo "Это может занять значительное время..."
 
 echo "Создание сайта ${SITE_NAME}..."
-$DC_COMMAND -f pwd.yml exec frappe bench new-site "${SITE_NAME}" --no-mariadb-socket --mariadb-root-password "${DB_ROOT_PASSWORD}" --admin-password "${ADMIN_PASSWORD}"
+$DC_COMMAND -f pwd.yml exec backend bench new-site "${SITE_NAME}" --no-mariadb-socket --mariadb-root-password "${DB_ROOT_PASSWORD}" --admin-password "${ADMIN_PASSWORD}"
 if [ $? -ne 0 ]; then
     echo "Ошибка: Не удалось создать новый сайт."
     exit 1
 fi
 
 echo "Установка Frappe версии ${FRAPPE_VERSION}..."
-$DC_COMMAND -f pwd.yml exec frappe bench get-app --branch "${FRAPPE_VERSION}" frappe
+$DC_COMMAND -f pwd.yml exec backend bench get-app --branch "${FRAPPE_VERSION}" frappe
 if [ $? -ne 0 ]; then
     echo "Ошибка: Не удалось загрузить Frappe."
     exit 1
 fi
 
 echo "Установка ERPNext версии ${ERPNext_VERSION}..."
-$DC_COMMAND -f pwd.yml exec frappe bench get-app --branch "${ERPNext_VERSION}" erpnext
+$DC_COMMAND -f pwd.yml exec backend bench get-app --branch "${ERPNext_VERSION}" erpnext
 if [ $? -ne 0 ]; then
     echo "Ошибка: Не удалось загрузить ERPNext."
     exit 1
 fi
 
 echo "Установка приложения ERPNext на сайт ${SITE_NAME}..."
-$DC_COMMAND -f pwd.yml exec frappe bench --site "${SITE_NAME}" install-app erpnext
+$DC_COMMAND -f pwd.yml exec backend bench --site "${SITE_NAME}" install-app erpnext
 if [ $? -ne 0 ]; then
     echo "Ошибка: Не удалось установить приложение ERPNext на сайт."
     exit 1
 fi
 
 echo "Добавление и установка приложения ferum_customs..."
-$DC_COMMAND -f pwd.yml exec frappe bench get-app "$FERUM_CUSTOMS_PATH"
+$DC_COMMAND -f pwd.yml exec backend bench get-app "$FERUM_CUSTOMS_PATH"
 if [ $? -ne 0 ]; then
     echo "Ошибка: Не удалось добавить приложение ferum_customs."
     exit 1
 fi
 
-$DC_COMMAND -f pwd.yml exec frappe bench --site "${SITE_NAME}" install-app ferum_customs
+$DC_COMMAND -f pwd.yml exec backend bench --site "${SITE_NAME}" install-app ferum_customs
 if [ $? -ne 0 ]; then
     echo "Ошибка: Не удалось установить приложение ferum_customs."
     exit 1

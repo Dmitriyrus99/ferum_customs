@@ -1,6 +1,15 @@
 #!/usr/bin/env bash
 # Quick start helper for local development
+# Shell settings & verify Docker proxy settings
 set -euo pipefail
+
+# Check for Docker systemd proxy settings
+if [ -d "/etc/systemd/system/docker.service.d" ] && ls /etc/systemd/system/docker.service.d/*proxy*.conf &>/dev/null; then
+    echo "Ошибка: в настройках Docker systemd обнаружен прокси (http-proxy.conf)."
+    echo "Пожалуйста, удалите или переименуйте этот файл и перезапустите службу Docker:" \
+         "sudo systemctl daemon-reload && sudo systemctl restart docker"
+    exit 1
+fi
 
 DC="docker compose"
 
@@ -22,4 +31,5 @@ if [ ! -f .env ]; then
     cp .env.example .env
 fi
 
+echo "⚠️ Проверьте, что в настройках Docker Desktop прокси отключен (Settings → Resources → Proxies), иначе могут быть ошибки при загрузке образов."
 ${DC} up -d --build

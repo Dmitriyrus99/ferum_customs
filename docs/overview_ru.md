@@ -95,6 +95,16 @@
 docker compose -f docker-compose.yml -f docker-compose.test.yml up -d
 ```
 
+# Настройка переменных среды для Python-приложения
+Скопируйте `.env.example` в `.env` и укажите необходимые переменные:
+
+```bash
+cp .env.example .env
+# отредактируйте .env (TELEGRAM_BOT_TOKEN, SITE_NAME, ADMIN_PASSWORD и т.д.)
+```
+
+Переменные автоматически загружаются через Pydantic Settings.
+
 Установите зависимости внутри контейнера и инсталлируйте приложение:
 
 ```bash

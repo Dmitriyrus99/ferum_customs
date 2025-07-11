@@ -35,6 +35,18 @@ Ferum Customs extends ERPNext with a service management layer. It keeps a regist
 - [Документация на русском](docs/overview_ru.md)
 - [Frappe/ERPNext Docker Setup](docs/docker_setup_ru.md)
 
+## Configuration
+
+Приложение использует переменные среды для конфиденциальных настроек.
+Скопируйте файл `.env.example` в `.env` и заполните ключи:
+
+```bash
+cp .env.example .env
+# укажите TELEGRAM_BOT_TOKEN, SITE_NAME, ADMIN_PASSWORD и прочие
+```
+
+Переменные автоматически загружаются через Pydantic Settings.
+
 ## Requirements
 
 - Frappe + ERPNext 16.x or later.
@@ -197,7 +209,8 @@ pytest
 Install development dependencies and run pre-commit hooks:
 
 ```bash
-pip install -r requirements-dev.txt
+pip install -U pip
+pip install .[dev,test]
 pre-commit run --all-files
 ```
 
