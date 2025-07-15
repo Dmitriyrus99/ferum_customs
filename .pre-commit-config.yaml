@@ -106,6 +106,14 @@ repos:
         language_version: python3
         exclude: ^\.venv_dev/ # Уже есть, отлично
 
+  - repo: local
+    hooks:
+      - id: check-fixtures-doctype
+        name: Check fixture JSON doctype field
+        entry: scripts/check_fixtures_doctype.py
+        language: python
+        files: ^ferum_customs/fixtures/.*\.json$
+
 ci:
     autoupdate_schedule: weekly
     skip: []
