@@ -3,6 +3,12 @@
 # Shell settings & verify Docker proxy settings
 set -euo pipefail
 
+ # If Docker CLI is not available (e.g., in bare Python-only env), skip Docker setup
+if ! command -v docker >/dev/null 2>&1; then
+    echo "⚠️ Docker CLI not found, skipping Docker environment setup."
+    exit 0
+fi
+
 # Check for Docker systemd proxy settings
 if [ -d "/etc/systemd/system/docker.service.d" ] && ls /etc/systemd/system/docker.service.d/*proxy*.conf &>/dev/null; then
     echo "Ошибка: в настройках Docker systemd обнаружен прокси (http-proxy.conf)."

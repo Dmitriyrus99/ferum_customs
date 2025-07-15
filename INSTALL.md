@@ -41,6 +41,20 @@ docker compose up -d --build
 
 If you use Docker images, add `ferum_customs` to `apps.txt` (or `apps.json`) and rebuild the image before running the `install-app` command.
 
+## Инструменты разработчика
+
+Для автоматизации задач код-ревью и CI используем Codex CLI.
+
+**Установка**:
+```bash
+pip install codex-cli
+```
+
+**Использование**:
+```bash
+codex --config .codex/project.yaml
+```
+
 ## Configuration
 
 After installation log in as **Administrator** and open **Role List**. Make sure the following roles exist and assign them to appropriate users:
