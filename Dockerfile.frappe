@@ -1,8 +1,6 @@
 ARG BENCH_TAG=v5.25.4
 # Container image for Frappe bench with Ferum Customs app
-FROM frappe/bench:${BENCH_TAG}
-LABEL org.opencontainers.image.source="https://github.com/<owner>/ferum_customs"
-LABEL org.opencontainers.image.licenses="MIT"
+FROM frappe/bench:${BENCH_TAG} AS builder
 
 # Install redis-server so bench init succeeds during image build
 USER root
@@ -32,3 +30,20 @@ RUN bench get-app --branch develop erpnext https://github.com/frappe/erpnext
 # Add the local app during build
 COPY --chown=frappe:frappe . /home/frappe/frappe-bench/apps/ferum_customs
 RUN bench setup requirements
+
+### Runtime stage ###
+FROM frappe/bench:${BENCH_TAG}
+LABEL org.opencontainers.image.source="https://github.com/<owner>/ferum_customs"
+LABEL org.opencontainers.image.licenses="MIT"
+
+# Runtime dependencies
+USER root
+RUN apt-get update \
+    && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends redis-server \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+USER frappe
+# Copy bench directory and apps from builder stage
+COPY --chown=frappe:frappe --from=builder /home/frappe/frappe-bench /home/frappe/frappe-bench
+
+WORKDIR /home/frappe/frappe-bench
