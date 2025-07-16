@@ -22,5 +22,8 @@ jobs:
           pip install ".[dev,test]"
       - name: Start stack
         run: docker compose up -d --build
+      - name: Verify pytest-cov plugin
+        run: pytest --help | grep -- '--cov'
+
       - name: Run integration tests
-        run: pytest tests/integration -q
+        run: pytest --cov=ferum_customs --cov-report=term-missing -q tests/integration

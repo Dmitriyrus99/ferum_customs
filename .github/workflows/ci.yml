@@ -40,6 +40,9 @@ jobs:
       - name: Run type checks
         run: mypy ferum_customs
 
+      - name: Verify pytest-cov plugin
+        run: pytest --help | grep -- '--cov'
+
       - name: Run tests
         run: pytest --cov=ferum_customs --cov-report=term-missing -q tests
       - name: Upload coverage to Codecov

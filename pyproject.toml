@@ -87,7 +87,7 @@ indent-style = "tab"
 docstring-code-format = true
 
 [tool.pytest.ini_options]
-addopts = "-ra -q -p no:pytest_cov"
+addopts = "-ra -q"
 testpaths = ["tests"]
 python_files = "test_*.py"
 markers = [
