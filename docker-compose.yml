@@ -14,10 +14,12 @@ services:
       - "8000:8000"
     volumes:
       - sites:/home/frappe/frappe-bench/sites
+      - ./docker/entrypoint.sh:/home/frappe/frappe-bench/entrypoint.sh:ro
     depends_on:
       - db
       - redis-cache
       - redis-queue
+    command: ["bash", "entrypoint.sh", "bench", "start"]
 
   db:
     image: mariadb:${MARIADB_TAG}

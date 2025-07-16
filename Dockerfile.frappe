@@ -36,11 +36,6 @@ FROM frappe/bench:${BENCH_TAG}
 LABEL org.opencontainers.image.source="https://github.com/<owner>/ferum_customs"
 LABEL org.opencontainers.image.licenses="MIT"
 
-# Runtime dependencies
-USER root
-RUN apt-get update \
-    && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends redis-server \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 USER frappe
 # Copy bench directory and apps from builder stage

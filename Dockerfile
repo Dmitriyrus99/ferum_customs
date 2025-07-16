@@ -6,7 +6,7 @@ RUN echo "nameserver 8.8.8.8" > /etc/resolv.conf || true
 
 USER root
 RUN apt-get update \
-    && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends redis-tools \
+    && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends redis-server \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 USER frappe
@@ -23,11 +23,6 @@ RUN echo "nameserver 8.8.8.8" > /etc/resolv.conf || true
 LABEL org.opencontainers.image.source="https://github.com/<owner>/ferum_customs"
 LABEL org.opencontainers.image.licenses="MIT"
 
-# Runtime dependencies
-USER root
-RUN apt-get update \
-    && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends redis-tools \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 USER frappe
 # Copy built bench and app from builder stage
