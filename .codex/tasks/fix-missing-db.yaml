@@ -1,0 +1,43 @@
+  - name: Проверить наличие базы данных
+    run: |
+      site_config="sites/${FRAPPE_SITE}/site_config.json"
+      db_name=$(jq -r .db_name "$site_config")
+      db_pass=$(jq -r .db_password "$site_config")
+      if ! mysql -u root -p"$MYSQL_ROOT_PASSWORD" -e "USE \`$db_name\`;" 2>/dev/null; then
+        echo "Database $db_name отсутствует, будет создана."
+        mysql -u root -p"$MYSQL_ROOT_PASSWORD" -e "CREATE DATABASE \`$db_name\`;"
+      else
+        echo "Database $db_name уже существует."
+      fi
+
+  - name: Проверить наличие пользователя в MariaDB
+    run: |
+      user_exists=$(mysql -u root -p"$MYSQL_ROOT_PASSWORD" -sse "SELECT EXISTS(SELECT 1 FROM mysql.user WHERE user = '$db_name')")
+      if [ "$user_exists" != 1 ]; then
+        echo "Пользователь $db_name не найден, создаю..."
+        mysql -u root -p"$MYSQL_ROOT_PASSWORD" -e "CREATE USER '$db_name'@'%' IDENTIFIED BY '$db_pass';"
+      else
+        echo "Пользователь $db_name уже существует."
+      fi
+
+  - name: Назначить привилегии пользователю
+    run: |
+      mysql -u root -p"$MYSQL_ROOT_PASSWORD" -e "GRANT ALL PRIVILEGES ON \`$db_name\`.* TO '$db_name'@'%'; FLUSH PRIVILEGES;"
+
+  - name: Выполнить миграции и патчи
+    run: |
+      bench --site "$FRAPPE_SITE" migrate
+      bench --site "$FRAPPE_SITE" execute frappe.patches.v15_0.rename_admin_password_field
+
+  - name: Установить новый пароль администратора
+    run: |
+      bench --site "$FRAPPE_SITE" set-admin-password "${ADMIN_PASSWORD:-fFeRu1011#f}"
+
+  - name: Записать лог в файл
+    run: |
+      echo "$(date) | DB инициализация завершена для $FRAPPE_SITE" >> /home/frappe/fix-missing-db.log
+
+env:
+  FRAPPE_SITE: "erp.ferumrus.ru"
+  MYSQL_ROOT_PASSWORD: "your_root_password"
+  ADMIN_PASSWORD: "fFeRu1011#f"

@@ -16,3 +16,4 @@ setup:
 tasks:
   - .codex/task.md
   - .codex/tasks/fix-missing-db.yaml
+  - .codex/tasks/project-hardening.yaml

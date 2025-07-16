@@ -1,0 +1,61 @@
+# .codex/tasks/project-hardening.yaml
+
+name: Улучшение структуры проекта, CI/CD, тестов и зависимостей
+description: >
+  В этой задаче Codex приведёт структуру проекта в порядок: разделит зависимости,
+  добавит недостающие конфиги, улучшит CI/CD, тесты, pre-commit хуки и структуру папок.
+
+steps:
+  - name: Упорядочить зависимости
+    description: >
+      Проверить файлы requirements.txt и pyproject.toml. Убрать дубли,
+      разделить зависимости на прод/разработку/тестирование.
+    acceptance:
+      - requirements.txt и pyproject.toml не конфликтуют
+      - зависимости dev/test выделены в [tool.poetry.dev-dependencies] или requirements-dev.txt
+
+  - name: Улучшить CI/CD
+    description: >
+      Использовать .github/workflows/ci.yml из README в качестве шаблона.
+      Добавить шаги отчета покрытия кода (codecov).
+    acceptance:
+      - CI запускается через GitHub Actions
+      - Включена интеграция с codecov (или аналогом)
+
+  - name: Добавить конфигурационный шаблон
+    description: >
+      Создать .env.example и описать переменные в README. Проверить, что .env не в git.
+    acceptance:
+      - .env.example присутствует
+      - В README описаны переменные окружения
+
+  - name: Рефакторинг структуры проекта
+    description: >
+      Вынести логику из ferum_customs/ferum_customs в ferum_customs/.
+      Логику из hooks/*.py перенести в custom_logic/.
+    acceptance:
+      - Нет вложенных папок с одинаковыми именами
+      - Повторяющаяся логика вынесена
+
+  - name: Расширить тесты
+    description: >
+      Проверить покрытие unit-тестами API (FastAPI) и FSM-сценариев.
+      Добавить недостающие кейсы и убедиться в прохождении pytest.
+    acceptance:
+      - Тесты покрывают API-эндпоинты и FSM
+      - Используется pytest-asyncio
+
+  - name: Обновить pre-commit
+    description: >
+      Проверить конфигурацию pre-commit. Обновить версии ruff, black, prettier/ESLint.
+    acceptance:
+      - pre-commit проходит без ошибок
+      - hook версии актуальны
+
+labels:
+  - refactor
+  - ci
+  - tests
+  - dependencies
+  - formatting
+  - configuration
