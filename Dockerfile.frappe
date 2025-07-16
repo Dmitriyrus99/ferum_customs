@@ -1,5 +1,8 @@
 ARG BENCH_TAG=v5.25.4
+# Container image for Frappe bench with Ferum Customs app
 FROM frappe/bench:${BENCH_TAG}
+LABEL org.opencontainers.image.source="https://github.com/<owner>/ferum_customs"
+LABEL org.opencontainers.image.licenses="MIT"
 
 # Install redis-server so bench init succeeds during image build
 USER root

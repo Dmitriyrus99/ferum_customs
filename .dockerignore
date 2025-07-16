@@ -1,0 +1,36 @@
+# Docker ignore file to reduce build context and improve build performance
+
+# Git and CI files
+.git
+.gitignore
+.github
+.codex
+
+# Documentation and markdown
+*.md
+docs
+
+# Docker compose configs (not needed inside image)
+docker-compose*.yml
+
+# Virtual environments and environment files
+.venv*
+venv*
+.env
+.env.*
+
+# Python cache and artifacts
+__pycache__
+*.py[cod]
+
+# Tests and helper scripts
+tests
+scripts
+
+# Other config files not needed at runtime
+*.yaml
+*.yml
+*.toml
+
+# Node dependencies
+node_modules

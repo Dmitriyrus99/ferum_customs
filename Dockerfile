@@ -1,5 +1,7 @@
 ARG BENCH_TAG=v5.25.4
 FROM frappe/bench:${BENCH_TAG}
+LABEL org.opencontainers.image.source="https://github.com/<owner>/ferum_customs"
+LABEL org.opencontainers.image.licenses="MIT"
 
 USER root
 RUN apt-get update \
