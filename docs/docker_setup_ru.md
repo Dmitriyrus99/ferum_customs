@@ -6,104 +6,42 @@
 
 ## Структура проекта
 
-```
+```plain
 .
-├── Dockerfile
-├── docker-compose.yml
-├── .env.example
-├── docker-entrypoint.sh
+├── docker-bake.hcl            # конфигурация сборки (docker buildx bake)
+├── compose.yaml               # описание сервисов (docker compose)
+├── example.env                # шаблон переменных окружения
 └── apps/
-    └── ferum_customs/              # ваш код приложения (git-submodule или копия)
+    └── ferum_customs/         # ваш код приложения (git-submodule или копия)
 ```
 
 > Папка `apps/ferum_customs` должна содержать обычное frappe-приложение с `setup.py`, `MANIFEST.in`, `ferum_customs/` и т.д.
 
 ---
 
-## Dockerfile
+## docker-bake.hcl и compose.yaml
 
-```dockerfile
-ARG BENCH_TAG=v5.25.4
-FROM frappe/bench:${BENCH_TAG}
+Проект использует шаблон `frappe_docker`, в котором:
+- `docker-bake.hcl` описывает параметры сборки образов для `docker buildx bake`.
+- `compose.yaml` содержит конфигурацию сервисов для `docker compose`.
 
-# Ставим redis-server (для локального режима bench) — можно убрать, если используете внешние Redis-контейнеры
-USER root
-RUN apt-get update \
-    && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends redis-server \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
-
-# Инициализируем bench под пользователем frappe
-USER frappe
-WORKDIR /home/frappe
-RUN bench init --skip-assets frappe-bench --python $(which python)
-
-WORKDIR /home/frappe/frappe-bench
-
-# Копируем кастом-приложение внутрь образа
-COPY --chown=frappe:frappe apps/ferum_customs apps/ferum_customs
-
-# Ставим python/npm зависимости
-RUN bench setup requirements
-
-# Копируем скрипт-entrypoint и делаем его исполняемым
-USER root
-COPY docker-entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
-USER frappe
-
-ENTRYPOINT ["/entrypoint.sh"]
-CMD ["bench", "start"]
-```
+Файлы находятся в каталоге `frappe_docker/`.
 
 ---
 
-## docker-compose.yml
+## compose.yaml
 
+Ниже — пример фрагмента из `frappe_docker/compose.yaml`:
 ```yaml
-version: "3.9"
-
 services:
-  frappe:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        BENCH_TAG: ${BENCH_TAG}
-    environment:
-      SITE_NAME: ${SITE_NAME}
-      DB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
-      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
-      INSTALL_APPS: erpnext,ferum_customs
-      DB_HOST: db
-      REDIS_CACHE: redis-cache:6379
-      REDIS_QUEUE: redis-queue:6379
-      REDIS_SOCKETIO: redis-queue:6379
-    ports:
-      - "8000:8000"
-    volumes:
-      - sites:/home/frappe/frappe-bench/sites
-    depends_on:
-      - db
-      - redis-cache
-      - redis-queue
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/api/method/ping"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-
+  backend:
+    # ... описание сервиса backend (Frappe + ERPNext + ferum_customs)
   db:
-    image: mariadb:${MARIADB_TAG}
-    environment:
-      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
-    volumes:
-      - db-data:/var/lib/mysql
-
+    # ...
   redis-cache:
-    image: redis:${REDIS_TAG}
-
+    # ...
   redis-queue:
-    image: redis:${REDIS_TAG}
+    # ...
 
 volumes:
   sites:
@@ -112,10 +50,10 @@ volumes:
 
 ---
 
-## .env.example
+## example.env
 
-```
-# Версии образов
+```ini
+# Версии образов и теги для frappe_docker
 BENCH_TAG=v5.25.4
 MARIADB_TAG=10.6
 REDIS_TAG=6.2
@@ -183,15 +121,23 @@ exec "$@"
 ### Как запустить
 
 ```bash
-# 1. Создаём .env на основе примера и правим пароли
-cp .env.example .env
+# 1. Создаём .env на основе шаблона и задаём пароли
+cp example.env .env
 nano .env
 
-# 2. Собираем и поднимаем
-docker compose up -d --build
+# 2. Создаём сайт ERPNext с вашим приложением
+docker compose run --rm backend bash -c "\
+  bench new-site ${SITE_NAME} \
+    --admin-password ${ADMIN_PASSWORD} \
+    --mariadb-root-password ${DB_ROOT_PASSWORD} \
+    --mariadb-user-host-login-scope='%' \
+    --install-app erpnext"
 
-# 3. Проверяем
-docker compose ps            # frappe → Up/healthy
+# 3. Поднимаем все сервисы
+docker compose up -d
+
+# 4. Проверяем
+docker compose ps            # backend → Up/healthy
 open http://localhost:8000   # форма логина ERPNext
 ```
 
