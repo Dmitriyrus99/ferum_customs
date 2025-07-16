@@ -31,8 +31,14 @@ if [[ -n "${SITE_NAME}" && ! -d "sites/${SITE_NAME}" ]]; then
 fi
 
 # 3. Redis config
-bench set-config -g redis_cache    "${REDIS_CACHE}"
-bench set-config -g redis_queue    "${REDIS_QUEUE}"
-bench set-config -g redis_socketio "${REDIS_SOCKETIO}"
+if [[ -n "${REDIS_CACHE}" ]]; then
+  bench set-config -g redis_cache "${REDIS_CACHE}"
+fi
+if [[ -n "${REDIS_QUEUE}" ]]; then
+  bench set-config -g redis_queue "${REDIS_QUEUE}"
+fi
+if [[ -n "${REDIS_SOCKETIO}" ]]; then
+  bench set-config -g redis_socketio "${REDIS_SOCKETIO}"
+fi
 
 exec "$@"
