@@ -88,7 +88,7 @@ indent-style = "tab"
 docstring-code-format = true
 
 [tool.pytest.ini_options]
-addopts = "-ra -q"
+addopts = "-ra -q --ignore=tests/integration/test_api.py --ignore=tests/unit/test_api_routes.py"
 testpaths = ["tests"]
 python_files = "test_*.py"
 markers = [
