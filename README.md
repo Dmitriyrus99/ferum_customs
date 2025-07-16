@@ -77,6 +77,12 @@ The helper script `scripts/setup_environment.sh` can bootstrap a development ben
 The helper script `scripts/setup_codex.sh` installs Docker and builds the Codex CLI image for local use.
 The lightweight `scripts/quick_setup.sh` script simply runs `docker compose` with the provided configuration.
 
+The helper script `scripts/fix-missing-db.sh` checks for missing Frappe site database and user, creates them if needed, and updates the administrator password. Usage:
+
+```bash
+SITE=<site_name> ADMIN_PASSWORD=<new_password> ./scripts/fix-missing-db.sh
+```
+
 Add `ferum_customs` to `apps.txt` (or `apps.json`) if you build custom images.
 
 ## Usage
