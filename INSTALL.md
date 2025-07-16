@@ -43,7 +43,14 @@ This document explains how to install the `ferum_customs` app in your Frappe/ERP
    ```
 ## Docker
 
-Before running Docker, prepare your environment file:
+Before running Docker, ensure your user has permission to access the Docker daemon:
+
+```bash
+# On Linux, if you get a permission denied error, add yourself to the docker group:
+sudo usermod -aG docker "$USER" && newgrp docker
+```
+
+Prepare your environment file:
 
 ```bash
 cp .env.example .env

@@ -125,6 +125,15 @@ exec "$@"
 cp example.env .env
 nano .env
 
+# 1. (Опционально) Устраните ошибки доступа к Docker:
+#
+# Если при запуске ниже команд вы видите ошибку permission denied при подключении к Docker,
+# добавьте своего пользователя в группу docker и перезапустите сеанс:
+#
+# ```bash
+# sudo usermod -aG docker "$USER" && newgrp docker
+# ```
+
 # 2. Создаём сайт ERPNext с вашим приложением
 docker compose run --rm backend bash -c "\
   bench new-site ${SITE_NAME} \
