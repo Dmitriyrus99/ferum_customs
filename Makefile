@@ -1,6 +1,7 @@
 ## Makefile for ferum_customs project
 
-.PHONY: help quick-setup setup-env setup-codex check-fixtures
+ .PHONY: help quick-setup setup-env setup-codex check-fixtures db-setup system-status
+PG-SETUP: db-setup
 
 help:
 	@echo "Makefile targets:"
@@ -20,3 +21,9 @@ setup-codex:
 
 check-fixtures:
 	@python3 scripts/check_fixtures_doctype.py $(git ls-files ferum_customs/fixtures/*.json)
+
+db-setup:
+	@bash scripts/setup_db.sh
+
+system-status:
+	@bash scripts/check_system_status.sh
