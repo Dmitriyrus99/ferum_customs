@@ -10,16 +10,21 @@ services:
       DB_HOST: db
       REDIS_CACHE: redis-cache:6379
       REDIS_QUEUE: redis-queue:6379
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD} # Добавлено
+      DB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD} # Добавлено
+      REDIS_SOCKETIO: redis-socketio:9000 # Исправлено на правильный хост/порт для socketio
     ports:
       - "8000:8000"
     volumes:
       - sites:/home/frappe/frappe-bench/sites
-      - ./docker/entrypoint.sh:/home/frappe/frappe-bench/entrypoint.sh:ro
+      - ./ferum_customs:/home/frappe/frappe-bench/apps/ferum_customs # Добавлено из override
+      - ./docker/entrypoint.sh:/usr/local/bin/docker-entrypoint.sh # Монтирование нового entrypoint
     depends_on:
       - db
       - redis-cache
       - redis-queue
-    command: ["bash", "entrypoint.sh", "bench", "start"]
+      - redis-socketio # Добавлено, если вы используете REDIS_SOCKETIO
+    command: ["/usr/local/bin/docker-entrypoint.sh", "bench", "start"] # Команда для entrypoint
 
   db:
     image: mariadb:${MARIADB_TAG}
@@ -32,6 +37,9 @@ services:
     image: redis:${REDIS_TAG}
 
   redis-queue:
+    image: redis:${REDIS_TAG}
+
+  redis-socketio: # Добавлен сервис для Redis SocketIO
     image: redis:${REDIS_TAG}
 
 volumes:

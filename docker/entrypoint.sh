@@ -1,44 +1,43 @@
-#!/usr/bin/env bash
-set -e
+#!/bin/bash
+set -euo pipefail
 
-# Unified Docker entrypoint for Frappe bench
+echo "Starting Ferum Customs Docker Entrypoint..."
+
+# Change to the bench directory
 cd /home/frappe/frappe-bench
 
-# 1. apps.txt
+# Ensure correct permissions for the sites directory
+# This is crucial for preventing "Permission denied" errors
+echo "Setting correct permissions for sites directory..."
+sudo chown -R frappe:frappe sites/
+
+# Ensure apps.txt exists and includes ferum_customs and erpnext
 SITE_APPS_FILE="sites/apps.txt"
 if [[ ! -f "${SITE_APPS_FILE}" ]]; then
   echo "frappe" > "${SITE_APPS_FILE}"
-  if [[ -n "${INSTALL_APPS}" ]]; then
-    IFS=',' read -ra ADD_APPS <<< "${INSTALL_APPS}"
-    for app in "${ADD_APPS[@]}"; do
-      echo "$app" >> "${SITE_APPS_FILE}"
-    done
-  fi
+  echo "erpnext" >> "${SITE_APPS_FILE}"
+  echo "ferum_customs" >> "${SITE_APPS_FILE}"
 fi
 
-# 2. Create site if not exists
+# Create site if it doesn't exist
 if [[ -n "${SITE_NAME}" && ! -d "sites/${SITE_NAME}" ]]; then
+  echo "Creating new Frappe site: ${SITE_NAME}..."
   bench new-site --no-mariadb-socket "${SITE_NAME}" \
        --admin-password "${ADMIN_PASSWORD}" \
        --mariadb-root-password "${DB_ROOT_PASSWORD}" \
        --db-host "${DB_HOST}"
-  if [[ -n "${INSTALL_APPS}" ]]; then
-    IFS=',' read -ra ADD_APPS <<< "${INSTALL_APPS}"
-    for app in "${ADD_APPS[@]}"; do
-      bench --site "${SITE_NAME}" install-app "$app"
-    done
-  fi
+
+  echo "Installing ERPNext and Ferum Customs on ${SITE_NAME}..."
+  bench --site "${SITE_NAME}" install-app erpnext
+  bench --site "${SITE_NAME}" install-app ferum_customs
+else
+  echo "Site ${SITE_NAME} already exists or SITE_NAME not set."
 fi
 
-# 3. Redis config
-if [[ -n "${REDIS_CACHE}" ]]; then
-  bench set-config -g redis_cache "${REDIS_CACHE}"
-fi
-if [[ -n "${REDIS_QUEUE}" ]]; then
-  bench set-config -g redis_queue "${REDIS_QUEUE}"
-fi
-if [[ -n "${REDIS_SOCKETIO}" ]]; then
-  bench set-config -g redis_socketio "${REDIS_SOCKETIO}"
-fi
+# Set Redis configs
+bench set-config -g redis_cache    "${REDIS_CACHE}"
+bench set-config -g redis_queue    "${REDIS_QUEUE}"
+bench set-config -g redis_socketio "${REDIS_SOCKETIO}"
 
+# Execute the original Docker CMD (e.g., bench start)
 exec "$@"
