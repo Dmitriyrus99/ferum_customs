@@ -71,3 +71,4 @@ frappe_docker/
 /dist/
 .pytest_cache/
 .ruff_cache/
+.codex/config.toml
