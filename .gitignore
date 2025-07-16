@@ -57,6 +57,7 @@ jspm_packages/
 
 # Aider AI Chat
 .aider*
+.codex/config.toml
 
 # Local frappe_docker clone
 frappe_docker/
