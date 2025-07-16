@@ -19,21 +19,39 @@ This document explains how to install the `ferum_customs` app in your Frappe/ERP
    ```bash
    bench get-app https://github.com/Dmitriyrus99/ferum_customs.git --branch main
    ```
-3. Install Python dependencies:
+3. (Optional) Create and activate a Python virtual environment:
+   ```bash
+   python3 -m venv .venv_dev
+   source .venv_dev/bin/activate
+   ```
+4. Install Python dependencies:
    ```bash
    pip install -r requirements.txt
    ```
-4. Install the application on your site:
+5. Copy and edit the environment configuration:
+   ```bash
+   cp .env.example .env
+   # Edit .env to set TELEGRAM_BOT_TOKEN, SITE_NAME, ADMIN_PASSWORD, DB_ROOT_PASSWORD, etc.
+   ```
+6. Install the application on your site:
    ```bash
    bench --site YOUR_SITE_NAME install-app ferum_customs
    ```
-5. Build assets and restart bench:
+7. Build assets and restart bench:
    ```bash
    bench build && bench restart
    ```
 ## Docker
 
+Before running Docker, prepare your environment file:
+
+```bash
+cp .env.example .env
+# Edit .env to set TELEGRAM_BOT_TOKEN, SITE_NAME, ADMIN_PASSWORD, DB_ROOT_PASSWORD, etc.
+```
+
 Run the stack with:
+
 ```bash
 docker compose up -d --build
 ```

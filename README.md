@@ -58,14 +58,34 @@ cp .env.example .env
 ### Using bench
 
 ```bash
-pipx install frappe-bench  # install bench CLI if not already present
+# Install bench CLI if not already present
+pipx install frappe-bench
+
+# Clone the application
 bench get-app https://github.com/Dmitriyrus99/ferum_customs.git --branch main
+
+# (Optional) Create and activate a Python virtual environment
+python3 -m venv .venv_dev
+source .venv_dev/bin/activate
+
+# Install Python dependencies and configure environment
 pip install -r requirements.txt
+cp .env.example .env
+# Edit .env to set TELEGRAM_BOT_TOKEN, SITE_NAME, ADMIN_PASSWORD, DB_ROOT_PASSWORD, etc.
+
+# Install the application and rebuild assets
 bench --site YOUR_SITE_NAME install-app ferum_customs
 bench build && bench restart
 ```
 
 ### Using Docker
+
+Before running Docker, copy and configure your environment file:
+
+```bash
+cp .env.example .env
+# Edit .env to set TELEGRAM_BOT_TOKEN, SITE_NAME, ADMIN_PASSWORD, DB_ROOT_PASSWORD, etc.
+```
 
 Run the stack locally:
 
