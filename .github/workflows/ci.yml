@@ -42,3 +42,7 @@ jobs:
 
       - name: Run tests
         run: pytest --cov=ferum_customs --cov-report=term-missing -q tests
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}

@@ -1,0 +1,68 @@
+# .codex/tasks/project-structure-hardening.yaml
+
+name: Укрепление структуры и конфигурации проекта
+description: |
+  Автоматизирует проверку и настройку структуры Python-проекта с Telegram-ботом,
+  REST API и Frappe/ERPNext-интеграцией. Включает в себя настройку зависимостей,
+  pre-commit хуков, тестов, Docker, .env-файлов и CI/CD.
+
+steps:
+  - name: Проверка зависимостей
+    run: |
+      python scripts/check_dependencies.py || echo "Создайте скрипт check_dependencies.py, который сравнивает requirements.txt и pyproject.toml"
+    acceptance:
+      - Все зависимости присутствуют и не дублируются между requirements.txt и pyproject.toml
+      - Разделены runtime/dev/test зависимости
+
+  - name: Обновление pre-commit хуков
+    run: |
+      pre-commit autoupdate
+    acceptance:
+      - Все хуки обновлены до последних стабильных версий
+
+  - name: Проверка и генерация .env.example
+    run: |
+      python scripts/generate_env_example.py || echo "Добавьте скрипт генерации .env.example из settings.py"
+    acceptance:
+      - .env.example содержит все ключевые переменные окружения
+      - Все переменные загружаются через pydantic-settings
+
+  - name: Проверка структуры каталогов
+    run: |
+      if [ -d ferum_customs/ferum_customs ]; then echo "Удалите вложенную папку"; exit 1; fi
+    acceptance:
+      - Отсутствуют вложенные одноимённые каталоги
+      - Каталоги docs/, tests/, scripts/, api/, config/ и пр. существуют
+
+  - name: Проверка тестов
+    run: |
+      pytest --maxfail=1 --disable-warnings --tb=short
+    acceptance:
+      - Все юнит-, интеграционные и e2e-тесты проходят
+
+  - name: Проверка линтеров и форматирования
+    run: |
+      pre-commit run --all-files || ruff . && black . && isort .
+    acceptance:
+      - Все проверки ruff, black, isort пройдены без ошибок
+
+  - name: Проверка docker-compose файлов
+    run: |
+      docker compose -f docker-compose.yml config
+      docker compose -f docker-compose.test.yml config
+    acceptance:
+      - Docker compose файлы валидны
+
+  - name: Проверка README
+    run: |
+      grep "docker compose up" README.md || echo "Добавьте инструкцию по запуску Docker"
+    acceptance:
+      - README содержит инструкции по запуску и настройке
+
+labels:
+  - structure
+  - lint
+  - tests
+  - ci
+  - docker
+  - docs

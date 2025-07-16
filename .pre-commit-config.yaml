@@ -18,7 +18,8 @@ repos:
         # Если нужно игнорировать .venv_dev/ для него, добавьте:
         # exclude: ".*json$|.*txt$|.*csv|.*md|^\\.venv_dev/"
       - id: check-yaml
-        exclude: ^\.venv_dev/ # Добавлено
+        # Исключить виртуальное окружение и задачи Codex (не standalone YAML)
+        exclude: '^(?:\.venv_dev/|\.codex/tasks/)'
       - id: no-commit-to-branch
         args: ['--branch', 'develop']
         # Обычно не требует exclude для venv, но можно добавить для консистентности
@@ -32,7 +33,8 @@ repos:
       - id: check-toml
         exclude: ^\.venv_dev/ # Добавлено
       - id: check-yaml # Второй check-yaml, тоже добавляем exclude
-        exclude: ^\.venv_dev/ # Добавлено
+        # Исключить виртуальное окружение и Codex задачи
+        exclude: '^(?:\.venv_dev/|\.codex/tasks/)'
       - id: debug-statements
         exclude: ^\.venv_dev/ # ОБЯЗАТЕЛЬНО ДОБАВИТЬ ЭТО!
 
@@ -80,12 +82,13 @@ repos:
       - id: ruff
         name: "Run ruff import sorter"
         args: ["--select=I", "--fix"]
-        # Для сортировки импортов тоже нужно исключить venv
-        exclude: ^\.venv_dev/ # <-- Убедитесь, что это здесь
+        # Исключить виртуальное окружение и скрипты из проверки импортов
+        exclude: '^(?:\.venv_dev/|scripts/)' 
 
       - id: ruff
         name: "Run ruff linter"
-        exclude: ^\.venv_dev/ # Уже есть, отлично
+        # Исключить виртуальное окружение и скрипты из линтинга
+        exclude: '^(?:\.venv_dev/|scripts/)'
 
       # - id: ruff-format # Если вы раскомментируете это, добавьте exclude и сюда
       #   name: "Run ruff formatter"
