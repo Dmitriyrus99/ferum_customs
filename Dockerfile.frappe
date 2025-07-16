@@ -21,7 +21,7 @@ ARG PYTHON_VERSION=3.11
 # The base image already contains a non-root user `frappe` (uid 1000)
 
 # Initialize bench as the frappe user
-RUN bench init --skip-assets frappe-bench --python $(which python)
+RUN bench init --skip-assets frappe-bench --python python3
 WORKDIR /home/frappe/frappe-bench
 
 # Clone applications
