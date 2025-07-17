@@ -122,3 +122,22 @@ bench --site frontend run-tests --app ferum_customs
 # Тесты конкретного модуля
 bench --site frontend run-tests --module "Service Request"
 ```
+
+## 7. Конфигурация ассистента
+
+```yaml
+fix_bot:
+  log_sources:
+    - cmd: "docker compose logs --no-color --since 5m"
+      interval: "*/2 * * * *"   # каждые 2 минуты
+  redis_default_url: "redis://:<REDIS_PASSWORD>@redis-cache:6379"
+  mysql_wait_timeout: "300s"
+  notify_channels:
+    - telegram: "@ferum_ops_chat"
+  auto_fix_limit_per_hour: 3
+```
+
+## 8. Выходные артефакты
+
+- `action_plan_<timestamp>.json` – что сделано и почему.
+- `fix_bot_report.md` – сводка за сутки (успешно/неуспешно).

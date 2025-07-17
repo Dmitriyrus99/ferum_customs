@@ -58,10 +58,10 @@ fi
 
 # Set Redis configs
 echo "Setting Redis configurations..."
-# --- ИЗМЕНЕНО: Добавлен префикс redis:// ---
-bench set-config -g redis_cache    "redis://redis-cache:6379"
-bench set-config -g redis_queue    "redis://redis-queue:6379"
-bench set-config -g redis_socketio "redis://redis-socketio:9000"
+# --- ИЗМЕНЕНО: Использовать пароль Redis из переменной окружения ---
+bench set-config -g redis_cache    "redis://:${REDIS_PASSWORD}@${REDIS_CACHE}"
+bench set-config -g redis_queue    "redis://:${REDIS_PASSWORD}@${REDIS_QUEUE}"
+bench set-config -g redis_socketio "redis://:${REDIS_PASSWORD}@${REDIS_SOCKETIO}"
 echo "Redis configurations set."
 
 # Execute the original Docker CMD (e.g., bench start)

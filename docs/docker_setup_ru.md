@@ -103,9 +103,9 @@ if [[ -n "${SITE_NAME}" && ! -d "sites/${SITE_NAME}" ]]; then
 fi
 
 # ── 3. Redis конфиги ─────────────────────────────────────────────────────
-bench set-config -g redis_cache    "${REDIS_CACHE}"
-bench set-config -g redis_queue    "${REDIS_QUEUE}"
-bench set-config -g redis_socketio "${REDIS_SOCKETIO}"
+bench set-config -g redis_cache    "redis://:${REDIS_PASSWORD}@${REDIS_CACHE}"
+bench set-config -g redis_queue    "redis://:${REDIS_PASSWORD}@${REDIS_QUEUE}"
+bench set-config -g redis_socketio "redis://:${REDIS_PASSWORD}@${REDIS_SOCKETIO}"
 
 exec "$@"
 ```
@@ -115,6 +115,34 @@ exec "$@"
 > 1. Создаёт `sites/apps.txt`, если его нет.
 > 2. Автоматически поднимает новый сайт при первом запуске контейнера.
 > 3. Прописывает адреса внешних Redis-сервисов, чтобы SocketIO не падал.
+
+### Обновление конфигурации Redis в запущенном контейнере
+
+Чтобы проверить, какие URL Redis сохранены в `common_site_config.json` и в конфиге сайта:
+```bash
+docker compose exec frappe bash -c "
+  grep -A1 -B0 redis_ sites/common_site_config.json
+  grep -A1 -B0 sites/${SITE_NAME}/site_config.json
+"
+```
+
+Чтобы обновить все три ключа за одну команду:
+```bash
+docker compose exec frappe bash -c "
+  bench set-config -g redis_cache     redis://redis-cache:6379  &&
+  bench set-config -g redis_queue     redis://redis-queue:6379  &&
+  bench set-config -g redis_socketio  redis://redis-socketio:6379
+"
+```
+
+Чтобы записать те же URL в `site_config.json` конкретного сайта (например, `erp.ferumrus.ru`), выполните:
+```bash
+docker compose exec frappe bash -c "
+  bench --site erp.ferumrus.ru set-config redis_cache    redis://redis-cache:6379 &&
+  bench --site erp.ferumrus.ru set-config redis_queue    redis://redis-queue:6379 &&
+  bench --site erp.ferumrus.ru set-config redis_socketio redis://redis-socketio:6379
+"
+```
 
 ---
 
