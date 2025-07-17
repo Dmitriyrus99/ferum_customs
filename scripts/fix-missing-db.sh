@@ -4,12 +4,16 @@ set -euo pipefail
 # Fix missing Frappe site DB and admin access
 
 # Default inputs
-SITE="${SITE:-erp.ferumrus.ru}"
-ADMIN_PASSWORD="${ADMIN_PASSWORD:-fFeRu1011#f}"
+SITE_NAME="${SITE_NAME:-erp.ferumrus.ru}"
+ADMIN_PASSWORD="${ADMIN_PASSWORD:-}"
 
-# Ensure MYSQL_ROOT_PASSWORD is set
-if [[ -z "${MYSQL_ROOT_PASSWORD:-}" ]]; then
-  echo "❌ MYSQL_ROOT_PASSWORD is not set" >&2
+# Ensure required inputs are set
+if [[ -z "${DB_ROOT_PASSWORD:-}" ]]; then
+  echo "❌ DB_ROOT_PASSWORD is not set" >&2
+  exit 1
+fi
+if [[ -z "${ADMIN_PASSWORD:-}" ]]; then
+  echo "❌ ADMIN_PASSWORD is not set" >&2
   exit 1
 fi
 
@@ -29,25 +33,21 @@ else
   exit 1
 fi
 
-# Load DB name and password from site_config.json
-SITE_CONFIG="sites/${SITE}/site_config.json"
-if [[ ! -f "$SITE_CONFIG" ]]; then
-  echo "❌ site_config.json not found: $SITE_CONFIG" >&2
-  exit 1
+# Determine DB name and password from site_config.json or defaults
+SITE_CONFIG="sites/${SITE_NAME}/site_config.json"
+if [[ -f "$SITE_CONFIG" ]]; then
+  echo "✅ Found site_config.json for ${SITE_NAME}, extracting DB credentials..."
+  DB_NAME=$(jq -r '.db_name' "$SITE_CONFIG")
+  DB_PASSWORD=$(jq -r '.db_password' "$SITE_CONFIG")
+else
+  echo "ℹ site_config.json for ${SITE_NAME} not found, using defaults"
+  DB_NAME="${SITE_NAME//./_}"
+  DB_PASSWORD="${ADMIN_PASSWORD}"
 fi
-
-DB_NAME=$(jq -r '.db_name' "$SITE_CONFIG")
-DB_PASSWORD=$(jq -r '.db_password' "$SITE_CONFIG")
-
-if [[ -z "$DB_NAME" || "$DB_NAME" == "null" ]]; then
-  echo "❌ db_name not found in site_config.json" >&2
-  exit 1
-fi
-
-echo "✅ Loaded DB_NAME: $DB_NAME"
+echo "✅ Using DB_NAME=${DB_NAME}"
 
 # Create database and user if they don't exist
-${DC} -f frappe_docker/pwd.yml exec -T db mariadb -uroot -p"$MYSQL_ROOT_PASSWORD" <<EOF
+${DC} exec -T db mariadb -uroot -p"$DB_ROOT_PASSWORD" <<EOF
 CREATE DATABASE IF NOT EXISTS \`$DB_NAME\`;
 CREATE USER IF NOT EXISTS '$DB_NAME'@'%' IDENTIFIED BY '$DB_PASSWORD';
 GRANT ALL PRIVILEGES ON \`$DB_NAME\`.* TO '$DB_NAME'@'%';
@@ -57,11 +57,11 @@ EOF
 echo "✅ Ensured database and user exist"
 
 # Check database connection
-${DC} -f frappe_docker/pwd.yml exec backend bash -c "mysql -h db -u$DB_NAME -p$DB_PASSWORD -e 'SHOW TABLES IN \`$DB_NAME\`;'"
+${DC} exec frappe bash -c "mysql -h db -u$DB_NAME -p$DB_PASSWORD -e 'SHOW DATABASES LIKE \"$DB_NAME\";'"
 
 echo "✅ Connection to database confirmed"
 
 # Set admin password for the site
-${DC} -f frappe_docker/pwd.yml exec backend bash -c "bench --site $SITE set-admin-password $ADMIN_PASSWORD"
+${DC} exec frappe bash -c "bench --site $SITE_NAME set-admin-password '$ADMIN_PASSWORD'"
 
 echo "✅ Admin password updated for site '$SITE'"

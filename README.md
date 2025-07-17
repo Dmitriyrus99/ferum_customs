@@ -107,7 +107,7 @@ The lightweight `scripts/quick_setup.sh` script simply runs `docker compose` wit
 The helper script `scripts/fix-missing-db.sh` checks for missing Frappe site database and user, creates them if needed, and updates the administrator password. Usage:
 
 ```bash
-SITE=<site_name> ADMIN_PASSWORD=<new_password> ./scripts/fix-missing-db.sh
+SITE_NAME=<site_name> DB_ROOT_PASSWORD=<root_db_password> ADMIN_PASSWORD=<new_password> ./scripts/fix-missing-db.sh
 ```
 
 Add `ferum_customs` to `apps.txt` (or `apps.json`) if you build custom images.
