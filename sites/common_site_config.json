@@ -1,0 +1,3 @@
+{
+ "redis_cache": "redis-cache:6379"
+}

@@ -23,16 +23,6 @@ if ! command -v jq >/dev/null 2>&1; then
   exit 1
 fi
 
-# Detect Docker Compose command
-if command -v docker >/dev/null 2>&1 && docker compose version >/dev/null 2>&1; then
-  DC="docker compose"
-elif command -v docker-compose >/dev/null 2>&1; then
-  DC="docker-compose"
-else
-  echo "❌ Docker Compose not found (requires 'docker compose' or 'docker-compose')" >&2
-  exit 1
-fi
-
 # Determine DB name and password from site_config.json or defaults
 SITE_CONFIG="sites/${SITE_NAME}/site_config.json"
 if [[ -f "$SITE_CONFIG" ]]; then
@@ -42,26 +32,27 @@ if [[ -f "$SITE_CONFIG" ]]; then
 else
   echo "ℹ site_config.json for ${SITE_NAME} not found, using defaults"
   DB_NAME="${SITE_NAME//./_}"
-  DB_PASSWORD="${ADMIN_PASSWORD}"
+  DB_PASSWORD="${ADMIN_PASSWORD}" # Using ADMIN_PASSWORD as DB_PASSWORD for new site setup
 fi
 echo "✅ Using DB_NAME=${DB_NAME}"
 
 # Create database and user if they don't exist
-${DC} exec -T db mariadb -uroot -p"$DB_ROOT_PASSWORD" <<EOF
+# ДОБАВЛЕНО: -h db -P 3306 для подключения по TCP/IP к сервису 'db'
+docker compose exec -T db mariadb -h db -P 3306 -uroot -p"$DB_ROOT_PASSWORD" <<EOF
 CREATE DATABASE IF NOT EXISTS \`$DB_NAME\`;
 CREATE USER IF NOT EXISTS '$DB_NAME'@'%' IDENTIFIED BY '$DB_PASSWORD';
 GRANT ALL PRIVILEGES ON \`$DB_NAME\`.* TO '$DB_NAME'@'%';
 FLUSH PRIVILEGES;
 EOF
-
 echo "✅ Ensured database and user exist"
 
 # Check database connection
-${DC} exec frappe bash -c "mysql -h db -u$DB_NAME -p$DB_PASSWORD -e 'SHOW DATABASES LIKE \"$DB_NAME\";'"
-
-echo "✅ Connection to database confirmed"
+# Эта команда уже использует -h db, поэтому она корректна
+docker compose exec frappe bash -c "mysql -h db -u$DB_NAME -p$DB_PASSWORD -e 'SHOW DATABASES LIKE \"$DB_NAME\";'"
+echo "✅ Database connection checked from Frappe container"
 
 # Set admin password for the site
-${DC} exec frappe bash -c "bench --site $SITE_NAME set-admin-password '$ADMIN_PASSWORD'"
+docker compose exec frappe bash -c "bench --site $SITE_NAME set-admin-password '$ADMIN_PASSWORD'"
+echo "✅ Admin password set for ${SITE_NAME}"
 
-echo "✅ Admin password updated for site '$SITE'"
+echo "Скрипт завершен успешно."

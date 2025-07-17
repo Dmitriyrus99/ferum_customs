@@ -1,3 +1,4 @@
+
 ARG BENCH_TAG=v5.25.4
 FROM frappe/bench:${BENCH_TAG} AS builder
 RUN echo "nameserver 8.8.8.8" > /etc/resolv.conf || true
@@ -14,7 +15,15 @@ WORKDIR /home/frappe
 RUN bench init --skip-assets frappe-bench --python python3
 WORKDIR /home/frappe/frappe-bench
 
-RUN bench get-app ferum_customs https://github.com/Dmitriyrus99/ferum_customs.git
+# --- ДОБАВЛЕНО: Установка ERPNext ---
+# Используйте ветку, соответствующую вашей версии Frappe.
+# Так как BENCH_TAG=v5.25.4, это соответствует Frappe v15.
+RUN bench get-app erpnext https://github.com/frappe/erpnext.git --branch version-15
+
+# Установка вашего кастомного приложения
+RUN bench get-app ferum_customs https://github.com/Dmitriyrus99/ferum_customs.git --branch main
+
+# Устанавливаем все требования после получения всех приложений
 RUN bench setup requirements
 
 ### Runtime stage ###
