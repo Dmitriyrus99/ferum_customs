@@ -1,11 +1,9 @@
 
 ARG BENCH_TAG=v5.25.4
 FROM frappe/bench:${BENCH_TAG} AS builder
-RUN echo "nameserver 8.8.8.8" > /etc/resolv.conf || true
-
-# Build stage: initialize bench and install app dependencies
 
 USER root
+# Install required packages for bench; Redis server runs as a separate service
 RUN apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends redis-server \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
@@ -15,7 +13,6 @@ WORKDIR /home/frappe
 RUN bench init --skip-assets frappe-bench --python python3
 WORKDIR /home/frappe/frappe-bench
 
-# --- ДОБАВЛЕНО: Установка ERPNext ---
 # Используйте ветку, соответствующую вашей версии Frappe.
 # Так как BENCH_TAG=v5.25.4, это соответствует Frappe v15.
 RUN bench get-app erpnext https://github.com/frappe/erpnext.git --branch version-15
@@ -28,8 +25,8 @@ RUN bench setup requirements
 
 ### Runtime stage ###
 # Runtime stage
+# Runtime stage
 FROM frappe/bench:${BENCH_TAG}
-RUN echo "nameserver 8.8.8.8" > /etc/resolv.conf || true
 LABEL org.opencontainers.image.source="https://github.com/<owner>/ferum_customs"
 LABEL org.opencontainers.image.licenses="MIT"
 
