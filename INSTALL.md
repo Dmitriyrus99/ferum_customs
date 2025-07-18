@@ -31,7 +31,7 @@ This document explains how to install the `ferum_customs` app in your Frappe/ERP
 5. Copy and edit the environment configuration:
    ```bash
    cp .env.example .env
-   # Edit .env to set TELEGRAM_BOT_TOKEN, SITE_NAME, ADMIN_PASSWORD, DB_ROOT_PASSWORD, etc.
+   # Edit .env to set TELEGRAM_BOT_TOKEN, SITE_NAME, ADMIN_PASSWORD, FRAPPE_ADMIN_PASSWORD, DB_ROOT_PASSWORD, etc.
    ```
 6. Install the application on your site:
    ```bash
@@ -54,7 +54,7 @@ Prepare your environment file:
 
 ```bash
 cp .env.example .env
-# Edit .env to set TELEGRAM_BOT_TOKEN, SITE_NAME, ADMIN_PASSWORD, DB_ROOT_PASSWORD, etc.
+# Edit .env to set TELEGRAM_BOT_TOKEN, SITE_NAME, ADMIN_PASSWORD, FRAPPE_ADMIN_PASSWORD, DB_ROOT_PASSWORD, etc.
 ```
 
 Run the stack with:

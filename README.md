@@ -42,7 +42,7 @@ Ferum Customs extends ERPNext with a service management layer. It keeps a regist
 
 ```bash
 cp .env.example .env
-# укажите TELEGRAM_BOT_TOKEN, SITE_NAME, ADMIN_PASSWORD и прочие
+# укажите TELEGRAM_BOT_TOKEN, SITE_NAME, ADMIN_PASSWORD, FRAPPE_ADMIN_PASSWORD и прочие
 ```
 
 Переменные автоматически загружаются через Pydantic Settings.
@@ -71,7 +71,7 @@ source .venv_dev/bin/activate
 # Install Python dependencies and configure environment
 pip install -r requirements.txt
 cp .env.example .env
-# Edit .env to set TELEGRAM_BOT_TOKEN, SITE_NAME, ADMIN_PASSWORD, DB_ROOT_PASSWORD, etc.
+# Edit .env to set TELEGRAM_BOT_TOKEN, SITE_NAME, ADMIN_PASSWORD, FRAPPE_ADMIN_PASSWORD, DB_ROOT_PASSWORD, etc.
 
 # Install the application and rebuild assets
 bench --site YOUR_SITE_NAME install-app ferum_customs
@@ -91,7 +91,7 @@ Copy and configure your environment file:
 
 ```bash
 cp .env.example .env
-# Edit .env to set TELEGRAM_BOT_TOKEN, SITE_NAME, ADMIN_PASSWORD, DB_ROOT_PASSWORD, etc.
+# Edit .env to set TELEGRAM_BOT_TOKEN, SITE_NAME, ADMIN_PASSWORD, FRAPPE_ADMIN_PASSWORD, DB_ROOT_PASSWORD, etc.
 ```
 
 Run the stack locally:
