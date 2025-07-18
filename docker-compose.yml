@@ -12,9 +12,9 @@ services:
       DB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
       FRAPPE_ADMIN_PASSWORD: ${ADMIN_PASSWORD}
       REDIS_PASSWORD: ${ADMIN_PASSWORD}
-      REDIS_CACHE: redis:6379
-      REDIS_QUEUE: redis:6379
-      REDIS_SOCKETIO: redis:6379
+      REDIS_CACHE: ${REDIS_CACHE}
+      REDIS_QUEUE: ${REDIS_QUEUE}
+      REDIS_SOCKETIO: ${REDIS_SOCKETIO}
     ports:
       - "8000:8000"
     volumes:
@@ -23,7 +23,6 @@ services:
       - ./docker/entrypoint.sh:/usr/local/bin/docker-entrypoint.sh # Монтирование нового entrypoint
     depends_on:
       - db
-      - redis
     command: ["/usr/local/bin/docker-entrypoint.sh", "bench", "start"] # Команда для entrypoint
 
   db:
