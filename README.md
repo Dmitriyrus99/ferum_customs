@@ -49,8 +49,8 @@ cp .env.example .env
 
 ## Requirements
 
-- Frappe + ERPNext 16.x or later.
-- Matching ERPNext branch (e.g. `version-16`).
+- Frappe + ERPNext 15.x or later.
+- Matching ERPNext branch (e.g. `version-15`).
 - A working [bench](https://github.com/frappe/bench) setup if installing without Docker.
 
 ## Installation

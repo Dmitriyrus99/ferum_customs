@@ -5,8 +5,8 @@ This document explains how to install the `ferum_customs` app in your Frappe/ERP
 ## Requirements
 
 - Требуется **Frappe + ERPNext**.
-- Tested with **Frappe/ERPNext 16.0**. Older versions are not officially supported.
-- ERPNext branch must match your Frappe version (e.g. `version-16`).
+- Tested with **Frappe/ERPNext 15.0**. Older versions are not officially supported.
+- ERPNext branch must match your Frappe version (e.g. `version-15`).
 - A working [bench](https://github.com/frappe/bench) setup.
 
 ## Bare-metal

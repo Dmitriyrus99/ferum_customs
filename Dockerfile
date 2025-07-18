@@ -1,6 +1,6 @@
 # Dockerfile for ERPNext with Ferum Customs app
 ARG BENCH_TAG=v5.25.4
-ARG ERPNEXT_BRANCH=version-16
+ARG ERPNEXT_BRANCH=version-15
 FROM frappe/bench:${BENCH_TAG} AS builder
 
 USER root
