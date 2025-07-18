@@ -36,16 +36,24 @@ if [[ ! -f "${SITE_APPS_FILE}" ]]; then
   echo "ferum_customs" >> "${SITE_APPS_FILE}"
 fi
 
-# Create site if it doesn't exist
-if [[ -n "${SITE_NAME}" && ! -d "sites/${SITE_NAME}" ]]; then
+## Remove any pre-existing site directory to ensure clean setup
+if [[ -n "${SITE_NAME}" && -d "sites/${SITE_NAME}" ]]; then
+  echo "Removing pre-existing site directory: ${SITE_NAME}"
+  rm -rf "sites/${SITE_NAME}"
+fi
+
+# Create site if it hasn't been configured yet
+if [[ -n "${SITE_NAME}" && ! -f "sites/${SITE_NAME}/site_config.json" ]]; then
   echo "Creating new Frappe site: ${SITE_NAME}..."
-  bench new-site --mariadb-root-password "${DB_ROOT_PASSWORD}" --db-host "${DB_HOST}" "${SITE_NAME}"
+  bench new-site --admin-password "${ADMIN_PASSWORD}" \
+           --mariadb-root-password "${DB_ROOT_PASSWORD}" \
+           --db-host "${DB_HOST}" "${SITE_NAME}"
 
   echo "Installing ERPNext and Ferum Customs on ${SITE_NAME}..."
   bench --site "${SITE_NAME}" install-app erpnext
   bench --site "${SITE_NAME}" install-app ferum_customs
 else
-  echo "Site ${SITE_NAME} already exists or SITE_NAME not set. Skipping new site creation."
+  echo "Site ${SITE_NAME} already exists or already configured. Skipping site creation."
 fi
 
 # Ensure common_site_config.json exists
