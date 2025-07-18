@@ -9,7 +9,7 @@ services:
       SITE_NAME: ${SITE_NAME}
       DB_HOST: db
       ADMIN_PASSWORD: ${ADMIN_PASSWORD}
-      DB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      DB_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       FRAPPE_ADMIN_PASSWORD: ${ADMIN_PASSWORD}
       REDIS_PASSWORD: ${ADMIN_PASSWORD}
       REDIS_CACHE: ${REDIS_CACHE}
@@ -28,7 +28,8 @@ services:
   db:
     image: mariadb:${MARIADB_TAG}
     environment:
-      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_ROOT_HOST: "%"
     volumes:
       - db-data:/var/lib/mysql
 
