@@ -8,13 +8,13 @@ services:
     environment:
       SITE_NAME: ${SITE_NAME}
       DB_HOST: db
-      REDIS_PASSWORD: ${REDIS_PASSWORD}
-      REDIS_CACHE: "redis://redis:6379"
-      REDIS_QUEUE: "redis://redis:6379"
-      REDIS_SOCKETIO: "redis://redis:6379"
-      ADMIN_PASSWORD: ${ADMIN_PASSWORD} # Добавлено
-      DB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD} # Добавлено
-      FRAPPE_ADMIN_PASSWORD: ${FRAPPE_ADMIN_PASSWORD}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      DB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      FRAPPE_ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      REDIS_PASSWORD: ${ADMIN_PASSWORD}
+      REDIS_CACHE: redis:6379
+      REDIS_QUEUE: redis:6379
+      REDIS_SOCKETIO: redis:6379
     ports:
       - "8000:8000"
     volumes:
