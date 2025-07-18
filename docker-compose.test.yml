@@ -11,6 +11,7 @@ services:
       DB_HOST: db
       REDIS_CACHE: redis-cache:6379
       REDIS_QUEUE: redis-queue:6379
+      REDIS_SOCKETIO: redis-queue:6379
       DB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin}
     volumes:
@@ -30,6 +31,7 @@ services:
     image: mariadb:${MARIADB_TAG:-10.6}
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root}
+      MYSQL_ROOT_HOST: ${DB_ROOT_HOST:-%}
     volumes:
       - db-data:/var/lib/mysql
 

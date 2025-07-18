@@ -45,7 +45,8 @@ fi
 # Create site if it hasn't been configured yet
 if [[ -n "${SITE_NAME}" && ! -f "sites/${SITE_NAME}/site_config.json" ]]; then
   echo "Creating new Frappe site: ${SITE_NAME}..."
-  bench new-site --admin-password "${ADMIN_PASSWORD}" \
+  bench new-site --no-mariadb-socket \
+           --admin-password "${ADMIN_PASSWORD}" \
            --mariadb-root-password "${DB_ROOT_PASSWORD}" \
            --db-host "${DB_HOST}" "${SITE_NAME}"
 
