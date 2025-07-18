@@ -27,11 +27,11 @@ RUN bench get-app ferum_customs https://github.com/Dmitriyrus99/ferum_customs.gi
 RUN bench setup requirements
 
 ### Runtime stage ###
+# Runtime stage
 FROM frappe/bench:${BENCH_TAG}
 RUN echo "nameserver 8.8.8.8" > /etc/resolv.conf || true
 LABEL org.opencontainers.image.source="https://github.com/<owner>/ferum_customs"
 LABEL org.opencontainers.image.licenses="MIT"
-
 
 USER frappe
 # Copy built bench and app from builder stage

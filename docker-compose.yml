@@ -1,5 +1,8 @@
 services:
   frappe:
+    dns:
+      - 1.1.1.1
+      - 9.9.9.9
     build:
       context: .
       dockerfile: Dockerfile
@@ -26,6 +29,9 @@ services:
     command: ["/usr/local/bin/docker-entrypoint.sh", "bench", "start"] # Команда для entrypoint
 
   db:
+    dns:
+      - 1.1.1.1
+      - 9.9.9.9
     image: mariadb:${MARIADB_TAG}
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
@@ -34,6 +40,9 @@ services:
       - db-data:/var/lib/mysql
 
   redis:
+    dns:
+      - 1.1.1.1
+      - 9.9.9.9
     image: redis:latest
     command: ["redis-server", "--appendonly", "yes", "--requirepass", "${REDIS_PASSWORD}"]
     volumes:

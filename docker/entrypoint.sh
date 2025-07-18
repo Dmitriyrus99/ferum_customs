@@ -50,20 +50,42 @@ fi
 
 # Ensure common_site_config.json exists
 COMMON_SITE_CONFIG="/home/frappe/frappe-bench/sites/common_site_config.json"
+# Ensure common_site_config.json exists and has initial Redis URLs to avoid CLI bootstrap errors
 if [[ ! -f "${COMMON_SITE_CONFIG}" ]]; then
   echo "common_site_config.json not found. Creating an empty one."
   echo "{}" > "${COMMON_SITE_CONFIG}"
   sudo chown frappe:frappe "${COMMON_SITE_CONFIG}"
 fi
+# Populate or update Redis URL entries in common_site_config.json
+cache_url=$(eval echo "\"$REDIS_CACHE\"")
+queue_url=$(eval echo "\"$REDIS_QUEUE\"")
+socketio_url=$(eval echo "\"$REDIS_SOCKETIO\"")
+python3 - <<PYCODE
+import json
+path = "${COMMON_SITE_CONFIG}"
+cfg = json.load(open(path))
+cfg["redis_cache"] = "${cache_url}"
+cfg["redis_queue"] = "${queue_url}"
+cfg["redis_socketio"] = "${socketio_url}"
+# Set default site for HTTP routing
+cfg["default_site"] = "${SITE_NAME}"
+json.dump(cfg, open(path, "w"), indent=2)
+PYCODE
+sudo chown frappe:frappe "${COMMON_SITE_CONFIG}"
 
 # Set Redis configs
 echo "Setting Redis configurations..."
-# --- ИЗМЕНЕНО: Использовать пароль Redis из переменной окружения ---
-bench set-config -g redis_cache    "redis://:${REDIS_PASSWORD}@${REDIS_CACHE}"
-bench set-config -g redis_queue    "redis://:${REDIS_PASSWORD}@${REDIS_QUEUE}"
-bench set-config -g redis_socketio "redis://:${REDIS_PASSWORD}@${REDIS_SOCKETIO}"
+## Используем полные URL из переменных окружения
+cache_url=$(eval echo "\"$REDIS_CACHE\"")
+queue_url=$(eval echo "\"$REDIS_QUEUE\"")
+socketio_url=$(eval echo "\"$REDIS_SOCKETIO\"")
+bench set-config -g redis_cache    "$cache_url"
+bench set-config -g redis_queue    "$queue_url"
+bench set-config -g redis_socketio "$socketio_url"
 echo "Redis configurations set."
 
 # Execute the original Docker CMD (e.g., bench start)
 echo "Executing original Docker command..."
+# Disable internal Redis processes in Procfile so bench start uses external Redis services
+sed -i '/redis_cache/d;/redis_queue/d;/redis_socketio/d' Procfile
 exec "$@"

@@ -146,6 +146,80 @@ docker compose exec frappe bash -c "
 
 ---
 
+### Ошибка: ValueError: Redis URL must specify одну из схем (redis://, rediss://, unix://)
+
+Иногда в логах Frappe появляется ошибка:
+
+```bash
+ValueError: Redis URL must specify one of the following schemes (redis://, rediss://, unix://)
+```
+
+Это означает, что ключ `redis_cache` (или `redis_queue`, `redis_socketio`) в `sites/common_site_config.json`
+пустой или указан без префикса `redis://` (например, `redis:6379`).
+
+#### 1. Проверьте переменные окружения в `docker-compose.yml` (или `.env`)
+
+```yaml
+environment:
+  REDIS_PASSWORD: ${ADMIN_PASSWORD}
+  REDIS_CACHE:    redis://:${REDIS_PASSWORD}@redis:6379/0
+  REDIS_QUEUE:    redis://:${REDIS_PASSWORD}@redis:6379/1
+  REDIS_SOCKETIO: redis://:${REDIS_PASSWORD}@redis:6379/2
+```
+
+Обязательно указывайте `redis://` в начале каждой строки.
+
+#### 2. Перезапустите Frappe, чтобы переменные точно попали внутрь
+
+```bash
+docker compose restart frappe
+```
+
+#### 3. Убедитесь, что они действительно в контейнере
+
+```bash
+docker compose exec frappe env | grep REDIS_
+```
+
+Должны увидеть три полных URL.
+
+#### 4. Проверьте значения в конфиге сайта
+
+```bash
+docker compose exec frappe bash -c \
+  "jq '.redis_cache, .redis_queue, .redis_socketio' sites/common_site_config.json"
+```
+
+Если какая‑то строка пустая — пропишите вручную:
+
+```bash
+docker compose exec frappe bench set-config -g redis_cache \
+  "redis://:${REDIS_PASSWORD}@redis:6379/0"
+docker compose exec frappe bench set-config -g redis_queue \
+  "redis://:${REDIS_PASSWORD}@redis:6379/1"
+docker compose exec frappe bench set-config -g redis_socketio \
+  "redis://:${REDIS_PASSWORD}@redis:6379/2"
+
+docker compose exec frappe bench --site all clear-cache
+```
+
+#### 5. Снова перезапустите Frappe и проверьте логи
+
+```bash
+docker compose restart frappe
+docker compose logs -f frappe | tail -n 50
+```
+
+Ожидаем этапы:
+
+```text
+Setting Redis configurations...
+Migrating site <SITE_NAME>
+Bench started.
+```
+
+---
+
 ### Как запустить
 
 ```bash
