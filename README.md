@@ -188,7 +188,7 @@ Project source lives inside the `ferum_customs` package. Key folders include `cu
 Quick unit tests can be executed with bench:
 
 ```bash
-bench --site <site> run-tests --app ferum_customs --test tests/unit
+bench run-tests --site <site> --app ferum_customs --test tests/unit
 ```
 
 #### Test site setup
@@ -222,7 +222,7 @@ If you do not have a site yet, follow these steps inside your bench directory:
 5. Run the unit tests:
 
    ```bash
-   bench --site test_site run-tests --app ferum_customs --test tests/unit
+   bench run-tests --site test_site --app ferum_customs --test tests/unit
    ```
 
 6. *(Optional)* Remove the site when finished:
