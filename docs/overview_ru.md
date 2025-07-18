@@ -109,18 +109,18 @@ cp .env.example .env
 
 ```bash
 docker compose exec frappe bash
-bench get-app ferum_customs https://github.com/dmitriyrus99/ferum_customs
-bench --site frontend install-app ferum_customs
+# Код приложения уже доступен в контейнере (см. docker-compose.yml)
+bench --site ${SITE_NAME} install-app ferum_customs
 ```
 
 ### 6.2 Запуск тестов
 
 ```bash
 # Все тесты приложения
-bench --site frontend run-tests --app ferum_customs
+bench --site ${SITE_NAME} run-tests --app ferum_customs
 
 # Тесты конкретного модуля
-bench --site frontend run-tests --module "Service Request"
+bench --site ${SITE_NAME} run-tests --module "Service Request"
 ```
 
 ## 7. Конфигурация ассистента
