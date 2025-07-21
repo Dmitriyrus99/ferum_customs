@@ -1,10 +1,9 @@
-import pytest
-from datetime import datetime, timezone
-
 import importlib
+from datetime import datetime, timezone
 from types import SimpleNamespace
 from typing import TYPE_CHECKING, cast
 
+import pytest
 from aiogram import Bot
 
 if TYPE_CHECKING:  # pragma: no cover - type checking only
@@ -45,5 +44,5 @@ def test_get_dispatcher_custom_bot_and_storage():
     bot = Bot(token="test-token")
     storage = MemoryStorage()
     dp = get_dispatcher(bot=bot, storage=storage)
-    assert getattr(dp, "bot") is bot
-    assert getattr(dp, "storage") is storage
+    assert dp.bot is bot
+    assert dp.storage is storage

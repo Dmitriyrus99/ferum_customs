@@ -1,10 +1,9 @@
-from datetime import datetime, timezone
-
-import pytest
 import importlib
+from datetime import datetime, timezone
 from types import SimpleNamespace
 from typing import TYPE_CHECKING, cast
 
+import pytest
 from aiogram import Bot
 
 if TYPE_CHECKING:  # pragma: no cover - type checking only
@@ -37,7 +36,6 @@ async def test_fsm_start_handler():
             text="/start",
         ),
     )
-    update = Update(update_id=1, message=message)
 
     await start_handler(bot=bot, message=message, state=state)
 

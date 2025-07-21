@@ -1,11 +1,9 @@
 import importlib
 import types
 from types import SimpleNamespace
+from typing import Any
 
 import pytest
-
-
-from typing import Any
 
 
 def test_validate_duplicate_serial(frappe_stub) -> None:
