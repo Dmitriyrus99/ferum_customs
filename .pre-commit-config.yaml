@@ -114,8 +114,10 @@ repos:
       - id: mypy
         args:
           - --config-file=mypy.ini
-          - --explicit-package-bases=ferum_customs=ferum_customs/ferum_customs
+          - --explicit-package-bases
           - ferum_customs/ferum_customs
+        additional_dependencies:
+          - fastapi==0.115.14
         exclude: ^\.venv_dev/
 
   - repo: local
