@@ -8,6 +8,7 @@ services:
       dockerfile: Dockerfile
       args:
         BENCH_TAG: ${BENCH_TAG}
+        ERPNEXT_BRANCH: ${ERPNEXT_BRANCH}
     environment:
       SITE_NAME: ${SITE_NAME}
       DB_HOST: db

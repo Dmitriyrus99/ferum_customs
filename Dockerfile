@@ -5,7 +5,8 @@ FROM frappe/bench:${BENCH_TAG} AS builder
 
 USER root
 RUN apt-get update \
-    && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends redis-server \
+    && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+       git redis-server \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 USER frappe

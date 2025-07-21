@@ -93,6 +93,9 @@ bench set-config -g redis_queue    "$queue_url"
 bench set-config -g redis_socketio "$socketio_url"
 echo "Redis configurations set."
 
+echo "Building front-end assets..."
+bench build
+
 # Execute the original Docker CMD (e.g., bench start)
 echo "Executing original Docker command..."
 # Disable internal Redis processes in Procfile so bench start uses external Redis services
