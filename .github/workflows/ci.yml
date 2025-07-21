@@ -38,13 +38,46 @@ jobs:
         run: pre-commit run --all-files --show-diff-on-failure
 
       - name: Run type checks
-        run: mypy ferum_customs
+        run: mypy --strict ferum_customs
+
+      - name: Security scan with Bandit
+        run: bandit -r ferum_customs -x tests
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Node dependencies
+        run: |
+          cd ui-tests
+          npm ci
+          npx playwright install --with-deps
+
+      - name: Audit npm dependencies
+        run: |
+          cd ui-tests
+          npm audit --audit-level=critical
+
+      - name: Lint and format JS
+        run: |
+          cd ui-tests
+          npm run lint
+          npm run format
+
+      - name: Run Playwright tests
+        run: |
+          cd ui-tests
+          npm test
+
+      - name: Run Locust smoke test
+        run: locust -f locustfile.py --headless -u 1 -r 1 -t 1s
 
       - name: Verify pytest-cov plugin
         run: pytest --help | grep -- '--cov'
 
       - name: Run tests
-        run: pytest --cov=ferum_customs --cov-report=term-missing -q tests
+        run: pytest --cov=ferum_customs --cov-report=term-missing --cov-fail-under=80 -q tests
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
         with:
