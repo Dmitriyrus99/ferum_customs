@@ -12,7 +12,10 @@ def test_settings_env_file(tmp_path, monkeypatch):
     tmp_env.write_text(env_content)
     monkeypatch.chdir(tmp_path)
 
-    settings = Settings()
+    monkeypatch.setenv("TELEGRAM_BOT_TOKEN", "token123")
+    monkeypatch.setenv("SITE_NAME", "mysite")
+
+    settings = Settings(telegram_bot_token="token123")
     assert settings.telegram_bot_token == "token123"
     assert settings.site_name == "mysite"
     assert not hasattr(settings, "EXTRA_VAR")

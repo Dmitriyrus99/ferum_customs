@@ -4,8 +4,8 @@
 from ferum_customs.config.settings import Settings
 
 
-def main():
-    settings = Settings()
+def main() -> None:
+    settings = Settings(telegram_bot_token="")
     fields = settings.model_fields
     lines = ["# Generated .env.example"]
     for name, field in fields.items():

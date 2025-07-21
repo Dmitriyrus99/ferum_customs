@@ -1,12 +1,21 @@
 from datetime import datetime, timezone
 
 import pytest
+import importlib
+from types import SimpleNamespace
+from typing import TYPE_CHECKING, cast
+
 from aiogram import Bot
+
+if TYPE_CHECKING:  # pragma: no cover - type checking only
+    from aiogram import types as aiogram_types
+else:
+    aiogram_types = importlib.import_module("aiogram.types")
 from aiogram.enums import ChatType
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.storage.base import StorageKey
 from aiogram.fsm.storage.memory import MemoryStorage
-from aiogram.types import Message, Update
+from aiogram.types import Update
 
 from telegram_bot.handlers import IncidentStates, start_handler
 
@@ -18,15 +27,18 @@ async def test_fsm_start_handler():
     key = StorageKey(bot_id=bot.id or 0, chat_id=123, user_id=123)
     state = FSMContext(storage=storage, key=key)
 
-    message = Message(
-        message_id=1,
-        date=datetime.now(timezone.utc),
-        chat={"id": 123, "type": ChatType.PRIVATE},
-        from_user={"id": 123, "is_bot": False, "first_name": "Tester"},
-        text="/start",
+    message = cast(
+        aiogram_types.Message,
+        SimpleNamespace(
+            message_id=1,
+            date=datetime.now(timezone.utc),
+            chat=SimpleNamespace(id=123, type=ChatType.PRIVATE),
+            from_user=SimpleNamespace(id=123, is_bot=False, first_name="Tester"),
+            text="/start",
+        ),
     )
     update = Update(update_id=1, message=message)
 
-    await start_handler(bot=bot, message=update.message, state=state)
+    await start_handler(bot=bot, message=message, state=state)
 
     assert await state.get_state() == IncidentStates.waiting_object.state

@@ -2,18 +2,22 @@
 """Check for consistency between requirements.txt and pyproject.toml dependencies."""
 
 import sys
+from sys import version_info
+from typing import Any, Set
+import importlib
 
-try:
-    import tomllib
-except ImportError:
-    try:
-        import tomli as tomllib
-    except ImportError:
+tomllib: Any
+if version_info >= (3, 11):
+    tomllib = importlib.import_module("tomllib")
+else:  # Python <3.11
+    try:  # pragma: no cover - executed only for older versions
+        tomllib = importlib.import_module("tomli")
+    except ModuleNotFoundError:  # pragma: no cover - executed only if tomli missing
         sys.exit("Please install tomli: pip install tomli")
 
 
-def parse_requirements(path="requirements.txt"):
-    reqs = set()
+def parse_requirements(path: str = "requirements.txt") -> Set[str]:
+    reqs: Set[str] = set()
     with open(path) as f:
         for line in f:
             line = line.strip()
@@ -24,17 +28,23 @@ def parse_requirements(path="requirements.txt"):
     return reqs
 
 
-def parse_pyproject(path="pyproject.toml"):
+def parse_pyproject(path: str = "pyproject.toml") -> Set[str]:
     with open(path, "rb") as f:
         data = tomllib.load(f)
-    deps = set()
+    deps: Set[str] = set()
     for entry in data.get("project", {}).get("dependencies", []):
-        pkg = entry.split("==")[0].split(">=")[0].split("<=")[0].split()[0].strip("\"'")
+        pkg = (
+            entry.split("==")[0]
+            .split(">=")[0]
+            .split("<=")[0]
+            .split()[0]
+            .strip("\"'")
+        )
         deps.add(pkg)
     return deps
 
 
-def main():
+def main() -> int:
     reqs = parse_requirements()
     deps = parse_pyproject()
     missing_in_py = reqs - deps
