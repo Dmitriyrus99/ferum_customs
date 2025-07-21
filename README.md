@@ -1,7 +1,5 @@
 # Ferum Customs
 
-[English version](README_EN.md)
-
 ![CI](https://github.com/<owner>/ferum_customs/actions/workflows/ci.yml/badge.svg)
 [![Coverage](https://img.shields.io/codecov/c/github/<owner>/ferum_customs/main.svg?logo=codecov)](https://codecov.io/gh/<owner>/ferum_customs)
 
@@ -35,15 +33,12 @@ Ferum Customs extends ERPNext with a service management layer. It keeps a regist
 ## Documentation
 
 - [Документация на русском](docs/overview_ru.md)
-- [Documentation in English](docs/overview_en.md)
 - [Frappe/ERPNext Docker Setup](docs/docker_setup_ru.md)
-- [Frappe/ERPNext Docker Setup EN](docs/docker_setup_en.md)
 
 ## Configuration
 
 Приложение использует переменные среды для конфиденциальных настроек.
 Скопируйте файл `.env.example` в `.env` и заполните ключи:
-Для production смотрите `.env.prod.example` с рекомендациями по SSL и security-headers.
 
 ```bash
 cp .env.example .env
@@ -262,8 +257,6 @@ docker compose -f docker-compose.test.yml up -d
 
 ## Backup and Recovery
 
-См. [docs/zero_downtime_upgrade.md](docs/zero_downtime_upgrade.md) для обновления без прерывания работы.
-
 Export SQL dumps of your site and copy the `files` directory from the bench. Automate this with
 
 ```bash
@@ -271,10 +264,6 @@ bench backup --with-files
 ```
 
 run via `cron` or a systemd timer. To restore, deploy the same version of the app, import the database dump and place attachments back into `sites/<site-name>/public/files`. Details are in [backup.md](backup.md).
-
-## Deployment
-
-См. [docs/deployment_guide.md](docs/deployment_guide.md) для вариантов развёртывания.
 
 ## Updating images
 
