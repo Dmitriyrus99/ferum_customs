@@ -8,7 +8,7 @@ def main() -> None:
     settings = Settings(telegram_bot_token="")
     fields = settings.model_fields
     lines = ["# Generated .env.example"]
-    for name, field in fields.items():
+    for name, _ in fields.items():
         key = name.upper()
         default = getattr(settings, name, "")
         value = default if default is not None else ""

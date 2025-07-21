@@ -1,13 +1,13 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
-class Settings(BaseSettings):  # type: ignore[misc]
+class Settings(BaseSettings):
     """
     Application settings loaded from environment variables.
     """
 
     # Telegram Bot API token
-    telegram_bot_token: str
+    telegram_bot_token: str = ""
 
     # Frappe/ERPNext settings
     site_name: str | None = None
