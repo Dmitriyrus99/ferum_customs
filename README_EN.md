@@ -1,6 +1,6 @@
 # Ferum Customs
 
-[English version](README_EN.md)
+[Русская версия](README.md)
 
 ![CI](https://github.com/<owner>/ferum_customs/actions/workflows/ci.yml/badge.svg)
 [![Coverage](https://img.shields.io/codecov/c/github/<owner>/ferum_customs/main.svg?logo=codecov)](https://codecov.io/gh/<owner>/ferum_customs)
@@ -9,17 +9,16 @@ Ferum Customs extends ERPNext with a service management layer. It keeps a regist
 
 ## Ferum Customs
 
-Кастомное приложение для ERPNext/Frappe, предназначенное для автоматизации работы сервисной компании
-в области противопожарной безопасности.
+Custom application for ERPNext/Frappe designed to automate a fire safety service company.
 
-### Основные возможности:
-- Управление заявками и проектами
-- Автоматизация актов, маршрутов, графиков обслуживания
-- Поддержка FSM-бота для Telegram
-- Расширения DocType, Workflow, Permission
-- Интеграция с Google Drive, аналитикой, CI/CD
+### Key features:
+- Ticket and project management
+- Automation of reports, routes and maintenance schedules
+- Telegram FSM-bot support
+- DocType, Workflow and Permission extensions
+- Integration with Google Drive, analytics and CI/CD
 
-### Требования:
+### Requirements:
 - Frappe >= 14
 - PostgreSQL / MariaDB
 - Python 3.10+
@@ -34,23 +33,21 @@ Ferum Customs extends ERPNext with a service management layer. It keeps a regist
 
 ## Documentation
 
-- [Документация на русском](docs/overview_ru.md)
-- [Documentation in English](docs/overview_en.md)
-- [Frappe/ERPNext Docker Setup](docs/docker_setup_ru.md)
-- [Frappe/ERPNext Docker Setup EN](docs/docker_setup_en.md)
+- [Documentation in Russian](docs/overview_ru.md)
+- [Frappe/ERPNext Docker Setup](docs/docker_setup_en.md)
 
 ## Configuration
 
-Приложение использует переменные среды для конфиденциальных настроек.
-Скопируйте файл `.env.example` в `.env` и заполните ключи:
-Для production смотрите `.env.prod.example` с рекомендациями по SSL и security-headers.
+The application uses environment variables for secrets.
+Copy `.env.example` to `.env` and fill in the keys:
+For production see `.env.prod.example` with SSL and security headers recommendations.
 
 ```bash
 cp .env.example .env
-# укажите TELEGRAM_BOT_TOKEN, SITE_NAME, ADMIN_PASSWORD, FRAPPE_ADMIN_PASSWORD и прочие
+# edit TELEGRAM_BOT_TOKEN, SITE_NAME, ADMIN_PASSWORD, FRAPPE_ADMIN_PASSWORD and others
 ```
 
-Переменные автоматически загружаются через Pydantic Settings.
+Environment variables are loaded via Pydantic Settings.
 
 ## Requirements
 
@@ -262,7 +259,7 @@ docker compose -f docker-compose.test.yml up -d
 
 ## Backup and Recovery
 
-См. [docs/zero_downtime_upgrade.md](docs/zero_downtime_upgrade.md) для обновления без прерывания работы.
+See [docs/zero_downtime_upgrade.md](docs/zero_downtime_upgrade.md) for zero-downtime upgrade steps.
 
 Export SQL dumps of your site and copy the `files` directory from the bench. Automate this with
 
@@ -274,7 +271,7 @@ run via `cron` or a systemd timer. To restore, deploy the same version of the ap
 
 ## Deployment
 
-См. [docs/deployment_guide.md](docs/deployment_guide.md) для вариантов развёртывания.
+See [docs/deployment_guide.md](docs/deployment_guide.md) for Kubernetes and Docker Swarm instructions.
 
 ## Updating images
 
