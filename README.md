@@ -255,6 +255,10 @@ GitHub Actions start containers defined in `docker-compose.test.yml` and run uni
 docker compose -f docker-compose.test.yml up -d
 ```
 
+The workflow additionally runs Bandit and `npm audit` for dependency scanning,
+executes Playwright E2E checks and a short Locust load test. Mypy uses `--strict`
+and coverage must not drop below 80%.
+
 ## Backup and Recovery
 
 Export SQL dumps of your site and copy the `files` directory from the bench. Automate this with
