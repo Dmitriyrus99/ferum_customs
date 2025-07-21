@@ -172,10 +172,10 @@ The bot internally calls whitelisted functions from ``ferum_customs.api``.
 
 ## Development
 
-Pre‑commit hooks format and lint the code. Enable them inside the app directory:
+Pre‑commit hooks format and lint the code. Install development dependencies and enable hooks:
 
 ```bash
-cd apps/ferum_customs
+pip install -r requirements-dev.txt
 pre-commit install
 ```
 

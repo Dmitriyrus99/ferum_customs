@@ -19,7 +19,7 @@ from frappe.model.document import Document
 # pass
 
 
-class PayrollEntryCustom(Document):
+class PayrollEntryCustom(Document):  # type: ignore[misc]
     total_payable: float | None
     total_deductions: float | None
     net_payable: float | None

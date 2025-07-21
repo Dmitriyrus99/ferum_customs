@@ -28,7 +28,7 @@ if TYPE_CHECKING:
     from frappe.types import DF
 
 
-class ServiceRequest(Document):
+class ServiceRequest(Document):  # type: ignore[misc]
     # Аннотации типов для полей DocType
     subject: DF.Data
     status: DF.Data

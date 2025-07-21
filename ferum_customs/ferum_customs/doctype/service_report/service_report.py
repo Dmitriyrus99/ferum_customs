@@ -6,7 +6,7 @@ Python-контроллер для DocType "Service Report".
 from __future__ import annotations
 
 import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Optional, cast
 
 import frappe
 from frappe import _
@@ -16,7 +16,7 @@ if TYPE_CHECKING:
     pass
 
 
-class ServiceReport(Document):
+class ServiceReport(Document):  # type: ignore[misc]
     service_request: str | None
     customer: str | None
     total_quantity: float
@@ -146,4 +146,4 @@ class ServiceReport(Document):
         from ferum_customs import api
 
         self.calculate_totals()
-        return api.create_invoice_from_report(self.name)
+        return cast(str, api.create_invoice_from_report(self.name))

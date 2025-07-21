@@ -16,7 +16,7 @@ from typing import Optional
 from frappe.model.document import Document
 
 
-class ServiceObject(Document):
+class ServiceObject(Document):  # type: ignore[misc]
     """
     Класс документа ServiceObject.
     """

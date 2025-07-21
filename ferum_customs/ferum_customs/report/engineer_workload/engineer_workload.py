@@ -1,12 +1,16 @@
 from __future__ import annotations
 
+from typing import Any
+
 import frappe
 from frappe import _
 
 from ferum_customs.constants import STATUS_OTMENENA, STATUS_ZAKRYTA
 
 
-def execute(filters=None):
+def execute(
+    filters: dict[str, Any] | None = None
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
     rows = frappe.db.sql(
         """
         select custom_assigned_engineer as engineer, count(*) as total

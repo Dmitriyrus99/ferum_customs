@@ -70,7 +70,7 @@ def _resolve_attachment_path(file_url: str, is_private: bool) -> tuple[Path, Pat
     return file_path, base_dir, safe_name
 
 
-@frappe.whitelist()
+@frappe.whitelist()  # type: ignore[misc]
 def delete_attachment_file_from_filesystem(
     file_url: str, is_private: bool = False
 ) -> None:
@@ -167,7 +167,7 @@ def delete_attachment_file_from_filesystem(
 # "CustomAttachment": {
 #     "on_trash": "ferum_customs.custom_logic.file_attachment_utils.on_custom_attachment_trash"
 # }
-def on_custom_attachment_trash(doc: FrappeDocument, method: str | None = None):
+def on_custom_attachment_trash(doc: FrappeDocument, method: str | None = None) -> None:
     """
     Вызывается при удалении записи CustomAttachment (on_trash).
     Удаляет связанный физический файл и, если есть, запись File.

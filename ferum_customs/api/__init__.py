@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Any, Optional, cast
 
 import frappe
 from fastapi import FastAPI
@@ -10,63 +10,63 @@ from ferum_customs.constants import SERVICE_REQUEST_STATUSES, STATUS_OTKRYTA
 app = FastAPI()
 
 
-@app.get("/")
+@app.get("/")  # type: ignore[misc]
 def root() -> dict[str, bool]:
     return {"ok": True}
 
 
-@app.get("/health")
+@app.get("/health")  # type: ignore[misc]
 def health() -> dict[str, str]:
     return {"status": "ok"}
 
 
-@whitelist()
-def validate_service_request(docname: str) -> dict | None:
+@whitelist()  # type: ignore[misc]
+def validate_service_request(docname: str) -> dict[str, Any] | None:
     """Return the service request document as a dict after permission check."""
     if not frappe.has_permission("Service Request", "read"):
         frappe.throw(_("Not permitted"), PermissionError)
 
     try:
         doc = frappe.get_doc("Service Request", docname)
-        return doc.as_dict()
+        return cast(dict[str, Any], doc.as_dict())
     except Exception:
         frappe.log_error(frappe.get_traceback(), "Error validating Service Request")
         raise
 
 
-@whitelist()
+@whitelist()  # type: ignore[misc]
 def on_submit_service_request(docname: str) -> None:
     """Hook executed when a Service Request is submitted."""
     frappe.logger(__name__).info(f"Service Request '{docname}' submitted")
 
 
-@whitelist()
+@whitelist()  # type: ignore[misc]
 def cancel_service_request(docname: str) -> None:
     """Hook executed when a Service Request is cancelled."""
     frappe.logger(__name__).info(f"Service Request '{docname}' cancelled")
 
 
-@whitelist()
-def validate_service_report(docname: str) -> dict | None:
+@whitelist()  # type: ignore[misc]
+def validate_service_report(docname: str) -> dict[str, Any] | None:
     """Return the service report document as a dict after permission check."""
     if not frappe.has_permission("Service Report", "read"):
         frappe.throw(_("Not permitted"), PermissionError)
 
     try:
         doc = frappe.get_doc("Service Report", docname)
-        return doc.as_dict()
+        return cast(dict[str, Any], doc.as_dict())
     except Exception:
         frappe.log_error(frappe.get_traceback(), "Error validating Service Report")
         raise
 
 
-@whitelist()
+@whitelist()  # type: ignore[misc]
 def on_submit_service_report(docname: str) -> None:
     """Hook executed when a Service Report is submitted."""
     frappe.logger(__name__).info(f"Service Report '{docname}' submitted")
 
 
-@whitelist()
+@whitelist()  # type: ignore[misc]
 def create_invoice_from_report(service_report: str) -> str:
     """Create a Sales Invoice draft from a submitted Service Report.
 
@@ -114,10 +114,10 @@ def create_invoice_from_report(service_report: str) -> str:
         )
 
     invoice.insert(ignore_permissions=True)
-    return invoice.name
+    return cast(str, invoice.name)
 
 
-@whitelist()
+@whitelist()  # type: ignore[misc]
 def bot_create_service_request(
     subject: str,
     customer: str | None = None,
@@ -135,10 +135,10 @@ def bot_create_service_request(
         }
     )
     doc.insert(ignore_permissions=True)
-    return doc.name
+    return cast(str, doc.name)
 
 
-@whitelist()
+@whitelist()  # type: ignore[misc]
 def bot_update_service_request_status(docname: str, status: str) -> None:
     """Update the status of a Service Request from the bot."""
 
@@ -150,7 +150,7 @@ def bot_update_service_request_status(docname: str, status: str) -> None:
     sr.save(ignore_permissions=True)
 
 
-@whitelist()
+@whitelist()  # type: ignore[misc]
 def bot_upload_attachment(docname: str, file_url: str, attachment_type: str) -> str:
     """Create a Custom Attachment linked to a Service Request."""
 
@@ -163,16 +163,19 @@ def bot_upload_attachment(docname: str, file_url: str, attachment_type: str) -> 
         }
     )
     ca.insert(ignore_permissions=True)
-    return ca.name
+    return cast(str, ca.name)
 
 
-@whitelist()
-def bot_get_service_requests(status: str | None = None) -> list[dict]:
+@whitelist()  # type: ignore[misc]
+def bot_get_service_requests(status: str | None = None) -> list[dict[str, Any]]:
     """Return a list of Service Requests filtered by status."""
 
     filters = {"status": status} if status else {}
-    return frappe.get_all(
-        "Service Request",
-        filters=filters,
-        fields=["name", "subject", "status"],
+    return cast(
+        list[dict[str, Any]],
+        frappe.get_all(
+            "Service Request",
+            filters=filters,
+            fields=["name", "subject", "status"],
+        ),
     )

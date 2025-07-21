@@ -3,7 +3,7 @@ import frappe
 from frappe.model.rename_doc import rename_doc
 
 
-def execute():
+def execute() -> None:
     """Renames DocType 'Project' to 'Service Project' if needed."""
     if frappe.db.exists("DocType", "Project") and not frappe.db.exists(
         "DocType", "Service Project"

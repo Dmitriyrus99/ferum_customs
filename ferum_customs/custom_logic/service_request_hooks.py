@@ -91,7 +91,7 @@ def _ensure_customer(doc: ServiceRequest) -> None:
 # --------------------------------------------------------------------------- #
 
 
-@frappe.whitelist()
+@frappe.whitelist()  # type: ignore[misc]
 def get_engineers_for_object(service_object_name: str) -> list[str]:
     """Возвращает список инженеров, назначенных на объект обслуживания."""
     if not service_object_name:
