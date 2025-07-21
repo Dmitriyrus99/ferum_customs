@@ -24,7 +24,7 @@ from fastapi import FastAPI
 from ferum_customs.config.settings import settings
 
 
-class IncidentStates(StatesGroup):
+class IncidentStates(StatesGroup):  # type: ignore[misc]
     """Conversation flow for incident reporting."""
 
     waiting_object = State()
@@ -32,14 +32,14 @@ class IncidentStates(StatesGroup):
     waiting_photo = State()
 
 
-class TaskStates(StatesGroup):
+class TaskStates(StatesGroup):  # type: ignore[misc]
     """Conversation flow for task creation."""
 
     waiting_title = State()
     waiting_details = State()
 
 
-class PhotoStates(StatesGroup):
+class PhotoStates(StatesGroup):  # type: ignore[misc]
     """Standalone photo upload flow."""
 
     waiting_photo = State()
@@ -83,7 +83,7 @@ async def start_handler(bot: Bot, message: Message, state: FSMContext) -> None:
     await state.set_state(IncidentStates.waiting_object)
 
 
-@app.on_event("startup")
+@app.on_event("startup")  # type: ignore[misc]
 async def startup_event() -> None:  # pragma: no cover - example implementation
     """Hook that runs on service startup."""
 
@@ -91,7 +91,7 @@ async def startup_event() -> None:  # pragma: no cover - example implementation
     pass
 
 
-@app.on_event("shutdown")
+@app.on_event("shutdown")  # type: ignore[misc]
 async def shutdown_event() -> None:  # pragma: no cover - example implementation
     """Hook that runs on service shutdown."""
 

@@ -28,7 +28,10 @@ fixtures = [
 ]
 
 
-def scheduler_events() -> dict:
+from typing import Any
+
+
+def scheduler_events() -> dict[str, Any]:
     """Return scheduler events configuration for Frappe."""
     return {}
 

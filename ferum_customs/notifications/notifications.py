@@ -8,6 +8,8 @@
 Возвращает словарь, описывающий условия для отправки стандартных уведомлений Frappe.
 """
 
+from typing import Any
+
 from frappe import _  # Для перевода возможных строк в будущем
 
 # Импорт констант для статусов, если они используются в условиях
@@ -18,7 +20,7 @@ from ferum_customs.constants import (
 )
 
 
-def get_notification_config() -> dict:
+def get_notification_config() -> dict[str, Any]:
     """
     Возвращает конфигурацию для стандартных уведомлений Frappe.
     """

@@ -18,9 +18,7 @@ if TYPE_CHECKING:
     pass
 
 
-class AssignedEngineerItem(
-    Document
-):  # Имя класса должно совпадать с именем DocType, но в CamelCase
+class AssignedEngineerItem(Document):  # type: ignore[misc]
     engineer: str | None
     """
     Класс документа (дочерней таблицы) AssignedEngineerItem.

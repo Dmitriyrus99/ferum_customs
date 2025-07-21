@@ -17,7 +17,7 @@ from frappe.model.document import Document
 # pass
 
 
-class ServiceProject(Document):  # Имя класса в CamelCase
+class ServiceProject(Document):  # type: ignore[misc]
     """
     Класс документа Service Project.
     """

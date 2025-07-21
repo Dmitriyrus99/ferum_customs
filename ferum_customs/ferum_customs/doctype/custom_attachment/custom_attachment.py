@@ -18,7 +18,7 @@ from frappe.model.document import Document
 # pass
 
 
-class CustomAttachment(Document):
+class CustomAttachment(Document):  # type: ignore[misc]
     attachment_type: str | None
     """
     Класс документа CustomAttachment.
