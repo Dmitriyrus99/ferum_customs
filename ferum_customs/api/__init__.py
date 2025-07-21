@@ -10,12 +10,12 @@ from ferum_customs.constants import SERVICE_REQUEST_STATUSES, STATUS_OTKRYTA
 app = FastAPI()
 
 
-@app.get("/")  # type: ignore[misc]
+@app.get("/")
 def root() -> dict[str, bool]:
     return {"ok": True}
 
 
-@app.get("/health")  # type: ignore[misc]
+@app.get("/health")
 def health() -> dict[str, str]:
     return {"status": "ok"}
 
