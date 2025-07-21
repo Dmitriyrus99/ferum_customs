@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Check for consistency between requirements.txt and pyproject.toml dependencies."""
 
+import importlib
 import sys
 from sys import version_info
-from typing import Any, Set
-import importlib
+from typing import Any
 
 tomllib: Any
 if version_info >= (3, 11):
@@ -16,8 +16,8 @@ else:  # Python <3.11
         sys.exit("Please install tomli: pip install tomli")
 
 
-def parse_requirements(path: str = "requirements.txt") -> Set[str]:
-    reqs: Set[str] = set()
+def parse_requirements(path: str = "requirements.txt") -> set[str]:
+    reqs: set[str] = set()
     with open(path) as f:
         for line in f:
             line = line.strip()
@@ -28,18 +28,12 @@ def parse_requirements(path: str = "requirements.txt") -> Set[str]:
     return reqs
 
 
-def parse_pyproject(path: str = "pyproject.toml") -> Set[str]:
+def parse_pyproject(path: str = "pyproject.toml") -> set[str]:
     with open(path, "rb") as f:
         data = tomllib.load(f)
-    deps: Set[str] = set()
+    deps: set[str] = set()
     for entry in data.get("project", {}).get("dependencies", []):
-        pkg = (
-            entry.split("==")[0]
-            .split(">=")[0]
-            .split("<=")[0]
-            .split()[0]
-            .strip("\"'")
-        )
+        pkg = entry.split("==")[0].split(">=")[0].split("<=")[0].split()[0].strip("\"'")
         deps.add(pkg)
     return deps
 
