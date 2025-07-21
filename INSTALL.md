@@ -4,7 +4,7 @@ This document explains how to install the `ferum_customs` app in your Frappe/ERP
 
 ## Requirements
 
-- Требуется **Frappe + ERPNext**.
+- Requires **Frappe + ERPNext**.
 - Tested with **Frappe/ERPNext 15.0**. Older versions are not officially supported.
 - ERPNext branch must match your Frappe version (e.g. `version-15`).
 - A working [bench](https://github.com/frappe/bench) setup.
@@ -66,16 +66,16 @@ docker compose up -d --build
 
 If you use Docker images, add `ferum_customs` to `apps.txt` (or `apps.json`) and rebuild the image before running the `install-app` command.
 
-## Инструменты разработчика
+## Developer tools
 
-Для автоматизации задач код-ревью и CI используем Codex CLI.
+Codex CLI helps automate code reviews and CI tasks.
 
-**Установка**:
+**Installation**:
 ```bash
 pip install codex-cli
 ```
 
-**Использование**:
+**Usage**:
 ```bash
 codex --config .codex/project.yaml
 ```
@@ -84,9 +84,9 @@ codex --config .codex/project.yaml
 
 After installation log in as **Administrator** and open **Role List**. Make sure the following roles exist and assign them to appropriate users:
 
-- `Проектный менеджер`
-- `Инженер`
-- `Заказчик` (customers only)
+- `Project Manager`
+- `Service Engineer`
+- `Customer` (customers only)
 
 The app also installs a *Service Request Workflow*. Review the workflow states and transitions under **Workflow List** and adjust them if required.
 
