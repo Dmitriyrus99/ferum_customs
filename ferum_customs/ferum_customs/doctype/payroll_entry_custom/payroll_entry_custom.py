@@ -5,8 +5,6 @@ Python-контроллер для DocType "Payroll Entry Custom".
 
 from __future__ import annotations
 
-from typing import Optional
-
 import frappe
 from frappe.model.document import Document
 

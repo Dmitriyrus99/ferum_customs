@@ -6,7 +6,7 @@ Python-контроллер для DocType "Service Report".
 from __future__ import annotations
 
 import datetime
-from typing import TYPE_CHECKING, Optional, cast
+from typing import TYPE_CHECKING, cast
 
 import frappe
 from frappe import _

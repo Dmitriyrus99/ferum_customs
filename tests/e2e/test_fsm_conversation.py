@@ -14,7 +14,6 @@ from aiogram.enums import ChatType
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.storage.base import StorageKey
 from aiogram.fsm.storage.memory import MemoryStorage
-from aiogram.types import Update
 
 from telegram_bot.handlers import IncidentStates, start_handler
 

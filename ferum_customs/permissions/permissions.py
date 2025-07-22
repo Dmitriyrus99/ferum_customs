@@ -5,8 +5,6 @@
 
 from __future__ import annotations
 
-from typing import Union
-
 import frappe
 
 from ferum_customs.constants import ROLE_CUSTOMER, ROLE_ZAKAZCHIK

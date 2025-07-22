@@ -7,7 +7,7 @@ Python-контроллер для дочернего DocType "Assigned Engineer
 from __future__ import annotations
 
 import datetime  # Для работы с датами и временем
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 import frappe
 from frappe.model.document import Document
