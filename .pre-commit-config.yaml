@@ -118,6 +118,7 @@ repos:
           - ferum_customs/ferum_customs
         additional_dependencies:
           - fastapi==0.115.14
+          - pydantic-settings
         exclude: ^\.venv_dev/
 
   - repo: local
