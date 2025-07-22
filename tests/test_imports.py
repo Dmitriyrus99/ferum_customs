@@ -1,13 +1,11 @@
-import pytest
+import importlib
 
 
-def test_basic_imports():
-    """
-    Базовый тест: проверка, что ключевые зависимости проекта импортируются без ошибок.
-    """
-    try:
-        import aiogram
-        import fastapi
-        import requests_oauthlib
-    except ImportError as e:
-        pytest.fail(f"Не удалось импортировать модуль: {e}")
+def test_basic_imports() -> None:
+    """Ensure that core dependencies are available for import."""
+
+    for module in ("aiogram", "fastapi", "requests_oauthlib"):
+        try:
+            _ = importlib.import_module(module)
+        except Exception as exc:  # pragma: no cover - fails only if missing
+            raise AssertionError(f"Не найден модуль {module}: {exc}") from exc
