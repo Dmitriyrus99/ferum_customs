@@ -13,10 +13,7 @@ from frappe.model.document import Document
 from frappe.utils import get_datetime, now
 
 from ferum_customs.constants import (
-    FIELD_CUSTOM_CUSTOMER,
     FIELD_CUSTOM_LINKED_REPORT,
-    FIELD_CUSTOM_PROJECT,
-    FIELD_CUSTOM_SERVICE_OBJECT_LINK,
     STATUS_OTKRYTA,
     STATUS_OTMENENA,
     STATUS_V_RABOTE,

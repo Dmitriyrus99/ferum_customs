@@ -11,8 +11,6 @@ from __future__ import annotations
 # from ..service_project.service_project import ServiceProject # Пример
 # from .assigned_engineer_item import AssignedEngineerItem # Для дочерней таблицы
 # pass
-from typing import Optional
-
 from frappe.model.document import Document
 
 

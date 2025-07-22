@@ -5,8 +5,6 @@ Python-контроллер для DocType "Custom Attachment".
 
 from __future__ import annotations
 
-from typing import Optional
-
 import frappe
 from frappe import _  # Для возможных пользовательских сообщений
 from frappe.model.document import Document

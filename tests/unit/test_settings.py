@@ -1,4 +1,3 @@
-import pytest
 
 from ferum_customs.config.settings import Settings
 
