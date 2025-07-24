@@ -1,7 +1,9 @@
 {
  "db_host": "db",
- "db_name": "_5605efc21d613817",
- "db_password": "3LrqmHilNdrZfucd",
+ "db_name": "_542e78bbae70abce",
+ "db_password": "v9l9hBYJCKXNZybf",
  "db_type": "mariadb",
- "db_user": "_5605efc21d613817"
+ "maintenance_mode": 1,
+ "setup_complete": 1,
+ "setup_wizard_required": 0
 }

@@ -1,35 +1,55 @@
-# Dockerfile for ERPNext with Ferum Customs app
-ARG BENCH_TAG=v5.25.4
-ARG ERPNEXT_BRANCH=version-15
+# ---------- builder ----------
+ARG BENCH_TAG=v5.25.9
 FROM frappe/bench:${BENCH_TAG} AS builder
 
+ARG FRAPPE_BRANCH=version-15
+ARG ERPNEXT_BRANCH=version-15
+
+# 1) Устанавливаем redis-server для bench init
 USER root
 RUN apt-get update \
-    && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-       git redis-server \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
-
+ && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends redis-server \
+ && rm -rf /var/lib/apt/lists/*
 USER frappe
+
 WORKDIR /home/frappe
 
-# Initialize bench environment
-RUN bench init --skip-assets frappe-bench --python python3
-WORKDIR /home/frappe/frappe-bench
-
-# Clone ERPNext application
-RUN bench get-app --branch \${ERPNEXT_BRANCH} erpnext https://github.com/frappe/erpnext
-
-# Add local Ferum Customs custom app
-COPY --chown=frappe:frappe . /home/frappe/frappe-bench/apps/ferum_customs
-RUN bench setup requirements
-
-### Runtime image ###
-FROM frappe/bench:${BENCH_TAG}
-LABEL org.opencontainers.image.source="https://github.com/Dmitriyrus99/ferum_customs"
-LABEL org.opencontainers.image.licenses="MIT"
-
-USER frappe
-# Copy built bench directory from builder stage
-COPY --chown=frappe:frappe --from=builder /home/frappe/frappe-bench /home/frappe/frappe-bench
+# 2) bench init (обязательно путь в конце)
+RUN bench init --skip-assets \
+    --frappe-branch "${FRAPPE_BRANCH}" \
+    --python python3 \
+    frappe-bench
 
 WORKDIR /home/frappe/frappe-bench
+
+# 3) ERPNext
+RUN bench get-app --branch "${ERPNEXT_BRANCH}" erpnext https://github.com/frappe/erpnext --resolve-deps
+
+# 4) Кастомное приложение
+COPY --chown=frappe:frappe . apps/ferum_customs
+RUN cd apps/ferum_customs \
+ && git init \
+ && git config user.email "build@local" \
+ && git config user.name "build" \
+ && git add -A \
+ && git commit -m "docker build commit"
+
+# 5) Зависимости
+RUN bench setup requirements frappe erpnext ferum_customs
+
+# 6) Сборка ассетов (не критично)
+RUN bench build || true
+
+# ---------- runtime ----------
+FROM frappe/bench:${BENCH_TAG} AS runtime
+WORKDIR /home/frappe/frappe-bench
+
+COPY --from=builder /home/frappe/frappe-bench /home/frappe/frappe-bench
+
+COPY --chown=frappe:frappe docker/entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
+VOLUME ["/home/frappe/frappe-bench/sites"]
+EXPOSE 8000 9000
+
+CMD ["/usr/local/bin/docker-entrypoint.sh", "bench", "start"]

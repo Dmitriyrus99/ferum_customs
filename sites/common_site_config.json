@@ -1,6 +1,9 @@
 {
  "default_site": "erp.ferumrus.ru",
- "redis_cache": "redis://:changeme@redis:6379/0",
- "redis_queue": "redis://:changeme@redis:6379/1",
- "redis_socketio": "redis://:changeme@redis:6379/2"
+ "redis_cache": "redis://:fFeRu864750@redis:6379/0",
+ "redis_queue": "redis://:fFeRu864750@redis:6379/1",
+ "redis_socketio": "redis://:fFeRu864750@redis:6379/2",
+ "rq_password": "w234er3aat9sHcrqcG8B",
+ "rq_username": "home-frappe-frappe-bench",
+ "use_rq_auth": false
 }

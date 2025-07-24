@@ -1,103 +1,93 @@
 #!/bin/bash
 set -euo pipefail
 
-echo "Starting Ferum Customs Docker Entrypoint..."
+echo "==> Ferum Customs entrypoint started"
 
-# Initial delay to allow all services to start fully...
-echo "Initial delay to allow all services to start fully..."
-sleep 10
+cd /home/frappe/frappe-bench || { echo "No bench dir!"; exit 1; }
 
-# Change to the bench directory
-cd /home/frappe/frappe-bench
+# fix permissions
+chown -R frappe:frappe sites || true
+chown -R frappe:frappe logs  || true
 
-# Ensure correct permissions for the sites directory
-echo "Setting correct permissions for sites directory..."
-sudo chown -R frappe:frappe sites/
+DB_HOST="${DB_HOST:-db}"
+SITE_NAME="${SITE_NAME:-}"
+INIT_LOCK_FILE="sites/${SITE_NAME}/.docker_site_initialized"
 
-# More robust waiting for MariaDB
-echo "Waiting for MariaDB service (port 3306) to be open..."
-until bash -c "</dev/tcp/db/3306"; do
-  echo "MariaDB port 3306 is not open yet - sleeping"
-  sleep 5
+echo "==> Waiting for MariaDB..."
+until mariadb -h "$DB_HOST" -P 3306 -uroot -p"${DB_ROOT_PASSWORD}" -e "SELECT 1" >/dev/null 2>&1; do
+  echo "   ... still waiting"
+  sleep 2
 done
-echo "MariaDB port 3306 is open. Now waiting for database readiness..."
+echo "==> MariaDB ready."
 
-until mariadb -h db -P 3306 -uroot -p"${DB_ROOT_PASSWORD}" -e "SELECT 1"; do
-  echo "MariaDB is not fully ready for connections - sleeping"
-  sleep 5
-done
-echo "MariaDB is up - executing command"
+# idempotent site init
+if [[ -n "$SITE_NAME" ]]; then
+  if [[ ! -f "$INIT_LOCK_FILE" ]]; then
+    echo "==> First-time init for site $SITE_NAME"
 
-# Ensure apps.txt exists and includes ferum_customs and erpnext
-SITE_APPS_FILE="sites/apps.txt"
-if [[ ! -f "${SITE_APPS_FILE}" ]]; then
-  echo "frappe" > "${SITE_APPS_FILE}"
-  echo "erpnext" >> "${SITE_APPS_FILE}"
-  echo "ferum_customs" >> "${SITE_APPS_FILE}"
+    mkdir -p sites
+
+    if [[ ! -f "sites/${SITE_NAME}/site_config.json" ]]; then
+      echo "==> Creating site $SITE_NAME"
+      bench new-site --no-mariadb-socket \
+        --admin-password "${ADMIN_PASSWORD}" \
+        --mariadb-root-password "${DB_ROOT_PASSWORD}" \
+        --db-host "${DB_HOST}" "${SITE_NAME}"
+    else
+      echo "==> site_config.json exists, skipping new-site"
+    fi
+
+    echo "==> Installing apps"
+    bench --site "${SITE_NAME}" install-app erpnext || echo "erpnext already?"
+    bench --site "${SITE_NAME}" install-app ferum_customs || echo "ferum_customs already?"
+
+    touch "$INIT_LOCK_FILE"
+  else
+    echo "==> Site $SITE_NAME already initialized"
+  fi
+
+  echo "==> Running migrate"
+  bench --site "${SITE_NAME}" migrate || true
+
+  echo "==> Create rq users / enable scheduler"
+  bench create-rq-users || true
+  bench --site "${SITE_NAME}" enable-scheduler || true
+  bench set-config -g default_site "${SITE_NAME}" || true
 fi
 
-## Remove any pre-existing site directory to ensure clean setup
-if [[ -n "${SITE_NAME}" && -d "sites/${SITE_NAME}" ]]; then
-  echo "Removing pre-existing site directory: ${SITE_NAME}"
-  rm -rf "sites/${SITE_NAME}"
-fi
+# update common_site_config
+COMMON_CFG="sites/common_site_config.json"
+[ -f "$COMMON_CFG" ] || echo "{}" > "$COMMON_CFG"
 
-# Create site if it hasn't been configured yet
-if [[ -n "${SITE_NAME}" && ! -f "sites/${SITE_NAME}/site_config.json" ]]; then
-  echo "Creating new Frappe site: ${SITE_NAME}..."
-  bench new-site --no-mariadb-socket \
-           --admin-password "${ADMIN_PASSWORD}" \
-           --mariadb-root-password "${DB_ROOT_PASSWORD}" \
-           --db-host "${DB_HOST}" "${SITE_NAME}"
+python3 - <<'PY'
+import json, os
+p="sites/common_site_config.json"
+with open(p) as f:
+    try:
+        cfg=json.load(f)
+    except Exception:
+        cfg={}
+cfg["redis_cache"]=os.environ.get("REDIS_CACHE", cfg.get("redis_cache"))
+cfg["redis_queue"]=os.environ.get("REDIS_QUEUE", cfg.get("redis_queue"))
+cfg["redis_socketio"]=os.environ.get("REDIS_SOCKETIO", cfg.get("redis_socketio"))
+if os.environ.get("SITE_NAME"):
+    cfg["default_site"]=os.environ["SITE_NAME"]
+with open(p,"w") as f:
+    json.dump(cfg,f,indent=2)
+PY
 
-  echo "Installing ERPNext and Ferum Customs on ${SITE_NAME}..."
-  bench --site "${SITE_NAME}" install-app erpnext
-  bench --site "${SITE_NAME}" install-app ferum_customs
-else
-  echo "Site ${SITE_NAME} already exists or already configured. Skipping site creation."
-fi
+chown frappe:frappe "$COMMON_CFG"
 
-# Ensure common_site_config.json exists
-COMMON_SITE_CONFIG="/home/frappe/frappe-bench/sites/common_site_config.json"
-# Ensure common_site_config.json exists and has initial Redis URLs to avoid CLI bootstrap errors
-if [[ ! -f "${COMMON_SITE_CONFIG}" ]]; then
-  echo "common_site_config.json not found. Creating an empty one."
-  echo "{}" > "${COMMON_SITE_CONFIG}"
-  sudo chown frappe:frappe "${COMMON_SITE_CONFIG}"
-fi
-# Populate or update Redis URL entries in common_site_config.json
-cache_url=$(eval echo "\"$REDIS_CACHE\"")
-queue_url=$(eval echo "\"$REDIS_QUEUE\"")
-socketio_url=$(eval echo "\"$REDIS_SOCKETIO\"")
-python3 - <<PYCODE
-import json
-path = "${COMMON_SITE_CONFIG}"
-cfg = json.load(open(path))
-cfg["redis_cache"] = "${cache_url}"
-cfg["redis_queue"] = "${queue_url}"
-cfg["redis_socketio"] = "${socketio_url}"
-# Set default site for HTTP routing
-cfg["default_site"] = "${SITE_NAME}"
-json.dump(cfg, open(path, "w"), indent=2)
-PYCODE
-sudo chown frappe:frappe "${COMMON_SITE_CONFIG}"
+echo "==> bench set-config for redis"
+bench set-config -g redis_cache    "${REDIS_CACHE}" || true
+bench set-config -g redis_queue    "${REDIS_QUEUE}" || true
+bench set-config -g redis_socketio "${REDIS_SOCKETIO}" || true
 
-# Set Redis configs
-echo "Setting Redis configurations..."
-## Используем полные URL из переменных окружения
-cache_url=$(eval echo "\"$REDIS_CACHE\"")
-queue_url=$(eval echo "\"$REDIS_QUEUE\"")
-socketio_url=$(eval echo "\"$REDIS_SOCKETIO\"")
-bench set-config -g redis_cache    "$cache_url"
-bench set-config -g redis_queue    "$queue_url"
-bench set-config -g redis_socketio "$socketio_url"
-echo "Redis configurations set."
+echo "==> Build assets (non-fatal)"
+bench build || true
 
-echo "Building front-end assets..."
-bench build
+echo "==> Remove redis lines from Procfile (use external redis)"
+sed -i '/redis_cache/d;/redis_queue/d;/redis_socketio/d' Procfile || true
 
-# Execute the original Docker CMD (e.g., bench start)
-echo "Executing original Docker command..."
-# Disable internal Redis processes in Procfile so bench start uses external Redis services
-sed -i '/redis_cache/d;/redis_queue/d;/redis_socketio/d' Procfile
+echo "==> Starting CMD: $*"
 exec "$@"
