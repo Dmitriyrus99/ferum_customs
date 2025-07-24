@@ -17,11 +17,7 @@ RUN bench init --skip-assets frappe-bench --python python3
 WORKDIR /home/frappe/frappe-bench
 
 # Clone ERPNext application
-RUN if [ "${ERPNEXT_BRANCH}" = "erpnext" ]; then \
-      bench get-app erpnext https://github.com/frappe/erpnext; \
-    else \
-      bench get-app --branch ${ERPNEXT_BRANCH} erpnext https://github.com/frappe/erpnext; \
-    fi
+RUN bench get-app --branch \${ERPNEXT_BRANCH} erpnext https://github.com/frappe/erpnext
 
 # Add local Ferum Customs custom app
 COPY --chown=frappe:frappe . /home/frappe/frappe-bench/apps/ferum_customs
