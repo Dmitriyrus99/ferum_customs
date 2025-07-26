@@ -3,7 +3,8 @@
  "db_name": "_542e78bbae70abce",
  "db_password": "v9l9hBYJCKXNZybf",
  "db_type": "mariadb",
- "maintenance_mode": 1,
+ "host_name": "http://erp.ferumrus.ru",
+ "maintenance_mode": 0,
  "setup_complete": 1,
  "setup_wizard_required": 0
 }
