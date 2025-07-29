@@ -13,9 +13,7 @@ from typing import Any
 from frappe import _  # Для перевода возможных строк в будущем
 
 # Импорт констант для статусов, если они используются в условиях
-from ferum_customs.constants import (
-    ROLE_PROEKTNYJ_MENEDZHER,
-)
+from ferum_customs.constants import ROLE_PROEKTNYJ_MENEDZHER
 
 
 def get_notification_config() -> dict[str, Any]:

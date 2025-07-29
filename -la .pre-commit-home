@@ -1,0 +1,66 @@
+[1mdiff --git a/.pre-commit-config.yaml b/.pre-commit-config.yaml[m
+[1mindex 0ca9993..798c651 100644[m
+[1m--- a/.pre-commit-config.yaml[m
+[1m+++ b/.pre-commit-config.yaml[m
+[36m@@ -9,7 +9,7 @@[m [mfail_fast: false[m
+ [m
+ repos:[m
+   - repo: https://github.com/pre-commit/pre-commit-hooks[m
+[31m-    rev: v4.6.0 # Обновлено для поддержки добавленных хуков (debug-statements и др.)[m
+[32m+[m[32m    rev: cef0300fd0fc4d2a87a85fa2093c6b283ea36f4b  # frozen: v5.0.0[m
+     hooks:[m
+       - id: trailing-whitespace[m
+         files: "erpnext.*"[m
+[36m@@ -38,7 +38,7 @@[m [mrepos:[m
+         exclude: ^\.venv_dev/ # ОБЯЗАТЕЛЬНО ДОБАВИТЬ ЭТО![m
+ [m
+   - repo: https://github.com/pre-commit/mirrors-prettier[m
+[31m-    rev: v2.7.1[m
+[32m+[m[32m    rev: f12edd9c7be1c20cfa42420fd0e6df71e42b51ea  # frozen: v4.0.0-alpha.8[m
+     hooks:[m
+       - id: prettier[m
+         types_or: [javascript, vue, scss][m
+[36m@@ -57,7 +57,7 @@[m [mrepos:[m
+           )$[m
+ [m
+   - repo: https://github.com/pre-commit/mirrors-eslint[m
+[31m-    rev: v8.44.0[m
+[32m+[m[32m    rev: a01f0f4088faf34088a795a1fb66aefc5cf099e9  # frozen: v9.32.0[m
+     hooks:[m
+       - id: eslint[m
+         types_or: [javascript][m
+[36m@@ -76,7 +76,7 @@[m [mrepos:[m
+           )$[m
+ [m
+   - repo: https://github.com/astral-sh/ruff-pre-commit[m
+[31m-    rev: v0.5.2 # Обновлено до последней стабильной версии[m
+[32m+[m[32m    rev: 73b0f6d59bbfcb75e17a4653d581c9dfaca13969  # frozen: v0.12.5[m
+     hooks:[m
+       - id: ruff[m
+         name: "Run ruff import sorter"[m
+[36m@@ -94,7 +94,7 @@[m [mrepos:[m
+       #   exclude: ^\.venv_dev/[m
+ [m
+   - repo: https://github.com/PyCQA/isort[m
+[31m-    rev: 5.12.0[m
+[32m+[m[32m    rev: c8ab4a5b21bac924d106e3103dd7c979fdd0f9bc  # frozen: 6.0.1[m
+     hooks:[m
+       - id: isort[m
+         name: isort (python import sorter)[m
+[36m@@ -102,14 +102,14 @@[m [mrepos:[m
+         exclude: ^\.venv_dev/ # Уже есть, отлично[m
+ [m
+   - repo: https://github.com/psf/black[m
+[31m-    rev: 24.4.2 # Обновлено до последней стабильной версии[m
+[32m+[m[32m    rev: 8a737e727ac5ab2f1d4cf5876720ed276dc8dc4b  # frozen: 25.1.0[m
+     hooks:[m
+       - id: black[m
+         language_version: python3[m
+         exclude: ^\.venv_dev/ # Уже есть, отлично[m
+ [m
+   - repo: https://github.com/pre-commit/mirrors-mypy[m
+[31m-    rev: v1.5.1[m
+[32m+[m[32m    rev: 850d8bf806620ef89a99381c5cf5ea2c1ea826dd  # frozen: v1.17.0[m
+     hooks:[m
+       - id: mypy[m
+         args:[m
