@@ -1,11 +1,11 @@
 # Ferum Customs
 
-![CI](https://github.com/<owner>/ferum_customs/actions/workflows/ci.yml/badge.svg)
-[![Coverage](https://img.shields.io/codecov/c/github/<owner>/ferum_customs/main.svg?logo=codecov)](https://codecov.io/gh/<owner>/ferum_customs)
+![CI](https://github.com/Dmitriyrus99/ferum_customs/actions/workflows/ci.yml/badge.svg)
+[![Coverage](https://img.shields.io/codecov/c/github/Dmitriyrus99/ferum_customs/main.svg?logo=codecov)](https://codecov.io/gh/Dmitriyrus99/ferum_customs)
 
 Ferum Customs extends ERPNext with a service management layer. It keeps a registry of serviced equipment, tracks incoming requests and stores reports about performed work.
 
-## Ferum Customs
+## Описание
 
 Кастомное приложение для ERPNext/Frappe, предназначенное для автоматизации работы сервисной компании
 в области противопожарной безопасности.
@@ -18,7 +18,7 @@ Ferum Customs extends ERPNext with a service management layer. It keeps a regist
 - Интеграция с Google Drive, аналитикой, CI/CD
 
 ### Требования:
-- Frappe >= 14
+- Frappe >= 15
 - PostgreSQL / MariaDB
 - Python 3.10+
 
@@ -54,6 +54,13 @@ cp .env.example .env
 - A working [bench](https://github.com/frappe/bench) setup if installing without Docker.
 
 ## Installation
+### Bare-metal (no Docker)
+
+Автоматическую установку и запуск без Docker можно выполнить с помощью скрипта:
+
+```bash
+sudo bash scripts/quick_setup_bare_metal.sh
+```
 
 ### Using bench
 

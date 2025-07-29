@@ -1,6 +1,6 @@
 ## Makefile for ferum_customs project
 
- .PHONY: help quick-setup setup-env setup-codex check-fixtures db-setup system-status
+.PHONY: help quick-setup quick-setup-bare-metal setup-env setup-codex check-fixtures db-setup system-status
 PG-SETUP: db-setup
 
 help:
@@ -12,6 +12,9 @@ help:
 
 quick-setup:
 	@bash scripts/quick_setup.sh
+
+quick-setup-bare-metal:
+	@bash scripts/quick_setup_bare_metal.sh
 
 setup-env:
 	@bash scripts/setup_environment.sh

@@ -11,6 +11,12 @@ This document explains how to install the `ferum_customs` app in your Frappe/ERP
 
 ## Bare-metal
 
+> **Note:** To automate all steps for bare-metal installation without Docker, run:
+>
+> ```bash
+> sudo bash scripts/quick_setup_bare_metal.sh
+> ```
+
 1. Install the bench CLI if you don't have it yet:
    ```bash
    pipx install frappe-bench
