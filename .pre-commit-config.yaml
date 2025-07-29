@@ -9,7 +9,7 @@ fail_fast: false
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.3.0 # Убедитесь, что это ваша текущая версия (возможно, стоит обновить до v4.6.0)
+    rev: v4.6.0 # Обновлено для поддержки добавленных хуков (debug-statements и др.)
     hooks:
       - id: trailing-whitespace
         files: "erpnext.*"
