@@ -257,17 +257,10 @@ pre-commit run --all-files
 
 ### Проверка после коммита
 
-Чтобы автоматически запускать статические проверки и тесты после каждого коммита, создайте Git‑hook:
+Чтобы автоматически запускать статические проверки и тесты после каждого коммита, включите версионно‑контролируемые Git‑хуки:
 
 ```bash
-cat > .git/hooks/post-commit << 'EOF'
-#!/usr/bin/env bash
-set -eo pipefail
-echo "Запуск post-commit проверок..."
-pre-commit run --all-files
-pytest -q --disable-warnings --maxfail=1 || echo "Тесты не прошли, исправьте ошибки"
-EOF
-chmod +x .git/hooks/post-commit
+git config core.hooksPath .githooks
 ```
 
 ## CI

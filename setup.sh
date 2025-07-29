@@ -19,4 +19,8 @@ pip install -r requirements.txt
 pip install -e .[dev,test]
 
 # Bootstrap Docker-based ERPNext environment
+# Configure Git to use version-controlled hooks and enable the post-commit hook
+git config core.hooksPath .githooks
+chmod +x .githooks/post-commit
+
 scripts/quick_setup.sh
