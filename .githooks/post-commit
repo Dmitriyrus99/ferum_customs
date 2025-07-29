@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+set -eo pipefail
+echo "Запуск post-commit проверок..."
+pre-commit run --all-files
+pytest -q --disable-warnings --maxfail=1 || echo "Тесты не прошли, исправьте ошибки"
