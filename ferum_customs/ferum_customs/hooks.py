@@ -27,6 +27,11 @@ fixtures = [
     "DocPerm",
 ]
 
+# Bench commands: custom CLI tools for this app
+from ferum_customs.bench_commands.run_tests import run_tests
+
+bench_commands = [run_tests]
+
 
 from typing import Any
 

@@ -76,7 +76,7 @@ repos:
           )$
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.2.0 # Рекомендую обновить до последней версии (v0.5.2 или выше), если возможно.
+    rev: v0.5.2 # Обновлено до последней стабильной версии
     hooks:
       - id: ruff
         name: "Run ruff import sorter"
@@ -102,7 +102,7 @@ repos:
         exclude: ^\.venv_dev/ # Уже есть, отлично
 
   - repo: https://github.com/psf/black
-    rev: 23.9.1 # Рекомендую обновить до последней версии (24.4.2 или выше), если возможно.
+    rev: 24.4.2 # Обновлено до последней стабильной версии
     hooks:
       - id: black
         language_version: python3
