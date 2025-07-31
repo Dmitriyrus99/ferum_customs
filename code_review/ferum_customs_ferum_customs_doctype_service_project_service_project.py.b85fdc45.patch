@@ -1,14 +1,25 @@
 34,35d33
 <         # Логика из оригинального файла (service_project.py):
 <         # if self.start_date and self.end_date:
-37,38d34
+40c38
 <         # Эта логика теперь в _validate_dates() и _format_dates_to_iso()
-< 
-45c41
-<                 # Предположим, что это поля Date для простоты сравнения дат.
 ---
->                 # Предположим, что это поля Date для простоты сравнения дат, но лучше использовать get_datetime для обоих.
-56c52
+> 
+42,43c40,41
+<                 # Преобразуем в объекты date/datetime для корректного сравнения
+<                 # Если поля типа Date, get_date() вернет date. Если Datetime, get_datetime() вернет datetime.
+---
+>                 # Преобразуем в объекты date/datetime для корректного сравнения.
+>                 # Предположим, что это поля Date для простоты сравнения дат.
+45c43
+<                 # Или использовать get_datetime для обоих, если они Datetime.
+---
+>                 # Или использовать get_datetime для обоих, если они Datetime, если это необходимо.
+50c48
+<                 # Можно выбросить ошибку, если формат дат критичен на этом этапе
+---
+>                 # Можно выбросить ошибку, если формат дат критичен на этом этапе.
+56c54
 <                 if isinstance(field_value, datetime.datetime | datetime.date):
 ---
 >                 if isinstance(field_value, (datetime.datetime, datetime.date)):

@@ -1,6 +1,6 @@
 --- dev_hooks.py
 +++ dev_hooks.py
-@@ -1,5 +1,5 @@
+@@ -1,4 +1,4 @@
  """Local development hooks.
  Add overrides or additional hook definitions here.
  """

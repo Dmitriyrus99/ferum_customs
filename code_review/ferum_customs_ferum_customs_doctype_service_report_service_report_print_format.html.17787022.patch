@@ -9,8 +9,8 @@
  <p>Проект: {{ doc.service_request }}</p>
  {% if sr and sr.custom_assigned_engineer %}
  <p>Ответственный инженер: {{ frappe.get_cached_value('User', sr.custom_assigned_engineer, 'full_name') or sr.custom_assigned_engineer }}</p>
-@@ -7,7 +8,7 @@
- {% if sr.custom_service_object_link %}
+ {% endif %}
+ {% if sr and sr.custom_service_object_link %}
  {% set so = frappe.get_doc('Service Object', sr.custom_service_object_link) %}
  <p>Объект: {{ so.object_name }} {% if so.location %}({{ so.location }}){% endif %}</p>
  {% endif %}

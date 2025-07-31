@@ -1,10 +1,47 @@
-1,2c1,2
-<     "track_changes": 1,
-<     "fields": [
----
->     "track_changes": 0,
->     "fields": [
-5c5
-<             "read_only": 1,
----
->             "read_only": 0,
+{
+    "doctype": "DocType",
+    "name": "Payroll Entry Custom",
+    "module": "Ferum Customs",
+    "track_changes": 1,
+    "fields": [
+        {
+            "fieldname": "total_payable",
+            "label": "Total Payable",
+            "fieldtype": "Currency",
+            "read_only": 1,
+            "precision": 2,
+            "options": "RUB"
+        },
+        {
+            "fieldname": "total_deductions",
+            "label": "Total Deductions",
+            "fieldtype": "Currency",
+            "precision": 2,
+            "options": "RUB"
+        },
+        {
+            "fieldname": "net_payable",
+            "label": "Net Payable",
+            "fieldtype": "Currency",
+            "read_only": 1,
+            "precision": 2,
+            "options": "RUB"
+        }
+    ],
++    "permissions": [
++        {
++            "role": "System Manager",
++            "read": 1,
++            "write": 1,
++            "create": 1,
++            "delete": 1
++        },
++        {
++            "role": "Employee",
++            "read": 1,
++            "write": 0,
++            "create": 0,
++            "delete": 0
++        }
++    ]
+}

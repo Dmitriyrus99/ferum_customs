@@ -1,22 +1,4 @@
-{
-    "doctype": "DocType",
-    "name": "Assigned Engineer Item",
-    "module": "Ferum Customs",
-    "istable": 1,
-    "track_changes": 1,
-    "fields": [
-        {
-            "fieldname": "engineer",
-            "label": "Engineer",
-            "fieldtype": "Link",
-            "options": "User",
-            "reqd": 1  // Added required field validation
-        },
-        {
-            "fieldname": "assignment_date",
-            "label": "Assignment Date",
-            "fieldtype": "Datetime",
-            "reqd": 1  // Added required field validation
-        }
-    ]
-}
+1c1
+<     "istable": 1,
+---
+>     "istable": 0,

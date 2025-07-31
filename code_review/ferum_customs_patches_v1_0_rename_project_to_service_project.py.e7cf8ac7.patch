@@ -3,47 +3,28 @@
 < import frappe
 ---
 > # ferum_customs/patches/v1_0/rename_project_to_service_project.py
-> import frappe
-4c4
+> import frappe, logging
+5c5
 < def execute() -> None:
 ---
-> def execute() -> None:
-6c6
-<     """Renames DocType 'Project' to 'Service Project' if needed."""
----
->     """Renames DocType 'Project' to 'Service Project' if needed."""
+> def execute() -> None:  # type: ignore
 8c8
-<     if frappe.db.exists("DocType", "Project") and not frappe.db.exists(
----
->     if frappe.db.exists("DocType", "Project") and not frappe.db.exists(
-10c10
 <         print("Renaming DocType 'Project' to 'Service Project'...")
 ---
->         print("Renaming DocType 'Project' to 'Service Project'...")
-12c12
-<             rename_doc(
----
->             rename_doc(
-14c14
+>         logging.info("Renaming DocType 'Project' to 'Service Project'...")
+11c11
 <             print("Successfully renamed 'Project' to 'Service Project'.")
 ---
->             print("Successfully renamed 'Project' to 'Service Project'.")
-16c16
-<             frappe.log_error(
----
->             frappe.log_error(
-18c18
+>             logging.info("Successfully renamed 'Project' to 'Service Project'.")
+14c14
 <             print(f"Error during rename: {e}")
 ---
->             print(f"Error during rename: {e}")
-20,21d20
-<         # frappe.db.commit() # Usually not needed as patches run in their own transaction.
-<         # Keep if there's a specific reason for intermediate commit in a more complex patch.
-23c22
-<     elif not frappe.db.exists("DocType", "Project"):
+>             logging.error(f"Error during rename: {e}")
+17c17
+<         print("DocType 'Project' does not exist. Skipping rename.")
 ---
->     elif not frappe.db.exists("DocType", "Project"):
-25c24
-<     elif frappe.db.exists("DocType", "Service Project"):
+>         logging.info("DocType 'Project' does not exist. Skipping rename.")
+19c19
+<         print("DocType 'Service Project' already exists. Skipping rename.")
 ---
->     elif frappe.db.exists("DocType", "Service Project"):
+>         logging.info("DocType 'Service Project' already exists. Skipping rename.")

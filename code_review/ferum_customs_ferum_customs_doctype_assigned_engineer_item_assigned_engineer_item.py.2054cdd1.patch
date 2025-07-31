@@ -4,15 +4,15 @@
 > # ferum_customs/doctype/assigned_engineer_item/assigned_engineer_item.py
 19a20
 > 
-22c23
+25c26
 <     engineer: str | None
 ---
->     engineer: Optional[str]
-25c26
-<     def validate(self) -> None:
----
->     def validate(self) -> None:  # type: ignore
+>     engineer: Optional[str] = None
 38c39
+<         if self.get("engineer") and isinstance(self.engineer, str):
+---
+>         if self.engineer and isinstance(self.engineer, str):
+54c55
 <         assignment_date_val = self.get("assignment_date")
 ---
 >         assignment_date_val = self.assignment_date

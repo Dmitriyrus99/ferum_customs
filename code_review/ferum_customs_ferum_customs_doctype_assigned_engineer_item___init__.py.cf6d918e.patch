@@ -2,4 +2,4 @@
 +++ b/ferum_customs/doctype/assigned_engineer_item/__init__.py
 @@ -1,1 +1,1 @@
 -__version__ = "0.0.1"
-+__version__ = "0.0.2"
++__version__ = "0.0.1"  # Update versioning according to semantic versioning guidelines

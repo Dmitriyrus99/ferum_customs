@@ -75,6 +75,6 @@
 ---
 > try:  # dev-hooks (if any)
 39c39
-< except ImportError:
+<     pass
 ---
-> except ImportError:  # Handle import error
+>     pass  # Ignore import errors
