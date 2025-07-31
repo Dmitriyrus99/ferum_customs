@@ -1,0 +1,242 @@
+1,2c1,2
+<     "doctype": "DocType",
+<     "name": "Service Report",
+---
+>     "doctype": "DocType", 
+>     "name": "Service Report", 
+5c5
+<     "track_changes": 1,
+---
+>     "track_changes": 1, 
+8c8
+<     "title_field": "service_request",
+---
+>     "title_field": "service_request", 
+10c10
+<             "fieldname": "service_request",
+---
+>             "fieldname": "service_request", 
+12c12
+<             "fieldtype": "Link",
+---
+>             "fieldtype": "Link", 
+14c14
+<             "in_list_view": 1
+---
+>             "in_list_view": 1 
+16c16
+<             "fieldname": "customer",
+---
+>             "fieldname": "customer", 
+18c18
+<             "fieldtype": "Link",
+---
+>             "fieldtype": "Link", 
+20c20
+<             "no_copy": 1,
+---
+>             "no_copy": 1, 
+22c22
+<             "description": "Automatically populated from the linked Service Request."
+---
+>             "description": "Automatically populated from the linked Service Request." 
+24c24
+<             "fieldname": "posting_date",
+---
+>             "fieldname": "posting_date", 
+26c26
+<             "fieldtype": "Datetime",
+---
+>             "fieldtype": "Datetime", 
+28c28
+<             "in_list_view": 1
+---
+>             "in_list_view": 1 
+30c30
+<             "fieldname": "total_payable",
+---
+>             "fieldname": "total_payable", 
+32c32
+<             "fieldtype": "Currency",
+---
+>             "fieldtype": "Currency", 
+34c34
+<             "no_copy": 1
+---
+>             "no_copy": 1 
+36c36
+<             "fieldname": "work_items_section",
+---
+>             "fieldname": "work_items_section", 
+38c38
+<             "fieldtype": "Section Break",
+---
+>             "fieldtype": "Section Break", 
+40c40
+<             "fieldname": "work_items",
+---
+>             "fieldname": "work_items", 
+42c42
+<             "fieldtype": "Table",
+---
+>             "fieldtype": "Table", 
+44c44
+<             "reqd": 1
+---
+>             "reqd": 1 
+46c46
+<             "fieldname": "total_quantity",
+---
+>             "fieldname": "total_quantity", 
+48c48
+<             "fieldtype": "Float",
+---
+>             "fieldtype": "Float", 
+50c50
+<             "no_copy": 1
+---
+>             "no_copy": 1 
+52c52
+<             "fieldname": "documents_section",
+---
+>             "fieldname": "documents_section", 
+54c54
+<             "fieldtype": "Section Break",
+---
+>             "fieldtype": "Section Break", 
+56c56
+<             "fieldname": "attached_documents",
+---
+>             "fieldname": "attached_documents", 
+58c58
+<             "fieldtype": "Table",
+---
+>             "fieldtype": "Table", 
+60c60
+<             "options": "ServiceReportDocumentItem"
+---
+>             "options": "ServiceReportDocumentItem" 
+62c62
+<             "fieldname": "status",
+---
+>             "fieldname": "status", 
+64c64
+<             "fieldtype": "Select",
+---
+>             "fieldtype": "Select", 
+66c66
+<             "options": "draft\nsubmitted\ncancelled",
+---
+>             "options": "draft\nsubmitted\ncancelled", 
+68c68
+<             "read_only": 1,
+---
+>             "read_only": 1, 
+70c70
+<             "hidden": 1,
+---
+>             "hidden": 1, 
+72c72
+<             "print_hide": 1
+---
+>             "print_hide": 1 
+74c74
+<     "permissions": [
+---
+>     "permissions": [ 
+76c76
+<             "role": "System Manager",
+---
+>             "role": "System Manager", 
+78c78
+<             "write": 1,
+---
+>             "write": 1, 
+80c80
+<             "create": 1,
+---
+>             "create": 1, 
+82c82
+<             "delete": 1,
+---
+>             "delete": 1, 
+84c84
+<             "submit": 1,
+---
+>             "submit": 1, 
+86c86
+<             "cancel": 1,
+---
+>             "cancel": 1, 
+88c88
+<             "amend": 1
+---
+>             "amend": 1 
+90c90
+<             "role": "Administrator",
+---
+>             "role": "Administrator", 
+92c92
+<             "write": 1,
+---
+>             "write": 1, 
+94c94
+<             "create": 1,
+---
+>             "create": 1, 
+96c96
+<             "delete": 1,
+---
+>             "delete": 1, 
+98c98
+<             "submit": 1,
+---
+>             "submit": 1, 
+100c100
+<             "cancel": 1,
+---
+>             "cancel": 1, 
+102c102
+<             "amend": 1
+---
+>             "amend": 1 
+104c104
+<             "role": "Проектный менеджер",
+---
+>             "role": "Проектный менеджер", 
+106c106
+<             "write": 1,
+---
+>             "write": 1, 
+108c108
+<             "create": 1,
+---
+>             "create": 1 
+110c110
+<             "delete": 1,
+---
+>             "delete": 1, 
+112c112
+<             "submit": 1,
+---
+>             "submit": 1, 
+114c114
+<             "cancel": 1,
+---
+>             "cancel": 1, 
+116c116
+<             "amend": 1
+---
+>             "amend": 1 
+118c118
+<             "role": "Инженер",
+---
+>             "role": "Инженер", 
+120c120
+<             "write": 1,
+---
+>             "write": 1, 
+122c122
+<             "create": 1
+---
+>             "create": 1

@@ -1,0 +1,14 @@
+10c10
+< # from .constants import (
+---
+> from .constants import (  # Uncomment if roles are needed
+12a13
+> 
+15c16
+<     frappe.db.commit()  # Коммит предыдущих транзакций перед началом операций в after_install, если необходимо
+---
+>     # frappe.db.commit()  # Коммит предыдущих транзакций перед началом операций в after_install, если необходимо
+20c21
+<     frappe.db.commit()  # Финальный коммит
+---
+>     # frappe.db.commit()  # Финальный коммит

@@ -1,0 +1,10 @@
+1,2c1,2
+<     "track_changes": 1,
+<     "fields": [
+---
+>     "track_changes": 0,
+>     "fields": [
+5c5
+<             "read_only": 1,
+---
+>             "read_only": 0,

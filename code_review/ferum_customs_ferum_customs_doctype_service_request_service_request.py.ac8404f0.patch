@@ -1,0 +1,8 @@
+34c34
+< from frappe.utils import get_datetime, now
+---
+> from frappe.utils import get_datetime, now, now_datetime
+50c50
+<             self.db_set("actual_start_datetime", frappe.utils.now_datetime())
+---
+>             self.db_set("actual_start_datetime", now_datetime())

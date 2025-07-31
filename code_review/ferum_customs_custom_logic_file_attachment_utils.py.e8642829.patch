@@ -1,0 +1,16 @@
+1c1
+< # ferum_customs/ferum_customs/custom_logic/file_attachment_utils.py
+---
+> # ferum_customs/custom_logic/file_attachment_utils.py
+34c34
+<     from typing import Any
+---
+>     from typing import Any, Optional
+56c56
+<     file_url: str, is_private: bool = False
+---
+>     file_url: str, is_private: Optional[bool] = False
+75c75
+<     file_doc_name = frappe.db.get_value("File", {"file_url": file_url})
+---
+>     file_doc_name = frappe.db.get_value("File", {"file_url": file_url}, "name")

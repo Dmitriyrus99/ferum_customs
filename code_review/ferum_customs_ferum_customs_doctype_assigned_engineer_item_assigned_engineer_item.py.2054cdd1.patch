@@ -1,0 +1,18 @@
+1c1
+< # ferum_customs/ferum_customs/doctype/assigned_engineer_item/assigned_engineer_item.py
+---
+> # ferum_customs/doctype/assigned_engineer_item/assigned_engineer_item.py
+19a20
+> 
+22c23
+<     engineer: str | None
+---
+>     engineer: Optional[str]
+25c26
+<     def validate(self) -> None:
+---
+>     def validate(self) -> None:  # type: ignore
+38c39
+<         assignment_date_val = self.get("assignment_date")
+---
+>         assignment_date_val = self.assignment_date

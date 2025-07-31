@@ -1,0 +1,70 @@
+1,2c1,2
+< # ferum_customs/ferum_customs/custom_logic/service_object_hooks.py
+< """Хуки для DocType *Service Object* – оборудование / объект обслуживания."""
+---
+> """Hooks for DocType *Service Object* – equipment / service object."""
+> 
+4c4
+< from frappe import _  # Для перевода строк
+---
+> from frappe import _  # For string translation
+6c6
+<     # Замените на актуальный путь к вашему DocType Service Object, если он определен.
+---
+>     # Replace with the actual path to your Service Object DocType if defined.
+8c8
+< # from frappe.model.document import Document # Общий тип для документов
+---
+> # from frappe.model.document import Document # General type for documents
+10c10
+<     """
+---
+>     """ 
+12c12
+<         doc: Экземпляр документа Service Object.
+---
+>         doc: Instance of the Service Object document.
+14c14
+<         method: Имя вызвавшего метода (например, "validate").
+---
+>         method: Name of the calling method (e.g., "validate").
+16c16
+<         frappe.ValidationError: Если серийный номер не уникален.
+---
+>         frappe.ValidationError: If the serial number is not unique.
+18c18
+<     if doc.get("serial_no"):
+---
+>     if doc.serial_no:
+20c20
+<         # Можно решить, считать ли это ошибкой или просто проигнорировать
+---
+>         # Decide whether to treat this as an error or just ignore it
+22c22
+<         # Формируем фильтры для поиска дубликатов.
+---
+>         # Create filters for duplicate search.
+24c24
+<         # Это гарантирует, что мы не найдем сам текущий документ при его редактировании.
+---
+>         # This ensures we do not find the current document when editing it.
+26c26
+<         # Можно добавить фильтр по компании, если серийные номера уникальны в рамках компании
+---
+>         # Add a filter by company if serial numbers are unique within the company
+28c28
+<         # frappe.db.exists возвращает имя существующего документа или None
+---
+>         # frappe.db.exists returns the name of an existing document or None
+30c30
+<             # Если дубликат найден, выбрасываем исключение с переводимым сообщением.
+---
+>             # If a duplicate is found, raise an exception with a translatable message.
+32c32
+<             ).format(serial_no_cleaned, existing_doc_name)
+---
+>             ).format(serial_no_cleaned, existing_doc_name) 
+34c34
+<             # Например, проверка связанных полей, форматов и т.д.
+---
+>             # For example, checking related fields, formats, etc.

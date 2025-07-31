@@ -1,0 +1,24 @@
+15c15
+< from frappe import _
+---
+> from frappe import _, throw
+38c38
+<         frappe.throw(
+---
+>         throw(
+45c45
+<         frappe.throw(
+---
+>         throw(
+52c52
+<         frappe.throw(
+---
+>         throw(
+66c66
+<         frappe.logger(__name__).warning(
+---
+>         frappe.logger(__name__).warning(
+70c70
+<         req: ServiceRequest = frappe.get_doc("Service Request", doc.service_request)
+---
+>         req: ServiceRequest = frappe.get_doc("Service Request", doc.service_request)  # type: ignore

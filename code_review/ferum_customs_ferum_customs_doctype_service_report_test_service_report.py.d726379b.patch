@@ -1,0 +1,24 @@
+10c10
+<     from frappe.tests.utils import FrappeTestCase
+---
+>     from frappe.tests.utils import FrappeTestCase, create_new_doc
+15c15
+<         doc = frappe.new_doc("Service Report")
+---
+>         doc = create_new_doc("Service Report")
+20c20
+<         doc.service_request = " TEST123 "
+---
+>         doc.service_request = "TEST123"
+22c22
+<         doc.customer = " CUSTOMER1 "
+---
+>         doc.customer = "CUSTOMER1"
+25c25
+<                 "description": " Test work item ",
+---
+>                 "description": "Test work item",
+28c28
+<         self.assertTrue(
+---
+>         self.assertTrue(doc.posting_date.strip().endswith("Z")

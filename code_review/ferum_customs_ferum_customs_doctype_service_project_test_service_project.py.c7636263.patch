@@ -1,0 +1,8 @@
+6c6
+<     from frappe.tests.utils import FrappeTestCase
+---
+>     from frappe.tests.utils import FrappeTestCase, ValidationError
+9c9
+<         with self.assertRaises(frappe.ValidationError):
+---
+>         with self.assertRaises(ValidationError):

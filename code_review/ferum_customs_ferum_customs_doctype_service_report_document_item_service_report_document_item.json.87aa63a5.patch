@@ -1,0 +1,11 @@
+--- ferum_customs/doctype/service_report_document_item/service_report_document_item.json
++++ ferum_customs/doctype/service_report_document_item/service_report_document_item.json
+@@ -7,6 +7,7 @@
+         {
+             "fieldname": "attachment",
+             "label": "Attachment",
+             "fieldtype": "Attach",
++            "reqd": 1,
+             "description": "Max file size: 10MB"
+         }
+     ]
