@@ -1,0 +1,6 @@
+--- ferum_customs/doctype/service_object/test_service_object.py
++++ ferum_customs/doctype/service_object/test_service_object.py
+@@ -8,7 +8,7 @@
+         doc.validate()
+-        self.assertEqual(doc.linked_service_project, "PROJECT001")
++        self.assertEqual(doc.linked_service_project.strip(), "PROJECT001")

@@ -1,0 +1,5 @@
+1,2d0
+< try:
+<     from frappe.tests.utils import FrappeTestCase
+3a2
+> from frappe.tests.utils import FrappeTestCase

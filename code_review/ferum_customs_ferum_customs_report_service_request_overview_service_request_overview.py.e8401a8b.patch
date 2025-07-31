@@ -1,0 +1,54 @@
+1c1
+< from __future__ import annotations
+---
+> from __future__ import annotations  # Ensure compatibility with future Python versions
+3,4c3,4
+< from typing import Any
+< 
+---
+> from typing import Any  # Importing Any for type hinting
+> 
+6c6
+< from ferum_customs.constants import STATUS_OTMENENA, STATUS_ZAKRYTA
+---
+> from ferum_customs.constants import STATUS_OTMENENA, STATUS_ZAKRYTA  # Importing constants for status checks
+8c8
+< def execute(
+---
+> def execute(  # Function to execute service request overview
+10c10
+< ) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+---
+> ) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:  # Return type hint for columns and data
+12c12
+<     open_count = frappe.db.count(
+---
+>     open_count = frappe.db.count(  # Count of open service requests
+14c14
+<     overdue_count = frappe.db.count(
+---
+>     overdue_count = frappe.db.count(  # Count of overdue service requests
+16c16
+<     avg_seconds = (
+---
+>     avg_seconds = (  # Calculate average resolution time in seconds
+18c18
+<         from `tabservice_request`
+---
+>         from `tabservice_request`  # Querying the service_request table
+20c20
+<     avg_hours = round(avg_seconds / 3600.0, 2)
+---
+>     avg_hours = round(avg_seconds / 3600.0, 2)  # Convert seconds to hours
+22c22
+<     columns = [
+---
+>     columns = [  # Define columns for the report
+24c24
+<     data = [
+---
+>     data = [  # Prepare data for the report
+26c26
+<     return columns, data
+---
+>     return columns, data  # Return the columns and data for the report

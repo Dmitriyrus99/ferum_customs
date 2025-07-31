@@ -1,0 +1,14 @@
+1c1
+< from unittest.mock import patch  # Для мокирования frappe.sendmail
+---
+> from unittest.mock import patch, MagicMock  # Для мокирования frappe.sendmail
+56a57
+> 
+63a65
+> 
+70a73
+> 
+75a78
+> 
+80a84
+>

@@ -1,0 +1,23 @@
+1,2c1,2
+< # ferum_customs/ferum_customs/doctype/custom_attachment/custom_attachment.py
+< """
+---
+> # ferum_customs/doctype/custom_attachment/custom_attachment.py
+> """
+12a3
+> 
+19c10
+<         # Логика из оригинального файла (custom_attachment.py):
+---
+>         # Логика из оригинального файла (custom_attachment.py) была удалена.
+22,23d12
+<         # if self.get("attachment_file") and isinstance(self.attachment_file, str):
+<         #     self.attachment_file = self.attachment_file.strip()
+30c19
+<         # if self.get("attachment_file") and isinstance(self.attachment_file, str):
+---
+>         # if self.get("attachment_file") and isinstance(self.attachment_file, str): # Consider validating URL
+34c23
+<         # Пример бизнес-правила: должен быть указан ТОЛЬКО один родитель
+---
+>         # Пример бизнес-правила: должен быть указан ТОЛЬКО один родитель (добавить проверку)

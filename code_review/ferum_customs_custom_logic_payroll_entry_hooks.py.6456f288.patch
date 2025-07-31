@@ -1,0 +1,12 @@
+15c15
+<     # Предполагаемая структура для импорта DocType:
+---
+>     # Предполагаемая структура для импорта DocType (не используется):
+30c30
+<     # Сюда можно добавить другие проверки для PayrollEntryCustom.
+---
+>     # Сюда можно добавить другие проверки для PayrollEntryCustom (не используется).
+56c56
+<     if isinstance(doc.get("total_payable"), float | int):
+---
+>     if isinstance(doc.get("total_payable"), (float, int)):

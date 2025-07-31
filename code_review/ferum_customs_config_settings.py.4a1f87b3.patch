@@ -1,0 +1,20 @@
+1c1
+< from pydantic_settings import BaseSettings, SettingsConfigDict
+---
+> from pydantic import BaseSettings, Extra
+7c7
+<     site_name: str | None = None
+---
+>     site_name: Optional[str] = None
+8c8
+<     admin_password: str | None = None
+---
+>     admin_password: Optional[str] = None
+10c10
+<     frappe_url: str | None = None
+---
+>     frappe_url: Optional[str] = None
+12c12
+<         extra="ignore",
+---
+>         extra=Extra.ignore,

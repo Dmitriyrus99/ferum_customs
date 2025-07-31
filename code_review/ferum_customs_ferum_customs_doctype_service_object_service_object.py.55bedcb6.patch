@@ -1,0 +1,37 @@
+1,2d0
+< # from typing import TYPE_CHECKING
+< # from frappe import _ # Если будут пользовательские сообщения
+4,5d1
+< # from ..service_project.service_project import ServiceProject # Пример
+< # from .assigned_engineer_item import AssignedEngineerItem # Для дочерней таблицы
+8a5
+> from frappe import _  # Для пользовательских сообщений
+10a8
+> from typing import TYPE_CHECKING
+12a11
+> if TYPE_CHECKING:
+14a14
+> 
+16,17d15
+< # Пример дополнительной валидации:
+< # if self.get("warranty_expiry_date") and self.get("purchase_date"):
+19a18
+> 
+21,22d19
+< # Логика из оригинального файла (service_object.py):
+< # if self.linked_service_project:
+24a22
+> 
+26,27d23
+< # Эта логика теперь в _clean_fields()
+< 
+29a26
+> 
+31,32d27
+< # Поля типа Link обычно не требуют strip(), так как хранят ID.
+< # Если 'linked_service_project' - это Data поле, то strip() имеет смысл.
+34a30
+> 
+36,37d31
+< # if self.get("object_name"):
+< #     self.object_name = self.object_name.strip()

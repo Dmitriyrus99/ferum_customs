@@ -1,0 +1,9 @@
+1,2d0
+< import pytest
+< 
+4a3
+> 
+6c5
+<     from frappe.tests.utils import FrappeTestCase
+---
+>     from frappe.tests.utils import FrappeTestCase  # type: ignore

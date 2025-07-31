@@ -1,0 +1,54 @@
+1,2c1,2
+<   "doctype": "DocType",
+<   "custom": 1,
+---
+>   "doctype": "DocType", // Ensure this is a valid DocType
+>   "custom": 1, // Custom DocType should be reviewed for necessity
+5c5
+<   "track_changes": 1,
+---
+>   "track_changes": 1, // Consider if change tracking is necessary
+8c8
+<   "fields": [
+---
+>   "fields": [ // Ensure all fields are necessary and properly validated
+12c12
+<       "fieldtype": "Data",
+---
+>       "fieldtype": "Data", // Validate data input for security
+15c15
+<       "fieldtype": "Link",
+---
+>       "fieldtype": "Link", // Ensure proper validation of linked documents
+20c20
+<       "fieldtype": "Data"
+---
+>       "fieldtype": "Data" // Validate data input for security
+23c23
+<       "fieldtype": "Text"
+---
+>       "fieldtype": "Text" // Validate text input for security
+26c26
+<       "fieldtype": "Select",
+---
+>       "fieldtype": "Select", // Ensure options are sanitized
+29c29
+<       "permissions": [
+---
+>       "permissions": [ // Review permissions for least privilege principle
+32c32
+<     { "role": "System Manager", "read": 1, "write": 1, "create": 1, "delete": 1, "submit": 1, "cancel": 1, "amend": 1 },
+---
+>     { "role": "System Manager", "read": 1, "write": 1, "create": 1, "delete": 1, "submit": 1, "cancel": 1, "amend": 1 }, // Review role permissions
+35c35
+<     { "role": "Administrator", "read": 1, "write": 1, "create": 1, "delete": 1, "submit": 1, "cancel": 1, "amend": 1 },
+---
+>     { "role": "Administrator", "read": 1, "write": 1, "create": 1, "delete": 1, "submit": 1, "cancel": 1, "amend": 1 }, // Review role permissions
+38c38
+<     { "role": "Проектный менеджер", "read": 1, "write": 1, "create": 1, "delete": 1 },
+---
+>     { "role": "Проектный менеджер", "read": 1, "write": 1, "create": 1, "delete": 1 }, // Review role permissions
+41c41
+<     { "role": "Инженер", "read": 1 }
+---
+>     { "role": "Инженер", "read": 1 } // Review role permissions

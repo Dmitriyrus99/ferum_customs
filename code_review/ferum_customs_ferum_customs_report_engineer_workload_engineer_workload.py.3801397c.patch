@@ -1,0 +1,24 @@
+1c1
+< from __future__ import annotations
+---
+> from __future__ import annotations  # Ensure compatibility with Python 3.7+
+3a4
+> 
+5a7
+> 
+8c10
+< def execute(
+---
+> def execute(filters: dict[str, Any] | None = None) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+10c12
+<     rows = frappe.db.sql(
+---
+>     rows = frappe.db.sql(  # Fetching data from the database
+12c14
+<         where status not in (%s, %s)
+---
+>         where status not in (%s, %s)  # Avoiding specific statuses
+14c16
+<         as_dict=True,
+---
+>         as_dict=True,  # Returning results as a dictionary
