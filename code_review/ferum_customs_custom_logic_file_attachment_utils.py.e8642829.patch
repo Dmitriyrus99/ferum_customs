@@ -1,16 +1,20 @@
 1c1
 < # ferum_customs/ferum_customs/custom_logic/file_attachment_utils.py
 ---
-> # ferum_customs/custom_logic/file_attachment_utils.py
-34c34
+> # custom_logic/file_attachment_utils.py
+43c43
 <     from typing import Any
 ---
 >     from typing import Any, Optional
 56c56
-<     file_url: str, is_private: bool = False
+< def delete_attachment_file_from_filesystem(
 ---
->     file_url: str, is_private: Optional[bool] = False
+> def delete_attachment_file_from_filesystem(file_url: str, is_private: bool = False) -> None:
+63c63
+<     if not file_url or not isinstance(file_url, str):
+---
+>     if not file_url or not isinstance(file_url, str) or not file_url.strip():
 75c75
-<     file_doc_name = frappe.db.get_value("File", {"file_url": file_url})
+<         logger.warning(
 ---
->     file_doc_name = frappe.db.get_value("File", {"file_url": file_url}, "name")
+>         logger.warning("File not found: %s", file_path)

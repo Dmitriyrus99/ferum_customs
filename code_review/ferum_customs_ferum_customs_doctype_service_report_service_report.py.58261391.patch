@@ -2,7 +2,7 @@
 <         if self.get("service_request") and isinstance(self.service_request, str):
 ---
 >         if self.get("service_request") and isinstance(self.get("service_request"), str):
-36c36
+37c37
 <         if self.get("customer") and isinstance(self.customer, str):
 ---
 >         if self.get("customer") and isinstance(self.get("customer"), str):

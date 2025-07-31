@@ -1,9 +1,17 @@
-1,2d0
+1,2c1,2
 < import os
 < 
-4a3
+---
+> import os  
 > import sys
-7c6
+7c7
+< def run_tests(site: str, app: str, test_path: str) -> None:
+---
+> def run_tests(site: str, app: str, test_path: str) -> int:
+11c11
 <     exit(pytest.main([path]))
 ---
->     sys.exit(pytest.main([path]))
+>     return pytest.main([path])
+> 
+> if __name__ == "__main__":
+>     sys.exit(run_tests())

@@ -1,8 +1,16 @@
-6c6
-<     from frappe.tests.utils import FrappeTestCase
+1,2c1,2
+< try:
+<     import frappe
 ---
->     from frappe.tests.utils import FrappeTestCase, ValidationError
-9c9
+> import frappe
+> from frappe import ValidationError
+5c5
+< except Exception:  # pragma: no cover
+---
+> 
+8a9
+> 
+10c11
 <         with self.assertRaises(frappe.ValidationError):
 ---
 >         with self.assertRaises(ValidationError):

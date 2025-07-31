@@ -1,5 +1,5 @@
---- permissions/__init__.py
-+++ permissions/__init__.py
+--- a/permissions/__init__.py
++++ b/permissions/__init__.py
 @@ -1,1 +1,1 @@
 -__version__ = "0.0.1"
 +__version__ = "0.0.2"

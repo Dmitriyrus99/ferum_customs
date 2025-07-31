@@ -17,8 +17,8 @@
 12c14
 <         where status not in (%s, %s)
 ---
->         where status not in (%s, %s)  # Avoiding specific statuses
+>         where status not in (%s, %s)  # Exclude certain statuses
 14c16
-<         as_dict=True,
+<         (STATUS_ZAKRYTA, STATUS_OTMENENA),
 ---
->         as_dict=True,  # Returning results as a dictionary
+>         (STATUS_ZAKRYTA, STATUS_OTMENENA),  # Parameters for the query

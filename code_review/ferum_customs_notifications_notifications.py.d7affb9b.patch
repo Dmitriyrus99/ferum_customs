@@ -6,3 +6,7 @@
 < def get_notification_config() -> dict[str, Any]:
 ---
 > def get_notification_config() -> Dict[str, Any]:
+12c12
+<             "condition": (
+---
+>             "condition": lambda doc: doc.get_doc_before_save() and doc.status != doc.get_doc_before_save().status,
