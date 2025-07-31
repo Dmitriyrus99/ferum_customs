@@ -32,7 +32,7 @@ This document explains how to install the `ferum_customs` app in your Frappe/ERP
    ```
 4. Install Python dependencies:
    ```bash
-   pip install -r requirements.txt
+   pip install .
    ```
 5. Copy and edit the environment configuration:
    ```bash
