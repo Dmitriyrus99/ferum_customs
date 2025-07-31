@@ -1,5 +1,0 @@
-- The `enabled` field should be a boolean value instead of an integer (1 should be `true`).
-- The `recipients` array should ideally include a unique identifier for each recipient to avoid ambiguity.
-- The use of non-ASCII characters in the `subject` and `message` fields may lead to encoding issues if not handled properly in the application.
-- The `event` field should be validated against a predefined list of acceptable events to prevent potential misuse or errors.
-- Consider adding a `created_at` and `updated_at` timestamp to track changes to the notification configuration.

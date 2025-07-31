@@ -1,3 +1,0 @@
-- The `is_standard` field should be a boolean value (`true` or `false`) instead of a string ("Yes").
-- The `add_total_row` field should be a boolean value (`true` or `false`) instead of an integer (0).
-- The `roles` array should ideally include an ID or a unique identifier for the role, not just the name, to avoid ambiguity and improve data integrity.

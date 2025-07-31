@@ -1,3 +1,0 @@
-- The JSON file is empty, which may not be an issue by itself, but it could indicate a lack of data or a potential problem in the data generation process.
-- If this file is expected to contain data, ensure that the data generation or fetching logic is functioning correctly.
-- If the file is intentionally empty, consider adding a comment or documentation to clarify its purpose.
