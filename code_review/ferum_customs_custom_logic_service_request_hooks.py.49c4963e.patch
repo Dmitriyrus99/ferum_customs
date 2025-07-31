@@ -1,0 +1,12 @@
+45c45
+<     if doc.status == STATUS_VYPOLNENA and not doc.get(FIELD_CUSTOM_LINKED_REPORT):
+---
+>     if doc.status == STATUS_VYPOLNENA and not doc.get(FIELD_CUSTOM_LINKED_REPORT) and not doc.get("completed_on"):
+66c66
+<     if linked_report := frappe.db.exists(
+---
+>     if linked_report := frappe.db.exists("Service Report", {"service_request": doc.name}):
+75c75
+<     try:
+---
+>     try:  # Ensure that the service object exists before accessing its fields

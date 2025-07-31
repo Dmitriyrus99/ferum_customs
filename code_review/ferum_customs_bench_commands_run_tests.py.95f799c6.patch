@@ -1,0 +1,9 @@
+1,2d0
+< import os
+< 
+3a2
+> import sys
+5c4
+<     exit(pytest.main([path]))
+---
+>     sys.exit(pytest.main([path]))

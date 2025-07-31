@@ -1,0 +1,12 @@
+45c45
+< 	frm.set_query(engineer_field, null);
+---
+> 	frm.set_query(engineer_field, () => null);
+66c66
+< 	frm.set_query(engineer_field, null);
+---
+> 	frm.set_query(engineer_field, () => null);
+85c85
+< 	frm.set_query(engineer_field, null);
+---
+> 	frm.set_query(engineer_field, () => null);

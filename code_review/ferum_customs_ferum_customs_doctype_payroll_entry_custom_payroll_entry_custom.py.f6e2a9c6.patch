@@ -1,0 +1,20 @@
+19c19
+< # from typing import TYPE_CHECKING
+---
+> from typing import TYPE_CHECKING
+30c30
+<     total_payable: float | None
+---
+>     total_payable: float | None = None
+31c31
+<     total_deductions: float | None
+---
+>     total_deductions: float | None = None
+32c32
+<     net_payable: float | None
+---
+>     net_payable: float | None = None
+66c66
+<         if isinstance(self.total_payable, float | int):
+---
+>         if isinstance(self.total_payable, (float, int)):

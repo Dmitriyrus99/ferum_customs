@@ -1,0 +1,32 @@
+15c15
+<     # Предполагаемая структура для импорта DocType:
+---
+>     # Предполагаемая структура для импорта DocType (не используется):
+30c30
+<     # Сюда можно добавить другие проверки для PayrollEntryCustom.
+---
+>     # Сюда можно добавить другие проверки для PayrollEntryCustom (например, проверка на наличие сотрудника).
+45c45
+<     total_bonus = 0.0
+---
+>     total_bonus: float = 0.0
+56c56
+<     base_salary = float(doc.get("base_salary", 0.0) or 0.0)
+---
+>     base_salary: float = float(doc.get("base_salary", 0.0) or 0.0)
+58c58
+<     additional_pay = float(doc.get("additional_pay", 0.0) or 0.0)
+---
+>     additional_pay: float = float(doc.get("additional_pay", 0.0) or 0.0)
+60c60
+<     total_deduction = float(doc.get("total_deduction", 0.0) or 0.0)
+---
+>     total_deduction: float = float(doc.get("total_deduction", 0.0) or 0.0)
+64c64
+<     if doc.get("total_payable") is None:
+---
+>     if doc.total_payable is None:
+66c66
+<     if isinstance(doc.get("total_payable"), float | int):
+---
+>     if isinstance(doc.total_payable, (float, int)):

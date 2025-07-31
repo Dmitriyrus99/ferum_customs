@@ -1,6 +1,6 @@
 # GPT Code Review Report
 
-**Date:** 2025-07-31 15:14:05
+**Date:** 2025-07-31 15:31:47
 
 
 ## Как применить изменения
@@ -72,7 +72,7 @@ find code_review -type f -name '*.patch' -exec git apply {} \;
 * PATCH: `ferum_customs/ferum_customs/report/engineer_workload/engineer_workload.py` → [ferum_customs_ferum_customs_report_engineer_workload_engineer_workload.py.3801397c.patch](code_review/ferum_customs_ferum_customs_report_engineer_workload_engineer_workload.py.3801397c.patch)
 * PATCH: `ferum_customs/ferum_customs/report/service_request_overview/__init__.py` → [ferum_customs_ferum_customs_report_service_request_overview___init__.py.61c5d123.patch](code_review/ferum_customs_ferum_customs_report_service_request_overview___init__.py.61c5d123.patch)
 * PATCH: `ferum_customs/ferum_customs/report/service_request_overview/service_request_overview.json` → [ferum_customs_ferum_customs_report_service_request_overview_service_request_overview.json.4d874e25.patch](code_review/ferum_customs_ferum_customs_report_service_request_overview_service_request_overview.json.4d874e25.patch)
-* PATCH: `ferum_customs/ferum_customs/report/service_request_overview/service_request_overview.py` → [ferum_customs_ferum_customs_report_service_request_overview_service_request_overview.py.e8401a8b.patch](code_review/ferum_customs_ferum_customs_report_service_request_overview_service_request_overview.py.e8401a8b.patch)
+* ISSUES: `ferum_customs/ferum_customs/report/service_request_overview/service_request_overview.py` → [ferum_customs_ferum_customs_report_service_request_overview_service_request_overview.py.e8401a8b.md](code_review/ferum_customs_ferum_customs_report_service_request_overview_service_request_overview.py.e8401a8b.md)
 * PATCH: `ferum_customs/ferum_customs/test_api.py` → [ferum_customs_ferum_customs_test_api.py.1bffab5e.patch](code_review/ferum_customs_ferum_customs_test_api.py.1bffab5e.patch)
 * PATCH: `ferum_customs/fixtures/client_script.json` → [ferum_customs_fixtures_client_script.json.84eea901.patch](code_review/ferum_customs_fixtures_client_script.json.84eea901.patch)
 * PATCH: `ferum_customs/fixtures/custom_docperm.json` → [ferum_customs_fixtures_custom_docperm.json.9601fb28.patch](code_review/ferum_customs_fixtures_custom_docperm.json.9601fb28.patch)

@@ -1,0 +1,378 @@
+1,2c1,2
+<   {
+<     "doctype": "DocPerm",
+---
+> {
+>   "doctype": "DocPerm",
+3,4c3,4
+<     "name": "Service Request-Проектный менеджер-0",
+<     "parent": "Service Request",
+---
+>   "name": "Service Request-Проектный менеджер-0",
+>   "parent": "Service Request",
+5,6c5,6
+<     "parenttype": "DocType",
+<     "role": "Проектный менеджер",
+---
+>   "parenttype": "DocType",
+>   "role": "Проектный менеджер",
+7,8c7,8
+<     "permlevel": 0,
+<     "read": 1,
+---
+>   "permlevel": 0,
+>   "read": 1,
+9,10c9,10
+<     "write": 1,
+<     "create": 1,
+---
+>   "write": 1,
+>   "create": 1,
+11,12c11,12
+<     "delete": 1,
+<     "submit": 1,
+---
+>   "delete": 1,
+>   "submit": 1,
+13,14c13,14
+<     "cancel": 1,
+<     "amend": 1,
+---
+>   "cancel": 1,
+>   "amend": 1,
+15,16c15,16
+<     "report": 1,
+<     "share": 1,
+---
+>   "report": 1,
+>   "share": 1,
+17,18c17,18
+<     "print": 1,
+<     "email": 1,
+---
+>   "print": 1,
+>   "email": 1,
+19,20c19,20
+<     "if_owner": 0,
+<     "match": ""
+---
+>   "if_owner": 0,
+>   "match": ""
+21,22c21,22
+<   },
+<   {
+---
+> },
+> {
+23,24c23,24
+<     "doctype": "DocPerm",
+<     "name": "Service Request-Инженер-0",
+---
+>   "doctype": "DocPerm",
+>   "name": "Service Request-Инженер-0",
+25,26c25,26
+<     "parent": "Service Request",
+<     "parenttype": "DocType",
+---
+>   "parent": "Service Request",
+>   "parenttype": "DocType",
+27,28c27,28
+<     "role": "Инженер",
+<     "permlevel": 0,
+---
+>   "role": "Инженер",
+>   "permlevel": 0,
+29,30c29,30
+<     "read": 1,
+<     "write": 1,
+---
+>   "read": 1,
+>   "write": 1,
+31,32c31,32
+<     "create": 0,
+<     "delete": 0,
+---
+>   "create": 0,
+>   "delete": 0,
+33,34c33,34
+<     "submit": 0,
+<     "cancel": 0,
+---
+>   "submit": 0,
+>   "cancel": 0,
+35,36c35,36
+<     "amend": 0,
+<     "report": 1,
+---
+>   "amend": 0,
+>   "report": 1,
+37,38c37,38
+<     "share": 1,
+<     "print": 1,
+---
+>   "share": 1,
+>   "print": 1,
+39,40c39,40
+<     "email": 1,
+<     "if_owner": 0,
+---
+>   "email": 1,
+>   "if_owner": 0,
+41,42c41,42
+<     "match": ""
+<   },
+---
+>   "match": ""
+> },
+43,44c43,44
+<   {
+<     "doctype": "DocPerm",
+---
+> {
+>   "doctype": "DocPerm",
+45,46c45,46
+<     "name": "Service Request-Заказчик-0",
+<     "parent": "Service Request",
+---
+>   "name": "Service Request-Заказчик-0",
+>   "parent": "Service Request",
+47,48c47,48
+<     "parenttype": "DocType",
+<     "role": "Заказчик",
+---
+>   "parenttype": "DocType",
+>   "role": "Заказчик",
+49,50c49,50
+<     "permlevel": 0,
+<     "read": 1,
+---
+>   "permlevel": 0,
+>   "read": 1,
+51,52c51,52
+<     "write": 0,
+<     "create": 1,
+---
+>   "write": 0,
+>   "create": 1,
+53,54c53,54
+<     "delete": 0,
+<     "submit": 0,
+---
+>   "delete": 0,
+>   "submit": 0,
+55,56c55,56
+<     "cancel": 0,
+<     "amend": 0,
+---
+>   "cancel": 0,
+>   "amend": 0,
+57,58c57,58
+<     "report": 0,
+<     "share": 0,
+---
+>   "report": 0,
+>   "share": 0,
+59,60c59,60
+<     "print": 1,
+<     "email": 1,
+---
+>   "print": 1,
+>   "email": 1,
+61,62c61,62
+<     "if_owner": 1,
+<     "match": ""
+---
+>   "if_owner": 1,
+>   "match": ""
+63,64c63,64
+<   },
+<   {
+---
+> },
+> {
+65,66c65,66
+<     "doctype": "DocPerm",
+<     "name": "Service Request-Customer-0",
+---
+>   "doctype": "DocPerm",
+>   "name": "Service Request-Customer-0",
+67,68c67,68
+<     "parent": "Service Request",
+<     "parenttype": "DocType",
+---
+>   "parent": "Service Request",
+>   "parenttype": "DocType",
+69,70c69,70
+<     "role": "Customer",
+<     "permlevel": 0,
+---
+>   "role": "Customer",
+>   "permlevel": 0,
+71,72c71,72
+<     "read": 1,
+<     "write": 0,
+---
+>   "read": 1,
+>   "write": 0,
+73,74c73,74
+<     "create": 1,
+<     "delete": 0,
+---
+>   "create": 1,
+>   "delete": 0,
+75,76c75,76
+<     "submit": 0,
+<     "cancel": 0,
+---
+>   "submit": 0,
+>   "cancel": 0,
+77,78c77,78
+<     "amend": 0,
+<     "report": 0,
+---
+>   "amend": 0,
+>   "report": 0,
+79,80c79,80
+<     "share": 0,
+<     "print": 1,
+---
+>   "share": 0,
+>   "print": 1,
+81,82c81,82
+<     "email": 1,
+<     "if_owner": 1,
+---
+>   "email": 1,
+>   "if_owner": 1,
+83,84c83,84
+<     "match": ""
+<   },
+---
+>   "match": ""
+> },
+85,86c85,86
+<   {
+<     "doctype": "DocPerm",
+---
+> {
+>   "doctype": "DocPerm",
+87,88c87,88
+<     "name": "Service Request-Administrator-0",
+<     "parent": "Service Request",
+---
+>   "name": "Service Request-Administrator-0",
+>   "parent": "Service Request",
+89,90c89,90
+<     "parenttype": "DocType",
+<     "role": "Administrator",
+---
+>   "parenttype": "DocType",
+>   "role": "Administrator",
+91,92c91,92
+<     "permlevel": 0,
+<     "read": 1,
+---
+>   "permlevel": 0,
+>   "read": 1,
+93,94c93,94
+<     "write": 1,
+<     "create": 1,
+---
+>   "write": 1,
+>   "create": 1,
+95,96c95,96
+<     "delete": 1,
+<     "submit": 1,
+---
+>   "delete": 1,
+>   "submit": 1,
+97,98c97,98
+<     "cancel": 1,
+<     "amend": 1,
+---
+>   "cancel": 1,
+>   "amend": 1,
+99,100c99,100
+<     "report": 1,
+<     "share": 1,
+---
+>   "report": 1,
+>   "share": 1,
+101,102c101,102
+<     "print": 1,
+<     "email": 1,
+---
+>   "print": 1,
+>   "email": 1,
+103,104c103,104
+<     "if_owner": 0,
+<     "match": ""
+---
+>   "if_owner": 0,
+>   "match": ""
+105,106c105,106
+<   },
+<   {
+---
+> },
+> {
+107,108c107,108
+<     "doctype": "DocPerm",
+<     "name": "Service Request-Генеральный директор-0",
+---
+>   "doctype": "DocPerm",
+>   "name": "Service Request-Генеральный директор-0",
+109,110c109,110
+<     "parent": "Service Request",
+<     "parenttype": "DocType",
+---
+>   "parent": "Service Request",
+>   "parenttype": "DocType",
+111,112c111,112
+<     "role": "Генеральный директор",
+<     "permlevel": 0,
+---
+>   "role": "Генеральный директор",
+>   "permlevel": 0,
+113,114c113,114
+<     "read": 1,
+<     "write": 1,
+---
+>   "read": 1,
+>   "write": 1,
+115,116c115,116
+<     "create": 1,
+<     "delete": 1,
+---
+>   "create": 1,
+>   "delete": 1,
+117,118c117,118
+<     "submit": 1,
+<     "cancel": 1,
+---
+>   "submit": 1,
+>   "cancel": 1,
+119,120c119,120
+<     "amend": 1,
+<     "report": 1,
+---
+>   "amend": 1,
+>   "report": 1,
+121,122c121,122
+<     "share": 1,
+<     "print": 1,
+---
+>   "share": 1,
+>   "print": 1,
+123,124c123,124
+<     "email": 1,
+<     "if_owner": 0,
+---
+>   "email": 1,
+>   "if_owner": 0,
+125,126c125,126
+<     "match": ""
+<   }
+---
+>   "match": ""
+> }

@@ -1,0 +1,25 @@
+15c15
+<       "unique": 1
+---
+>       "unique": 1,
+22c22
+<     { "fieldname": "start_date", "label": "Дата начала", "fieldtype": "Date" },
+---
+>     {
+>       "fieldname": "start_date",
+>       "label": "Дата начала",
+>       "fieldtype": "Date"
+>     },
+24c24
+<     { "fieldname": "end_date", "label": "Дата окончания", "fieldtype": "Date" },
+---
+>     {
+>       "fieldname": "end_date",
+>       "label": "Дата окончания",
+>       "fieldtype": "Date"
+>     },
+30c30
+<     {
+---
+>     },
+>     {

@@ -1,0 +1,4 @@
+10c10
+<             "description": "Max file size: 10MB"
+---
+>             "description": "Max file size: 10MB. Allowed formats: PDF, DOCX, JPG, PNG."

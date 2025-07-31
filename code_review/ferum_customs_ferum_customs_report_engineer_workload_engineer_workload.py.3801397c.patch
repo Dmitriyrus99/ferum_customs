@@ -1,0 +1,28 @@
+1c1
+< from __future__ import annotations
+---
+> from __future__ import annotations  # Ensure compatibility with Python 3.7+
+3a4
+> 
+5a7
+> 
+8c10
+< def execute(
+---
+> def execute(filters: dict[str, Any] | None = None) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:  # Function signature
+10c12
+<     rows = frappe.db.sql(
+---
+>     rows = frappe.db.sql(  # SQL query to fetch engineer workload
+12c14
+<         where status not in (%s, %s)
+---
+>         where status not in (%s, %s)  # Exclude certain statuses
+14c16
+<         group by custom_assigned_engineer
+---
+>         group by custom_assigned_engineer  # Group by engineer
+16c18
+<         order by total desc
+---
+>         order by total desc  # Order results by total requests

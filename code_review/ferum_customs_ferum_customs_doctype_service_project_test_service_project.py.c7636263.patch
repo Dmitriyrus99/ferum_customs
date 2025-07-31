@@ -1,0 +1,20 @@
+1c1
+< import pytest
+---
+> import pytest  # Ensure pytest is installed and available
+3c3
+<     from frappe.tests.utils import FrappeTestCase
+---
+>     from frappe.tests.utils import FrappeTestCase  # Importing FrappeTestCase for testing
+5c5
+<     pytest.skip("frappe not available", allow_module_level=True)
+---
+>     pytest.skip("frappe not available", allow_module_level=True)  # Skip test if frappe is not available
+8c8
+<         doc.start_date = frappe.utils.now_datetime()
+---
+>         doc.start_date = frappe.utils.now_datetime()  # Set start date to current datetime
+10c10
+<         with self.assertRaises(frappe.ValidationError):
+---
+>         with self.assertRaises(frappe.ValidationError):  # Expecting ValidationError for invalid date range

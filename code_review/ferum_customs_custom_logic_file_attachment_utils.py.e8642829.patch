@@ -1,0 +1,24 @@
+1c1
+< # ferum_customs/ferum_customs/custom_logic/file_attachment_utils.py
+---
+> # ferum_customs/custom_logic/file_attachment_utils.py
+43c43
+<     from typing import Any
+---
+>     from typing import Any, Optional
+56c56
+< def delete_attachment_file_from_filesystem(
+---
+> def delete_attachment_file_from_filesystem(file_url: str, is_private: bool = False) -> None:
+63c63
+<     if not file_url or not isinstance(file_url, str):
+---
+>     if not file_url or not isinstance(file_url, str) or not file_url.strip():
+75c75
+<         logger.warning(
+---
+>         logger.warning("File '%s' not found on filesystem. Nothing to delete.", file_path)
+80c80
+<         logger.warning(
+---
+>         logger.warning("Path '%s' is not a file. Skipping deletion.", file_path)

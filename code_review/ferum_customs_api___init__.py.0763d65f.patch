@@ -1,0 +1,8 @@
+19c19
+< def validate_service_request(docname: str) -> dict[str, Any] | None:
+---
+> def validate_service_request(docname: str) -> dict[str, Any]:
+25c25
+< def validate_service_report(docname: str) -> dict[str, Any] | None:
+---
+> def validate_service_report(docname: str) -> dict[str, Any]:

@@ -1,0 +1,12 @@
+1,2c1,2
+< /// <reference path="../../../typings/frappe.d.ts" />
+< 
+---
+> // <reference path="../../../typings/frappe.d.ts" />
+> 
+4a5
+> 
+6c7
+< 			frm.add_custom_button(__("Создать счёт"), () => {
+---
+> 			frm.add_custom_button(__("Создать счёт"), function() {

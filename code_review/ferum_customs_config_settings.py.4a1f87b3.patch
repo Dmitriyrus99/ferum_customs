@@ -1,0 +1,31 @@
+1c1
+< from pydantic_settings import BaseSettings, SettingsConfigDict
+---
+> from pydantic import BaseSettings, BaseModel
+3c3
+< class Settings(BaseSettings):
+---
+> class Settings(BaseModel):
+7c7
+<     telegram_bot_token: str = ""
+---
+>     telegram_bot_token: str
+9c9
+<     site_name: str | None = None
+---
+>     site_name: Optional[str] = None
+10c10
+<     admin_password: str | None = None
+---
+>     admin_password: Optional[str] = None
+12c12
+<     frappe_url: str | None = None
+---
+>     frappe_url: Optional[str] = None
+15c15
+<     model_config = SettingsConfigDict(
+---
+>     class Config:
+>         env_file = [".env", ".env.example"]
+>         env_file_encoding = "utf-8"
+>         extra = "ignore"

@@ -1,0 +1,14 @@
+6c6
+<     from frappe.tests.utils import FrappeTestCase
+---
+>     from frappe.tests.utils import FrappeTestCase, create_new_doc
+10a11
+> 
+12c13
+<         doc = frappe.new_doc("Assigned Engineer Item")
+---
+>         doc = create_new_doc("Assigned Engineer Item")
+14c15
+<         self.assertEqual(doc.engineer, "Engineer User")
+---
+>         self.assertEqual(doc.engineer.strip(), "Engineer User")

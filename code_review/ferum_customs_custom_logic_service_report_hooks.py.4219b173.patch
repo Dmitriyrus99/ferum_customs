@@ -1,0 +1,12 @@
+19c19
+<     if not frappe.db.exists("Service Request", doc.service_request):
+---
+>     if not frappe.db.exists("Service Request", doc.service_request.strip()):
+30c30
+<     req_status = frappe.db.get_value("Service Request", doc.service_request, "status")
+---
+>     req_status = frappe.db.get_value("Service Request", doc.service_request.strip(), "status")
+46c46
+<         req: ServiceRequest = frappe.get_doc("Service Request", doc.service_request)
+---
+>         req: ServiceRequest = frappe.get_doc("Service Request", doc.service_request.strip())

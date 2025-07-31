@@ -1,0 +1,19 @@
+34,35d33
+<         # Логика из оригинального файла (service_project.py):
+<         # if self.start_date and self.end_date:
+40c38
+<         # Эта логика теперь в _validate_dates() и _format_dates_to_iso()
+---
+> 
+43c41
+<                 # Или использовать get_datetime для обоих, если они Datetime.
+---
+>                 # Или использовать get_datetime для обоих, если они Datetime. 
+48c46
+<                 # Можно выбросить ошибку, если формат дат критичен на этом этапе
+---
+>                 # Можно выбросить ошибку, если формат дат критичен на этом этапе 
+56c54
+<                 if isinstance(field_value, datetime.datetime | datetime.date):
+---
+>                 if isinstance(field_value, (datetime.datetime, datetime.date)):

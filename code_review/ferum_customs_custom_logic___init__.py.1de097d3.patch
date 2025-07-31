@@ -1,0 +1,5 @@
+--- a/custom_logic/__init__.py
++++ b/custom_logic/__init__.py
+@@ -1,1 +1,1 @@
+-__version__ = "0.0.1"
++__version__ = "0.0.1"  # Consider using a more semantic versioning approach

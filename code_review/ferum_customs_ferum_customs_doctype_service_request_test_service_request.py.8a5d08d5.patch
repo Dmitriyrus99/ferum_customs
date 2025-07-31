@@ -1,0 +1,62 @@
+1,2c1,2
+< from unittest.mock import patch  # Для мокирования frappe.sendmail
+< 
+---
+> from unittest.mock import patch  # For mocking frappe.sendmail
+> 
+5c5
+<     pytest.skip("frappe not available", allow_module_level=True)
+---
+>     pytest.skip("frappe not available", allow_module_level=True)  # pragma: no cover
+12c12
+< # Импортируйте ваши константы
+---
+> # Import your constants
+15c15
+< TEST_ENGINEER_USER_EMAIL = "test_sr_engineer_ferum@example.com"
+---
+> TEST_ENGINEER_USER_EMAIL = "test_sr_engineer_ferum@example.com"  # Test engineer email
+18c18
+< ACTUAL_TEST_SO_NAME = "_Test SO for SR Tests"
+---
+> ACTUAL_TEST_SO_NAME = "_Test SO for SR Tests"  # Actual test SO name
+22c22
+<         frappe.set_user(self.test_pm_user_email)  # Действия от имени ПМ
+---
+>         frappe.set_user(self.test_pm_user_email)  # Actions on behalf of PM
+26c26
+<         sr.subject = "Test SR - " + frappe.generate_hash(length=5)
+---
+>         sr.subject = "Test SR - " + frappe.generate_hash(length=5)  # Generate unique subject
+30c30
+<                 # Иногда workflow может быть не до конца синхронизирован в тестах
+---
+>                 # Sometimes the workflow may not be fully synchronized in tests
+34c34
+<         # Проверяем, что custom_project подтянулся (логика в service_request.before_save)
+---
+>         # Check that custom_project has been pulled (logic in service_request.before_save)
+38c38
+<         # sr.custom_linked_report = None # Убедимся, что поле пустое (оно и так будет None для нового SR)
+---
+>         # sr.custom_linked_report = None  # Ensure the field is empty (it will be None for a new SR)
+42c42
+<         from ferum_customs.custom_logic.service_request_hooks import (
+---
+>         from ferum_customs.custom_logic.service_request_hooks import (  # Import custom logic
+46c46
+<         # Даты
+---
+>         # Dates
+50c50
+<         # Установка кастомных полей для проверки _clean_fields (если бы они очищались)
+---
+>         # Setting custom fields to check _clean_fields (if they were to be cleared)
+54c54
+<         # if sr_doc.custom_customer: # Если бы custom_customer очищался
+---
+>         # if sr_doc.custom_customer:  # If custom_customer were to be cleared
+58c58
+<         # Мокируем функцию frappe.sendmail
+---
+>         # Mocking the frappe.sendmail function
