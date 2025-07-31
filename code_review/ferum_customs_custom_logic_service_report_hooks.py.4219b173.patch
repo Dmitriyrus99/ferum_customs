@@ -1,24 +1,26 @@
-15c15
-< from frappe import _
----
-> from frappe import _, throw
-38c38
-<         frappe.throw(
----
->         throw(
-45c45
-<         frappe.throw(
----
->         throw(
-52c52
-<         frappe.throw(
----
->         throw(
-66c66
-<         frappe.logger(__name__).warning(
----
->         frappe.logger(__name__).warning(
-70c70
-<         req: ServiceRequest = frappe.get_doc("Service Request", doc.service_request)
----
->         req: ServiceRequest = frappe.get_doc("Service Request", doc.service_request)  # type: ignore
+--- a/ferum_customs/custom_logic/service_report_hooks.py
++++ b/ferum_customs/custom_logic/service_report_hooks.py
+@@ -55,7 +55,7 @@
+ 
+     req_status = frappe.db.get_value("Service Request", doc.service_request, "status")
+ 
+-    if not req_status:
++    if req_status is None:
+         frappe.logger(__name__).error(
+             _(
+                 "Не удалось получить статус для заявки '{0}', связанной с отчетом '{1}'."
+@@ -100,7 +100,7 @@
+ 
+         if req.status != STATUS_VYPOLNENA:
+             req.status = STATUS_VYPOLNENA
+-            if req.meta.has_field("completed_on") and not req.get("completed_on"):
++            if req.meta.has_field("completed_on") and not req.completed_on:
+                 req.completed_on = frappe.utils.now()
+ 
+         req.save(ignore_permissions=True)
+@@ -132,4 +132,4 @@
+             _(
+                 "Произошла ошибка при обновлении связанной заявки. Обратитесь к администратору."
+             )
+-        )
++        )

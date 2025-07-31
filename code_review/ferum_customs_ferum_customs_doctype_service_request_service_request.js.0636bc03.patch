@@ -1,6 +1,37 @@
-45c45
-< 	},
----
-> 	}).fail((r) => {
-50a51
-> 	});
+--- a/ferum_customs/ferum_customs/doctype/service_request/service_request.js
++++ b/ferum_customs/ferum_customs/doctype/service_request/service_request.js
+@@ -120,22 +120,21 @@
+ 		}
+ 
+ 		if (frm.doc.docstatus === 1 && frm.doc.status === "Выполнена") {
+-			frappe.db &&
+-				frm.add_custom_button(
+-					__("Создать Акт выполненных работ"),
+-					() => {
+-						frappe.new_doc("Service Report", {
+-							service_request: frm.doc.name,
+-							customer: frm.doc.custom_customer,
+-						});
+-					},
+-					__("Создать")
+-				);
++			frm.add_custom_button(
++				__("Создать Акт выполненных работ"),
++				() => {
++					frappe.new_doc("Service Report", {
++						service_request: frm.doc.name,
++						customer: frm.doc.custom_customer,
++					});
++				},
++				__("Создать")
++			);
+ 		}
+ 	},
+ 
+ 	validate(frm) {
+-		// console.log("service_request DocType-specific JS: Client-side validation...");
++		// Client-side validation logic
+ 		return true;
+ 	},
+-});
++});

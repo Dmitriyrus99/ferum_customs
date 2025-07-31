@@ -1,0 +1,5 @@
+- The `is_standard` field should be a boolean value (`1` for true, `0` for false) instead of a string. Change `"Yes"` to `1`.
+- The `roles` array should include the `doctype` field for better clarity and adherence to best practices. Consider adding a `doctype` key to specify the role's context.
+- Ensure that the `report_type` is appropriate for the intended use case. If this report is meant to be a standard report, consider changing it to `"Report"` instead of `"Script Report"` if it does not require custom scripting.
+- The `ref_doctype` should be checked to ensure it matches the naming conventions and exists in the system. If `service_request` is not a valid DocType, it should be corrected.
+- Consider adding a `description` field to provide more context about the report's purpose.

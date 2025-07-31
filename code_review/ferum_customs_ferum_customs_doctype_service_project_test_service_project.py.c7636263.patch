@@ -1,16 +1,17 @@
-1,2c1,2
-< try:
-<     import frappe
----
-> import frappe
-> from frappe import ValidationError
-5c5
-< except Exception:  # pragma: no cover
----
-> 
-8a9
-> 
-10c11
-<         with self.assertRaises(frappe.ValidationError):
----
->         with self.assertRaises(ValidationError):
+--- a/ferum_customs/ferum_customs/doctype/service_project/test_service_project.py
++++ b/ferum_customs/ferum_customs/doctype/service_project/test_service_project.py
+@@ -3,7 +3,7 @@
+ try:
+     import frappe
+     from frappe.tests.utils import FrappeTestCase
+-except Exception:  # pragma: no cover
++except ImportError:  # pragma: no cover
+     pytest.skip("frappe not available", allow_module_level=True)
+ 
+ 
+@@ -13,4 +13,4 @@
+         doc.start_date = frappe.utils.now_datetime()
+         doc.end_date = frappe.utils.add_days(doc.start_date, -1)
+         with self.assertRaises(frappe.ValidationError):
+-            doc.validate()
++            doc.validate()

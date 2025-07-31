@@ -1,230 +1,80 @@
-1,2d0
-< # ferum_customs/ferum_customs/doctype/custom_attachment/custom_attachment.py
-< """
-3a2
-> 
-> 
-5,6d3
-< # from typing import TYPE_CHECKING
-< 
-8,9d4
-< # if TYPE_CHECKING:
-< # pass
-11,12d5
-< 
-< 
-14,15d6
-< 
-< 
-17,18d7
-< 
-< 
-20,21d8
-< 
-< 
-23,24d10
-< 
-< 
-26,27d11
-< 
-< 
-29,30d12
-< 
-< 
-32,33d13
-< 
-< 
-35,36d14
-< 
-< 
-38,39d15
-< 
-< 
-41,42d16
-< 
-< 
-44,45d17
-< 
-< 
-47,48d18
-< 
-< 
-50,51d19
-< 
-< 
-53,54d20
-< 
-< 
-56,57d21
-< 
-< 
-59,60d22
-< 
-< 
-62,63d23
-< 
-< 
-65,66d24
-< 
-< 
-68,69d25
-< 
-< 
-71,72d26
-< 
-< 
-74,75d27
-< 
-< 
-77,78d28
-< 
-< 
-80,81d29
-< 
-< 
-83,84d30
-< 
-< 
-86,87d31
-< 
-< 
-89,90d32
-< 
-< 
-92,93d33
-< 
-< 
-95,96d34
-< 
-< 
-98,99d35
-< 
-< 
-101,102d36
-< 
-< 
-104,105d37
-< 
-< 
-107,108d38
-< 
-< 
-110,111d39
-< 
-< 
-113,114d40
-< 
-< 
-116,117d41
-< 
-< 
-119,120d42
-< 
-< 
-122,123d43
-< 
-< 
-125,126d44
-< 
-< 
-128,129d45
-< 
-< 
-131,132d46
-< 
-< 
-134,135d47
-< 
-< 
-137,138d48
-< 
-< 
-140,141d49
-< 
-< 
-143,144d50
-< 
-< 
-146,147d51
-< 
-< 
-149,150d52
-< 
-< 
-152,153d53
-< 
-< 
-155,156d54
-< 
-< 
-158,159d55
-< 
-< 
-161,162d56
-< 
-< 
-164,165d57
-< 
-< 
-167,168d58
-< 
-< 
-170,171d59
-< 
-< 
-173,174d60
-< 
-< 
-176,177d61
-< 
-< 
-179,180d62
-< 
-< 
-182,183d63
-< 
-< 
-185,186d64
-< 
-< 
-188,189d65
-< 
-< 
-191,192d66
-< 
-< 
-194,195d67
-< 
-< 
-197,198d68
-< 
-< 
-200,201d69
-< 
-< 
-203,204d70
-< 
-< 
-206,207d71
-< 
-< 
-209,210d72
-< 
-< 
-212,213d73
-< 
-< 
-215,216d74
-< 
-< 
-218,219d75
-< 
-< 
-221,222d76
-< 
-< 
-224,225d77
-< 
-< 
-226a78
->
+--- a/ferum_customs/ferum_customs/doctype/custom_attachment/custom_attachment.py
++++ b/ferum_customs/ferum_customs/doctype/custom_attachment/custom_attachment.py
+@@ -9,51 +9,26 @@
+ from frappe import _  # Для возможных пользовательских сообщений
+ from frappe.model.document import Document
+ 
+-# from typing import TYPE_CHECKING
+-
+-
+-# if TYPE_CHECKING:
+-# pass
+-
+-
+-class CustomAttachment(Document):  # type: ignore[misc]
+-    attachment_type: str | None
++class CustomAttachment(Document):
+     """
+     Класс документа CustomAttachment.
+     """
++    attachment_type: str | None
+ 
+     def validate(self) -> None:
+         """
+         Валидация данных документа.
+         Очищает и приводит к нижнему регистру `attachment_type`.
+-        Очищает `attachment_file`.
+         """
+         self._clean_fields()
+         self._validate_parent_references()
+-
+-        # Логика из оригинального файла (custom_attachment.py):
+-        # if self.attachment_type:
+-        #     self.attachment_type = self.attachment_type.strip().lower()
+-        # if self.attachment_file: # Поле Attach обычно хранит URL и не требует strip() здесь
+-        #     self.attachment_file = self.attachment_file.strip()
+-        # Эта логика теперь в _clean_fields()
+ 
+     def _clean_fields(self) -> None:
+         """
+         Очистка строковых полей.
+         """
+-        if self.get("attachment_type") and isinstance(self.attachment_type, str):
++        if self.attachment_type and isinstance(self.attachment_type, str):
+             self.attachment_type = self.attachment_type.strip().lower()
+-
+-        # Поле 'attachment_file' имеет тип Attach. Значение в нем - это URL файла.
+-        # URL-ы обычно не содержат начальных/конечных пробелов, которые нужно удалять.
+-        # Frappe сам обрабатывает загрузку и сохранение пути к файлу.
+-        # Оригинальный код делал self.attachment_file.strip(), что для URL нетипично.
+-        # Если есть конкретная причина для этого, ее нужно указать.
+-        # if self.get("attachment_file") and isinstance(self.attachment_file, str):
+-        #     self.attachment_file = self.attachment_file.strip()
+-        #     # Дополнительно можно проверить валидность URL или имени файла.
+-        pass
+ 
+     def _validate_parent_references(self) -> None:
+         """
+@@ -80,18 +55,8 @@
+                         title=_("Ошибка связи"),
+                     )
+ 
+-        # Пример бизнес-правила: должен быть указан хотя бы один родитель
+-        # if linked_parents_count == 0 and not self.is_new(): # Пропускаем для новых, если они могут быть без родителя временно
+-        # if linked_parents_count == 0 and self.docstatus == 0: # Если при сохранении черновика
+-        #     frappe.throw(_("Необходимо указать ссылку хотя бы на один родительский документ (Заявка, Отчет или Объект)."))
++        if linked_parents_count == 0 and not self.is_new():
++            frappe.throw(_("Необходимо указать ссылку хотя бы на один родительский документ (Заявка, Отчет или Объект)."))
+ 
+-        # Пример бизнес-правила: должен быть указан ТОЛЬКО один родитель
+-        # if linked_parents_count > 1:
+-        #     frappe.throw(_("Можно указать ссылку только на один родительский документ."))
+-
+-    # Хук on_trash для CustomAttachment теперь обрабатывается в
+-    # ferum_customs.custom_logic.file_attachment_utils.on_custom_attachment_trash
+-    # и вызывается через hooks.py.
+-    # def on_trash(self) -> None:
+-    #     # Логика удаления физического файла и связанной File DocType записи.
+-    #     pass
++        if linked_parents_count > 1:
++            frappe.throw(_("Можно указать ссылку только на один родительский документ."))

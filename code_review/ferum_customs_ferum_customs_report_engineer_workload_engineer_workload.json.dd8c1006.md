@@ -1,0 +1,4 @@
+- The `is_standard` field should be a boolean value (`true` or `false`) instead of a string. Change `"Yes"` to `true`.
+- The `roles` array should include the role in English for better clarity and maintainability, as it is currently in Russian. Consider adding a corresponding English role or providing a translation.
+- Ensure that the `report_type` is appropriate for the intended use case. If it is a script report, confirm that the necessary script is implemented correctly in the corresponding Python file.
+- Consider adding a `description` field to provide context about the report's purpose, which can improve clarity for future developers.

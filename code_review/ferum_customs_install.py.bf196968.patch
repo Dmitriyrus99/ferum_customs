@@ -1,29 +1,60 @@
-1,2c1,2
-< # ferum_customs/install.py
-< """
----
-> # ferum_customs/install.py
-> """
-4a5
-> 
-6,7d6
-< # Импорт констант ролей, если они используются
-< # from .constants import (
-9,10d7
-< #     ROLE_PROEKTNYJ_MENEDZHER,
-< #     ROLE_OFIS_MENEDZHER,
-12d8
-< #     ROLE_INZHENER,
-14d9
-< #     ROLE_ZAKAZCHIK
-16,17d10
-< 
-< 
-19c12
-<     frappe.db.commit()  # Коммит предыдущих транзакций перед началом операций в after_install, если необходимо
----
->     # frappe.db.commit()  # Коммит предыдущих транзакций перед началом операций в after_install, если необходимо
-22c15
-<     frappe.db.commit()  # Финальный коммит
----
->     # frappe.db.commit()  # Финальный коммит
+--- a/ferum_customs/install.py
++++ b/ferum_customs/install.py
+@@ -10,20 +10,10 @@
+ import frappe
+ from frappe import _  # Для возможных сообщений
+ 
+-# Импорт констант ролей, если они используются
+-# from .constants import (
+-#     ROLE_PROEKTNYJ_MENEDZHER,
+-#     ROLE_OFIS_MENEDZHER,
+-#     ROLE_INZHENER,
+-#     ROLE_ZAKAZCHIK
+-# )
+-
+-
+ def after_install() -> None:
+     """
+     Вызывается один раз после успешной установки приложения.
+     """
+-    frappe.db.commit()  # Коммит предыдущих транзакций перед началом операций в after_install, если необходимо
+     # Создание ролей выполняется через фикстуры (fixtures/role.json).
+     # Дополнительная логика установки может быть добавлена при необходимости.
+ 
+@@ -36,7 +26,6 @@
+     # Пример: Создание начальных данных
+     # create_initial_data()
+ 
+-    frappe.db.commit()  # Финальный коммит
+     frappe.clear_cache()  # Очистка кэша после установки
+     frappe.msgprint(
+         _(
+@@ -44,27 +33,4 @@
+         ),
+         title=_("Installation Complete"),
+         indicator="green",
+-    )
+-
+-
+-# Пример функции для добавления Custom Fields (не рекомендуется, лучше фикстуры)
+-# def add_custom_fields():
+-#     if not frappe.db.exists("Custom Field", {"dt": "User", "fieldname": "custom_user_department"}):
+-#         frappe.get_doc({
+-#             "doctype": "Custom Field",
+-#             "dt": "User",
+-#             "fieldname": "custom_user_department",
+-#             "label": "Department (Custom)",
+-#             "fieldtype": "Link",
+-#             "options": "Department",
+-#             "insert_after": "role_profile_name" # Пример
+-#         }).insert()
+-
+-# Пример функции для создания начальных данных
+-# def create_initial_data():
+-#     if not frappe.db.exists("ServiceType", {"service_type_name": "Standard Maintenance"}): # Пример DocType
+-#         frappe.get_doc({
+-#             "doctype": "ServiceType",
+-#             "service_type_name": "Standard Maintenance",
+-#             "default_duration_hours": 2
+-#         }).insert()
++    )

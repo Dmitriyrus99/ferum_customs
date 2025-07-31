@@ -1,0 +1,5 @@
+- The JSON structure appears to be correct for defining a notification in Frappe.
+- Ensure that the `doctype` and `name` fields are unique and correctly defined in the system to avoid conflicts.
+- The `recipients` field should be validated to ensure that the role "Проектный менеджер" exists in the system to prevent runtime errors.
+- Consider adding a `condition` field to control when the notification should be sent, enhancing flexibility.
+- Ensure that the `subject` and `message` fields are properly localized if the application supports multiple languages.

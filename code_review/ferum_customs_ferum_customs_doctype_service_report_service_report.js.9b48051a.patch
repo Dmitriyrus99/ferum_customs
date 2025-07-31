@@ -1,12 +1,23 @@
-1,2c1,2
-< /// <reference path="../../../typings/frappe.d.ts" />
-< 
----
-> // <reference path="../../../typings/frappe.d.ts" />
-> 
-5a6
-> 
-8c9
-< 			frm.add_custom_button(__("Создать счёт"), () => {
----
-> 			frm.add_custom_button(__("Создать счёт"), function() {
+--- a/ferum_customs/ferum_customs/doctype/service_report/service_report.js
++++ b/ferum_customs/ferum_customs/doctype/service_report/service_report.js
+@@ -8,13 +8,18 @@
+ 					method: "ferum_customs.api.create_invoice_from_report",
+ 					args: { service_report: frm.doc.name },
+ 					freeze: true,
+-					callback(r) {
++					callback: (r) => {
+ 						if (r.message) {
+ 							frappe.set_route("Form", "Sales Invoice", r.message);
++						} else {
++							frappe.msgprint(__("Failed to create invoice. Please try again."));
+ 						}
+ 					},
++					error: (err) => {
++						frappe.msgprint(__("An error occurred: ") + err.message);
++					}
+ 				});
+ 			});
+ 		}
+ 	},
+-});
++});

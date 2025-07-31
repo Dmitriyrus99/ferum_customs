@@ -1,3 +1,36 @@
-1,2d0
-< # Copyright (c) 2025 Ferum LLC and contributors
-< # For license information, please see license.txt
+--- a/ferum_customs/ferum_customs/doctype/service_report_work_item/service_report_work_item.py
++++ b/ferum_customs/ferum_customs/doctype/service_report_work_item/service_report_work_item.py
+@@ -1,13 +1,26 @@
+ # Copyright (c) 2025 Ferum LLC and contributors
+ # For license information, please see license.txt
+ 
+-# import frappe
++import frappe
+ from frappe.model.document import Document
+ 
++class ServiceReportWorkItem(Document):
++    """
++    ServiceReportWorkItem represents a work item in a service report.
++    This class can be extended to include custom validation or logic
++    specific to the work item.
++    """
++    def validate(self):
++        """
++        Override the validate method to add custom validation logic.
++        """
++        # Add any validation logic here if needed in the future
++        pass
+ 
+-class ServiceReportWorkItem(Document):  # type: ignore[misc]
+-    # Эта строка (pass) означает, что в этом классе нет специфической логики.
+-    # Frappe будет использовать стандартное поведение для дочерних документов.
+-    # Если вам понадобится добавить валидации или другую логику для каждой строки
+-    # этой таблицы на сервере, вы можете сделать это здесь.
+-    pass
++    def on_update(self):
++        """
++        Override the on_update method to add logic that should run
++        after the document is updated.
++        """
++        # Add any post-update logic here if needed in the future
++        pass

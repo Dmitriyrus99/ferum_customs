@@ -1,12 +1,20 @@
-45c45
-<     if doc.status == STATUS_VYPOLNENA and not doc.get(FIELD_CUSTOM_LINKED_REPORT):
----
->     if doc.status == STATUS_VYPOLNENA and not doc.get(FIELD_CUSTOM_LINKED_REPORT) and not doc.get("completed_on"):
-66c66
-<     if linked_report := frappe.db.exists(
----
->     if linked_report := frappe.db.exists("Service Report", {"service_request": doc.name}):
-75c75
-<     try:
----
->     try:  # Ensure that the service object exists before accessing its fields
+--- a/ferum_customs/custom_logic/service_request_hooks.py
++++ b/ferum_customs/custom_logic/service_request_hooks.py
+@@ -136,9 +136,9 @@
+         )
+ 
+         customer_email = doc.get("customer_email")
+-        if customer_email:
++        if customer_email and customer_email not in recipients:
+             recipients.append(customer_email)
+-        else:
++        elif not customer_email:
+             frappe.logger(__name__).warning(
+                 f"Service Request '{doc.name}' has no customer_email field set"
+             )
+@@ -185,4 +185,4 @@
+         frappe.logger(__name__).error(
+             f"Не удалось отправить уведомление о закрытии заявки '{doc.name}': {e}",
+             exc_info=True,
+-        )
++        )

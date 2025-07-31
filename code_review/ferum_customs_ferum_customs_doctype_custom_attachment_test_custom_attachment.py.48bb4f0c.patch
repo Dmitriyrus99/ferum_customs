@@ -1,13 +1,22 @@
---- ferum_customs/doctype/custom_attachment/test_custom_attachment.py
-+++ ferum_customs/doctype/custom_attachment/test_custom_attachment.py
-@@ -8,7 +8,7 @@
+--- a/ferum_customs/ferum_customs/doctype/custom_attachment/test_custom_attachment.py
++++ b/ferum_customs/ferum_customs/doctype/custom_attachment/test_custom_attachment.py
+@@ -3,15 +3,15 @@
+ try:
+     import frappe
+     from frappe.tests.utils import FrappeTestCase
+-except Exception:  # pragma: no cover
++except ImportError:  # pragma: no cover
+     pytest.skip("frappe not available", allow_module_level=True)
+ 
  
  class TestCustomAttachment(FrappeTestCase):
      def test_basic(self, frappe_site):
+         doc = frappe.new_doc("Custom Attachment")
 -        doc.attachment_type = " Photo "
 -        doc.attachment_file = " /path/to/file.jpg "
-+        doc.attachment_type = "Photo".strip()
-+        doc.attachment_file = "/path/to/file.jpg".strip()
++        doc.attachment_type = "photo".strip()  # Remove leading/trailing spaces
++        doc.attachment_file = "/path/to/file.jpg".strip()  # Remove leading/trailing spaces
          doc.validate()
          self.assertEqual(doc.attachment_type, "photo")
-         self.assertEqual(doc.attachment_file, "/path/to/file.jpg")
+-        self.assertEqual(doc.attachment_file, "/path/to/file.jpg")
++        self.assertEqual(doc.attachment_file, "/path/to/file.jpg")

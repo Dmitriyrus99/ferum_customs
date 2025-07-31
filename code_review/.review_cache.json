@@ -2,8 +2,8 @@
   "ferum_customs/dev_hooks.py": {
     "src": "ferum_customs/dev_hooks.py",
     "content_hash": "cc974f759d7d63c364caef8bb083994b",
-    "diff_file": "ferum_customs_dev_hooks.py.ac127416.patch",
-    "md_file": null,
+    "diff_file": null,
+    "md_file": "ferum_customs_dev_hooks.py.ac127416.md",
     "status": "reviewed"
   },
   "ferum_customs/install.py": {
@@ -16,15 +16,15 @@
   "ferum_customs/constants.py": {
     "src": "ferum_customs/constants.py",
     "content_hash": "12d771060f3be8202bb33d11f7b8b173",
-    "diff_file": "ferum_customs_constants.py.a8b230f6.patch",
+    "diff_file": null,
     "md_file": null,
     "status": "reviewed"
   },
   "ferum_customs/__init__.py": {
     "src": "ferum_customs/__init__.py",
     "content_hash": "031d2b105914bd41498040b838c6e3b1",
-    "diff_file": "ferum_customs___init__.py.3c6240c0.patch",
-    "md_file": null,
+    "diff_file": null,
+    "md_file": "ferum_customs___init__.py.3c6240c0.md",
     "status": "reviewed"
   },
   "ferum_customs/workspace/service_management.json": {
@@ -37,14 +37,14 @@
   "ferum_customs/patches/create_custom_roles_and_permissions.py": {
     "src": "ferum_customs/patches/create_custom_roles_and_permissions.py",
     "content_hash": "df0808e03aab02b452283f0d721e759f",
-    "diff_file": null,
-    "md_file": "ferum_customs_patches_create_custom_roles_and_permissions.py.48bf8bdf.md",
+    "diff_file": "ferum_customs_patches_create_custom_roles_and_permissions.py.48bf8bdf.patch",
+    "md_file": null,
     "status": "reviewed"
   },
   "ferum_customs/patches/__init__.py": {
     "src": "ferum_customs/patches/__init__.py",
     "content_hash": "b84bb75ea4569850046028d93c006a2e",
-    "diff_file": "ferum_customs_patches___init__.py.2e6bbc8d.patch",
+    "diff_file": null,
     "md_file": null,
     "status": "reviewed"
   },
@@ -58,7 +58,7 @@
   "ferum_customs/patches/v1_0/__init__.py": {
     "src": "ferum_customs/patches/v1_0/__init__.py",
     "content_hash": "b84bb75ea4569850046028d93c006a2e",
-    "diff_file": "ferum_customs_patches_v1_0___init__.py.ce020c15.patch",
+    "diff_file": null,
     "md_file": null,
     "status": "reviewed"
   },
@@ -72,8 +72,8 @@
   "ferum_customs/bench_commands/__init__.py": {
     "src": "ferum_customs/bench_commands/__init__.py",
     "content_hash": "927468bf1c20752ad3bf06df66d29222",
-    "diff_file": "ferum_customs_bench_commands___init__.py.87be9ad5.patch",
-    "md_file": null,
+    "diff_file": null,
+    "md_file": "ferum_customs_bench_commands___init__.py.87be9ad5.md",
     "status": "reviewed"
   },
   "ferum_customs/config/settings.py": {
@@ -86,7 +86,7 @@
   "ferum_customs/config/__init__.py": {
     "src": "ferum_customs/config/__init__.py",
     "content_hash": "b84bb75ea4569850046028d93c006a2e",
-    "diff_file": "ferum_customs_config___init__.py.7aa998d0.patch",
+    "diff_file": null,
     "md_file": null,
     "status": "reviewed"
   },
@@ -100,14 +100,14 @@
   "ferum_customs/ferum_customs/custom_hooks.py": {
     "src": "ferum_customs/ferum_customs/custom_hooks.py",
     "content_hash": "75874d348a62a603c1e27852bc8b882e",
-    "diff_file": "ferum_customs_ferum_customs_custom_hooks.py.8802c862.patch",
+    "diff_file": null,
     "md_file": null,
     "status": "reviewed"
   },
   "ferum_customs/ferum_customs/__init__.py": {
     "src": "ferum_customs/ferum_customs/__init__.py",
     "content_hash": "b84bb75ea4569850046028d93c006a2e",
-    "diff_file": "ferum_customs_ferum_customs___init__.py.a66d136f.patch",
+    "diff_file": null,
     "md_file": null,
     "status": "reviewed"
   },
@@ -135,15 +135,15 @@
   "ferum_customs/ferum_customs/doctype/service_report_work_item/__init__.py": {
     "src": "ferum_customs/ferum_customs/doctype/service_report_work_item/__init__.py",
     "content_hash": "b84bb75ea4569850046028d93c006a2e",
-    "diff_file": "ferum_customs_ferum_customs_doctype_service_report_work_item___init__.py.4d037a95.patch",
+    "diff_file": null,
     "md_file": null,
     "status": "reviewed"
   },
   "ferum_customs/ferum_customs/doctype/assigned_engineer_item/assigned_engineer_item.json": {
     "src": "ferum_customs/ferum_customs/doctype/assigned_engineer_item/assigned_engineer_item.json",
     "content_hash": "49de5668ce3dcf26b55e929fcae51ed2",
-    "diff_file": "ferum_customs_ferum_customs_doctype_assigned_engineer_item_assigned_engineer_item.json.927c6f8a.patch",
-    "md_file": null,
+    "diff_file": null,
+    "md_file": "ferum_customs_ferum_customs_doctype_assigned_engineer_item_assigned_engineer_item.json.927c6f8a.md",
     "status": "reviewed"
   },
   "ferum_customs/ferum_customs/doctype/assigned_engineer_item/assigned_engineer_item.py": {
@@ -163,7 +163,7 @@
   "ferum_customs/ferum_customs/doctype/assigned_engineer_item/__init__.py": {
     "src": "ferum_customs/ferum_customs/doctype/assigned_engineer_item/__init__.py",
     "content_hash": "b84bb75ea4569850046028d93c006a2e",
-    "diff_file": "ferum_customs_ferum_customs_doctype_assigned_engineer_item___init__.py.cf6d918e.patch",
+    "diff_file": null,
     "md_file": null,
     "status": "reviewed"
   },
@@ -191,7 +191,7 @@
   "ferum_customs/ferum_customs/doctype/service_object/__init__.py": {
     "src": "ferum_customs/ferum_customs/doctype/service_object/__init__.py",
     "content_hash": "b84bb75ea4569850046028d93c006a2e",
-    "diff_file": "ferum_customs_ferum_customs_doctype_service_object___init__.py.3f755204.patch",
+    "diff_file": null,
     "md_file": null,
     "status": "reviewed"
   },
@@ -205,14 +205,14 @@
   "ferum_customs/ferum_customs/doctype/service_project/service_project.json": {
     "src": "ferum_customs/ferum_customs/doctype/service_project/service_project.json",
     "content_hash": "c9b4ddeb1682c6975a6a494b5ab76908",
-    "diff_file": "ferum_customs_ferum_customs_doctype_service_project_service_project.json.8d86636e.patch",
+    "diff_file": null,
     "md_file": null,
     "status": "reviewed"
   },
   "ferum_customs/ferum_customs/doctype/service_project/__init__.py": {
     "src": "ferum_customs/ferum_customs/doctype/service_project/__init__.py",
     "content_hash": "b84bb75ea4569850046028d93c006a2e",
-    "diff_file": "ferum_customs_ferum_customs_doctype_service_project___init__.py.f3d18f5b.patch",
+    "diff_file": null,
     "md_file": null,
     "status": "reviewed"
   },
@@ -247,15 +247,15 @@
   "ferum_customs/ferum_customs/doctype/custom_attachment/__init__.py": {
     "src": "ferum_customs/ferum_customs/doctype/custom_attachment/__init__.py",
     "content_hash": "b84bb75ea4569850046028d93c006a2e",
-    "diff_file": "ferum_customs_ferum_customs_doctype_custom_attachment___init__.py.942b99b5.patch",
-    "md_file": null,
+    "diff_file": null,
+    "md_file": "ferum_customs_ferum_customs_doctype_custom_attachment___init__.py.942b99b5.md",
     "status": "reviewed"
   },
   "ferum_customs/ferum_customs/doctype/payroll_entry_custom/payroll_entry_custom.json": {
     "src": "ferum_customs/ferum_customs/doctype/payroll_entry_custom/payroll_entry_custom.json",
     "content_hash": "79120d96f464e1081ad723cc3a54e9c9",
-    "diff_file": "ferum_customs_ferum_customs_doctype_payroll_entry_custom_payroll_entry_custom.json.3ebbb9ca.patch",
-    "md_file": null,
+    "diff_file": null,
+    "md_file": "ferum_customs_ferum_customs_doctype_payroll_entry_custom_payroll_entry_custom.json.3ebbb9ca.md",
     "status": "reviewed"
   },
   "ferum_customs/ferum_customs/doctype/payroll_entry_custom/test_payroll_entry_custom.py": {
@@ -268,7 +268,7 @@
   "ferum_customs/ferum_customs/doctype/payroll_entry_custom/__init__.py": {
     "src": "ferum_customs/ferum_customs/doctype/payroll_entry_custom/__init__.py",
     "content_hash": "b84bb75ea4569850046028d93c006a2e",
-    "diff_file": "ferum_customs_ferum_customs_doctype_payroll_entry_custom___init__.py.bcc7d04e.patch",
+    "diff_file": null,
     "md_file": null,
     "status": "reviewed"
   },
@@ -310,7 +310,7 @@
   "ferum_customs/ferum_customs/doctype/service_request/__init__.py": {
     "src": "ferum_customs/ferum_customs/doctype/service_request/__init__.py",
     "content_hash": "b84bb75ea4569850046028d93c006a2e",
-    "diff_file": "ferum_customs_ferum_customs_doctype_service_request___init__.py.1340992c.patch",
+    "diff_file": null,
     "md_file": null,
     "status": "reviewed"
   },
@@ -352,21 +352,21 @@
   "ferum_customs/ferum_customs/doctype/service_report/__init__.py": {
     "src": "ferum_customs/ferum_customs/doctype/service_report/__init__.py",
     "content_hash": "b84bb75ea4569850046028d93c006a2e",
-    "diff_file": "ferum_customs_ferum_customs_doctype_service_report___init__.py.2ea66684.patch",
+    "diff_file": null,
     "md_file": null,
     "status": "reviewed"
   },
   "ferum_customs/ferum_customs/doctype/service_report_document_item/service_report_document_item.json": {
     "src": "ferum_customs/ferum_customs/doctype/service_report_document_item/service_report_document_item.json",
     "content_hash": "1e8975342ad1550a66933dcdfcedd413",
-    "diff_file": "ferum_customs_ferum_customs_doctype_service_report_document_item_service_report_document_item.json.87aa63a5.patch",
-    "md_file": null,
+    "diff_file": null,
+    "md_file": "ferum_customs_ferum_customs_doctype_service_report_document_item_service_report_document_item.json.87aa63a5.md",
     "status": "reviewed"
   },
   "ferum_customs/ferum_customs/doctype/service_report_document_item/__init__.py": {
     "src": "ferum_customs/ferum_customs/doctype/service_report_document_item/__init__.py",
     "content_hash": "b84bb75ea4569850046028d93c006a2e",
-    "diff_file": "ferum_customs_ferum_customs_doctype_service_report_document_item___init__.py.99267c58.patch",
+    "diff_file": null,
     "md_file": null,
     "status": "reviewed"
   },
@@ -387,8 +387,8 @@
   "ferum_customs/ferum_customs/report/service_request_overview/service_request_overview.json": {
     "src": "ferum_customs/ferum_customs/report/service_request_overview/service_request_overview.json",
     "content_hash": "a61b0022c10799a2b0f1cd42f0978f18",
-    "diff_file": "ferum_customs_ferum_customs_report_service_request_overview_service_request_overview.json.4d874e25.patch",
-    "md_file": null,
+    "diff_file": null,
+    "md_file": "ferum_customs_ferum_customs_report_service_request_overview_service_request_overview.json.4d874e25.md",
     "status": "reviewed"
   },
   "ferum_customs/ferum_customs/report/service_request_overview/__init__.py": {
@@ -408,14 +408,14 @@
   "ferum_customs/ferum_customs/report/engineer_workload/engineer_workload.json": {
     "src": "ferum_customs/ferum_customs/report/engineer_workload/engineer_workload.json",
     "content_hash": "83788ef9c1ec7521c3e5e5afe7bd8a1b",
-    "diff_file": "ferum_customs_ferum_customs_report_engineer_workload_engineer_workload.json.dd8c1006.patch",
-    "md_file": null,
+    "diff_file": null,
+    "md_file": "ferum_customs_ferum_customs_report_engineer_workload_engineer_workload.json.dd8c1006.md",
     "status": "reviewed"
   },
   "ferum_customs/ferum_customs/report/engineer_workload/__init__.py": {
     "src": "ferum_customs/ferum_customs/report/engineer_workload/__init__.py",
     "content_hash": "b84bb75ea4569850046028d93c006a2e",
-    "diff_file": "ferum_customs_ferum_customs_report_engineer_workload___init__.py.1085d8b0.patch",
+    "diff_file": null,
     "md_file": null,
     "status": "reviewed"
   },
@@ -429,7 +429,7 @@
   "ferum_customs/notifications/__init__.py": {
     "src": "ferum_customs/notifications/__init__.py",
     "content_hash": "b84bb75ea4569850046028d93c006a2e",
-    "diff_file": "ferum_customs_notifications___init__.py.bd304243.patch",
+    "diff_file": null,
     "md_file": null,
     "status": "reviewed"
   },
@@ -443,7 +443,7 @@
   "ferum_customs/permissions/__init__.py": {
     "src": "ferum_customs/permissions/__init__.py",
     "content_hash": "b84bb75ea4569850046028d93c006a2e",
-    "diff_file": "ferum_customs_permissions___init__.py.1a5ebc5d.patch",
+    "diff_file": null,
     "md_file": null,
     "status": "reviewed"
   },
@@ -485,43 +485,43 @@
   "ferum_customs/custom_logic/__init__.py": {
     "src": "ferum_customs/custom_logic/__init__.py",
     "content_hash": "b84bb75ea4569850046028d93c006a2e",
-    "diff_file": "ferum_customs_custom_logic___init__.py.1de097d3.patch",
+    "diff_file": null,
     "md_file": null,
     "status": "reviewed"
   },
   "ferum_customs/workflow/workflow_service_request.json": {
     "src": "ferum_customs/workflow/workflow_service_request.json",
     "content_hash": "ecdc663aed40278946e35c64c270de15",
-    "diff_file": "ferum_customs_workflow_workflow_service_request.json.0b849a50.patch",
+    "diff_file": null,
     "md_file": null,
     "status": "reviewed"
   },
   "ferum_customs/fixtures/custom_role.json": {
     "src": "ferum_customs/fixtures/custom_role.json",
     "content_hash": "58e0494c51d30eb3494f7c9198986bb9",
-    "diff_file": "ferum_customs_fixtures_custom_role.json.39e73402.patch",
-    "md_file": null,
+    "diff_file": null,
+    "md_file": "ferum_customs_fixtures_custom_role.json.39e73402.md",
     "status": "reviewed"
   },
   "ferum_customs/fixtures/role.json": {
     "src": "ferum_customs/fixtures/role.json",
     "content_hash": "9119db256cc4cc8f3fd70858bce6fa87",
-    "diff_file": "ferum_customs_fixtures_role.json.728f9020.patch",
-    "md_file": null,
+    "diff_file": null,
+    "md_file": "ferum_customs_fixtures_role.json.728f9020.md",
     "status": "reviewed"
   },
   "ferum_customs/fixtures/portal_menu_item.json": {
     "src": "ferum_customs/fixtures/portal_menu_item.json",
     "content_hash": "616ff54417d8af337d96eefeccf3613b",
-    "diff_file": "ferum_customs_fixtures_portal_menu_item.json.6d4178df.patch",
-    "md_file": null,
+    "diff_file": null,
+    "md_file": "ferum_customs_fixtures_portal_menu_item.json.6d4178df.md",
     "status": "reviewed"
   },
   "ferum_customs/fixtures/notification.json": {
     "src": "ferum_customs/fixtures/notification.json",
     "content_hash": "4b1e96d2bfcf033eda3b7a2c30f7f256",
-    "diff_file": "ferum_customs_fixtures_notification.json.5a23fb2a.patch",
-    "md_file": null,
+    "diff_file": null,
+    "md_file": "ferum_customs_fixtures_notification.json.5a23fb2a.md",
     "status": "reviewed"
   },
   "ferum_customs/fixtures/custom_fields.json": {
@@ -534,29 +534,29 @@
   "ferum_customs/fixtures/custom_docperm.json": {
     "src": "ferum_customs/fixtures/custom_docperm.json",
     "content_hash": "db2e3da4a2c971cd96d94ab1526236ee",
-    "diff_file": "ferum_customs_fixtures_custom_docperm.json.9601fb28.patch",
+    "diff_file": null,
     "md_file": null,
     "status": "reviewed"
   },
   "ferum_customs/fixtures/client_script.json": {
     "src": "ferum_customs/fixtures/client_script.json",
     "content_hash": "58e0494c51d30eb3494f7c9198986bb9",
-    "diff_file": "ferum_customs_fixtures_client_script.json.84eea901.patch",
-    "md_file": null,
+    "diff_file": null,
+    "md_file": "ferum_customs_fixtures_client_script.json.84eea901.md",
     "status": "reviewed"
   },
   "ferum_customs/templates/__init__.py": {
     "src": "ferum_customs/templates/__init__.py",
     "content_hash": "b84bb75ea4569850046028d93c006a2e",
-    "diff_file": "ferum_customs_templates___init__.py.0e7812b6.patch",
+    "diff_file": null,
     "md_file": null,
     "status": "reviewed"
   },
   "ferum_customs/templates/pages/__init__.py": {
     "src": "ferum_customs/templates/pages/__init__.py",
     "content_hash": "b84bb75ea4569850046028d93c006a2e",
-    "diff_file": "ferum_customs_templates_pages___init__.py.694c6fa9.patch",
-    "md_file": null,
+    "diff_file": null,
+    "md_file": "ferum_customs_templates_pages___init__.py.694c6fa9.md",
     "status": "reviewed"
   },
   "ferum_customs/api/__init__.py": {

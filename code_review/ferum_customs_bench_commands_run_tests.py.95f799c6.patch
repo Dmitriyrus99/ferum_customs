@@ -1,17 +1,25 @@
-1,2c1,2
-< import os
-< 
----
-> import os  
-> import sys
-7c7
-< def run_tests(site: str, app: str, test_path: str) -> None:
----
-> def run_tests(site: str, app: str, test_path: str) -> int:
-11c11
-<     exit(pytest.main([path]))
----
->     return pytest.main([path])
-> 
-> if __name__ == "__main__":
->     sys.exit(run_tests())
+--- a/ferum_customs/bench_commands/run_tests.py
++++ b/ferum_customs/bench_commands/run_tests.py
+@@ -1,8 +1,6 @@
+ import os
+-
+ import click
+ import pytest
+-
+ 
+ @click.command("run-tests")
+ @click.option("--site", required=True, help="Site name on which to run tests")
+@@ -18,5 +16,12 @@
+     # Ensure SITE_NAME is set for any fixtures or configurations
+     os.environ["SITE_NAME"] = site
+     path = os.path.join(app, test_path)
++    
++    # Check if the test path exists before running tests
++    if not os.path.exists(path):
++        click.echo(f"Test path '{path}' does not exist.")
++        exit(1)
++
+     # Execute pytest on the target path
+-    exit(pytest.main([path]))
++    exit_code = pytest.main([path])
++    exit(exit_code)

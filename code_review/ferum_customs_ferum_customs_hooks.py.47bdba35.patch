@@ -1,80 +1,33 @@
-1c1
-< # Ferum Customs - hooks
----
-> # Ferum Customs - hooks
-3c3
-< app_name = "ferum_customs"
----
-> app_name = "ferum_customs"  # Application name
-5c5
-< app_title = "Ferum Customs"
----
-> app_title = "Ferum Customs"  # Application title
-7c7
-< app_publisher = "Ferum LLC"
----
-> app_publisher = "Ferum LLC"  # Publisher name
-9c9
-< app_description = "Specific custom functionality for ERPNext"
----
-> app_description = "Specific custom functionality for ERPNext"  # Description
-11c11
-< app_email = "support@ferum.ru"
----
-> app_email = "support@ferum.ru"  # Support email
-13c13
-< app_license = "MIT"
----
-> app_license = "MIT"  # License type
-15c15
-< doc_events = DOC_EVENTS
----
-> doc_events = DOC_EVENTS  # Document events
-17c17
-< permission_query_conditions = {
----
-> permission_query_conditions = {  # Permission query conditions
-19c19
-< get_notification_config = (
----
-> get_notification_config = (  # Notification configuration
-21c21
-< # ── актуальный список фикстур: только данные, без описаний DocType ──
----
-> # ── актуальный список фикстур: только данные, без описаний DocType ──  # Fixtures list
-23c23
-< fixtures = [
----
-> fixtures = [  # List of fixtures
-25c25
-< # Bench commands: custom CLI tools for this app
----
-> # Bench commands: custom CLI tools for this app  # Custom CLI tools
-27c27
-< from ferum_customs.bench_commands.run_tests import run_tests
----
-> from ferum_customs.bench_commands.run_tests import run_tests  # Importing run_tests
-29c29
-< bench_commands = [run_tests]
----
-> bench_commands = [run_tests]  # List of bench commands
-31c31
-< from typing import Any
----
-> from typing import Any  # Type hinting
-33c33
-< def scheduler_events() -> dict[str, Any]:
----
-> def scheduler_events() -> dict[str, Any]:  # Scheduler events function
-35c35
-<     """Return scheduler events configuration for Frappe."""
----
->     """Return scheduler events configuration for Frappe."""  # Docstring
-37c37
-< try:  # dev-hooks (если есть)
----
-> try:  # dev-hooks (if any)
-39c39
-<     pass
----
->     pass  # Ignore import errors
+--- a/ferum_customs/ferum_customs/hooks.py
++++ b/ferum_customs/ferum_customs/hooks.py
+@@ -12,9 +12,7 @@
+ permission_query_conditions = {
+     "Service Request": "ferum_customs.permissions.permissions.get_service_request_pqc",
+ }
+-get_notification_config = (
+-    "ferum_customs.notifications.notifications.get_notification_config"
+-)
++get_notification_config = "ferum_customs.notifications.notifications.get_notification_config"
+ 
+ # ── актуальный список фикстур: только данные, без описаний DocType ──
+ fixtures = [
+@@ -32,16 +30,13 @@
+ 
+ bench_commands = [run_tests]
+ 
++from typing import Any, Dict
+ 
+-from typing import Any
+-
+-
+-def scheduler_events() -> dict[str, Any]:
++def scheduler_events() -> Dict[str, Any]:
+     """Return scheduler events configuration for Frappe."""
+     return {}
+-
+ 
+ try:  # dev-hooks (если есть)
+     from ferum_customs.dev_hooks import *
+ except ImportError:
+-    pass
++    pass

@@ -1,6 +1,0 @@
-1,2c1,2
-< """DocType hook mapping used by hooks.py."""
-< 
----
-> """DocType hook mapping used by hooks.py. Ensure all hooks are properly defined and tested."""
->

@@ -1,18 +1,68 @@
-1,2c1,2
-< from __future__ import annotations
-< 
----
-> from __future__ import annotations  # Ensure compatibility with future Python versions
-> 
-4a5
-> 
-7a9
-> 
-10c12
-<         from `tabservice_request`
----
->         from `tabService Request`  # Correct table name casing for consistency
-12c14
-<         where actual_end_datetime is not null
----
->         where actual_end_datetime is not null  # Ensure proper handling of null values
+--- a/ferum_customs/ferum_customs/report/service_request_overview/service_request_overview.py
++++ b/ferum_customs/ferum_customs/report/service_request_overview/service_request_overview.py
+@@ -1,6 +1,6 @@
+ from __future__ import annotations
+ 
+-from typing import Any
++from typing import Any, Optional, Tuple, List, Dict
+ 
+ import frappe
+ from frappe import _
+@@ -9,30 +9,32 @@
+ 
+ 
+ def execute(
+-    filters: dict[str, Any] | None = None
+-) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+-    open_count = frappe.db.count(
+-        "service_request",
+-        {"status": ["not in", (STATUS_ZAKRYTA, STATUS_OTMENENA)]},
+-    )
+-    overdue_count = frappe.db.count(
+-        "service_request",
+-        {
+-            "status": ["not in", (STATUS_ZAKRYTA, STATUS_OTMENENA)],
+-            "planned_end_datetime": ("<", frappe.utils.now_datetime()),
+-        },
+-    )
++    filters: Optional[Dict[str, Any]] = None
++) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
++    # Use a single query to get both open and overdue counts to improve performance
++    counts = frappe.db.sql(
++        """
++        SELECT 
++            SUM(CASE WHEN status NOT IN (%s, %s) THEN 1 ELSE 0 END) AS open_count,
++            SUM(CASE WHEN status NOT IN (%s, %s) AND planned_end_datetime < %s THEN 1 ELSE 0 END) AS overdue_count
++        FROM `tabservice_request`
++        """,
++        (STATUS_ZAKRYTA, STATUS_OTMENENA, STATUS_ZAKRYTA, STATUS_OTMENENA, frappe.utils.now_datetime()),
++        as_dict=True
++    )[0]
++
++    open_count = counts.get('open_count', 0)
++    overdue_count = counts.get('overdue_count', 0)
+ 
+     avg_seconds = (
+         frappe.db.sql(
+             """
+-        select avg(timestampdiff(second, actual_start_datetime, actual_end_datetime))
+-        from `tabservice_request`
+-        where actual_end_datetime is not null
+-        """,
++            SELECT AVG(TIMESTAMPDIFF(SECOND, actual_start_datetime, actual_end_datetime)) 
++            FROM `tabservice_request` 
++            WHERE actual_end_datetime IS NOT NULL
++            """,
+             as_dict=False,
+-        )[0][0]
+-        or 0
++        )[0][0] or 0
+     )
+     avg_hours = round(avg_seconds / 3600.0, 2)
+ 
+@@ -52,4 +54,4 @@
+         {"metric": _("Avg Resolution (h)"), "value": avg_hours},
+     ]
+ 
+-    return columns, data
++    return columns, data
