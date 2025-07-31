@@ -1,0 +1,14 @@
+--- a/.devcontainer/devcontainer.json
++++ b/.devcontainer/devcontainer.json
+@@ -3,8 +3,8 @@
+   "image": "mcr.microsoft.com/devcontainers/universal:2-linux",
+   "features": {
+     "ghcr.io/devcontainers/features/docker-in-docker:2": {
+-      "version": "latest"
++      "version": "2.0.0" // Specify a stable version instead of latest
+     }
+   },
+-  "postCreateCommand": "sudo usermod -aG docker ${USER}"
+-}
++  "postCreateCommand": "echo 'Please log out and back in to use Docker.'"
++}

@@ -1,0 +1,17 @@
+--- a/openai_utils.py
++++ b/openai_utils.py
+@@ -11,7 +11,7 @@
+     """Return a Python code completion for the given fragment."""
+ 
+     response = openai.ChatCompletion.create(
+-        model="gpt-4o",
++        model="gpt-4",  # Corrected model name
+         messages=[
+             {
+                 "role": "system",
+@@ -30,4 +30,4 @@
+         stream=False,
+     )
+     content = response["choices"][0]["message"]["content"]
+-    return str(content).strip()
++    return content.strip()  # Removed unnecessary str() conversion

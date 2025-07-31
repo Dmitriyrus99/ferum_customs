@@ -1,0 +1,16 @@
+--- a/ferum_customs/doctype/service_report/service_report.json
++++ b/ferum_customs/doctype/service_report/service_report.json
+@@ -114,7 +114,11 @@
+             "role": "Инженер",
+             "read": 1,
+             "write": 1,
+-            "create": 1
++            "create": 1,
++            "delete": 0,
++            "submit": 0,
++            "cancel": 0,
++            "amend": 0
+         }
+     ]
+-}
++}

@@ -1,0 +1,26 @@
+--- a/notifications/notifications.py
++++ b/notifications/notifications.py
+@@ -8,7 +8,7 @@
+ Возвращает словарь, описывающий условия для отправки стандартных уведомлений Frappe.
+ """
+ 
+-from typing import Any
++from typing import Any, Dict
+ 
+ from frappe import _  # Для перевода возможных строк в будущем
+ 
+@@ -16,7 +16,7 @@
+ from ferum_customs.constants import ROLE_PROEKTNYJ_MENEDZHER
+ 
+ 
+-def get_notification_config() -> dict[str, Any]:
++def get_notification_config() -> Dict[str, Any]:
+     """
+     Возвращает конфигурацию для стандартных уведомлений Frappe.
+     """
+@@ -52,4 +52,4 @@
+         #     "subject": _("Отчет о выполненных работах {{ doc.name }} был отправлен"),
+         #     "message": _("Отчет {{ doc.name }} для заявки {{ doc.service_request }} был отправлен.") # service_request - стандартное поле в ServiceReport
+         # }
+-    }
++    }

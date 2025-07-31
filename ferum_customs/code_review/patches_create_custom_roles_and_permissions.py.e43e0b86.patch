@@ -1,0 +1,9 @@
+--- a/patches/create_custom_roles_and_permissions.py
++++ b/patches/create_custom_roles_and_permissions.py
+@@ -106,3 +106,6 @@
+ 
+     for perm in SERVICE_REQUEST_PERMS:
+         create_docperm(perm)
++
++    # Ensure that permissions are refreshed after creation
++    frappe.clear_cache()

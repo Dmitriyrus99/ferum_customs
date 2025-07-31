@@ -1,0 +1,3 @@
+- The `fieldtype` for `assignment_date` should be `Date` instead of `Datetime` if only the date is required without the time component.
+- The `options` for the `engineer` field should specify a valid user role or a specific user group to prevent unauthorized access to user data.
+- There is no validation for the `assignment_date` to ensure it is not set in the future, which could lead to logical errors in the application.

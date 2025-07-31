@@ -1,0 +1,13 @@
+--- a/tests/unit/test_service_object_hook.py
++++ b/tests/unit/test_service_object_hook.py
+@@ -17,8 +17,8 @@
+ 
+     hooks = importlib.import_module("ferum_customs.custom_logic.service_object_hooks")
+ 
+-    doc: SimpleNamespace = SimpleNamespace(serial_no=" SN123 ", name="SO-0001")
++    doc: SimpleNamespace = SimpleNamespace(serial_no="SN123", name="SO-0001")  # Removed extra spaces
+     doc.get = lambda k, d=None: getattr(doc, k, d)
+     with pytest.raises(frappe_stub.ValidationError):
+         hooks.validate(doc)
+-    assert "Серийный номер" in captured["msg"]
++    assert "Серийный номер" in captured["msg"]

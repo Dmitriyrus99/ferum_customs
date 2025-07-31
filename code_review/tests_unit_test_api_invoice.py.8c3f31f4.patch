@@ -1,0 +1,17 @@
+--- a/tests/unit/test_api_invoice.py
++++ b/tests/unit/test_api_invoice.py
+@@ -23,7 +23,7 @@
+     )
+ 
+     def get_doc(doctype, name=None):
+-        if isinstance(doctype, dict):
++        if doctype == "Invoice":
+             return invoice_doc
+         if doctype == "Service Report":
+             assert name == "SR1"
+@@ -35,4 +35,4 @@
+ 
+     result = api.create_invoice_from_report("SR1")
+     assert result == "INV001"
+-    assert items and items[0]["description"] == "Work"
++    assert items and items[0]["description"] == "Work"

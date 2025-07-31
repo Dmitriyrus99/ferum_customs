@@ -1,0 +1,11 @@
+--- a/ui-tests/playwright.config.js
++++ b/ui-tests/playwright.config.js
+@@ -5,6 +5,7 @@
+ 	use: {
+ 		baseURL: "http://localhost:8000",
+ 		headless: true,
++		ignoreHTTPSErrors: true, // Added to ignore HTTPS errors if needed
+ 	},
+ 	testDir: "tests",
+-});
++});

@@ -1,0 +1,29 @@
+--- a/custom_logic/service_object_hooks.py
++++ b/custom_logic/service_object_hooks.py
+@@ -13,10 +13,6 @@
+     from ferum_customs.ferum_customs.doctype.service_object.service_object import (
+         ServiceObject,
+     )
+-
+-# from frappe.model.document import Document # Общий тип для документов
+-# ServiceObject = Document
+-
+ 
+ def validate(doc: ServiceObject, method: str | None = None) -> None:
+     """
+@@ -34,8 +30,7 @@
+         # Удаляем возможные пробелы по краям перед проверкой
+         serial_no_cleaned = doc.serial_no.strip()
+         if not serial_no_cleaned:  # Если после очистки строка пустая
+-            # Можно решить, считать ли это ошибкой или просто проигнорировать
+-            # frappe.throw(_("Серийный номер не может состоять только из пробелов."))
++            frappe.throw(_("Серийный номер не может состоять только из пробелов."))
+             return
+ 
+         # Формируем фильтры для поиска дубликатов.
+@@ -61,4 +56,4 @@
+     # Сюда можно добавить другие проверки для ServiceObject.
+     # Например, проверка связанных полей, форматов и т.д.
+     # if doc.installation_date and doc.installation_date > frappe.utils.today():
+-    #     frappe.throw(_("Дата установки не может быть в будущем."))
++    #     frappe.throw(_("Дата установки не может быть в будущем."))

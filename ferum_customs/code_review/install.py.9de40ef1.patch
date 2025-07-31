@@ -1,0 +1,47 @@
+--- a/install.py
++++ b/install.py
+@@ -23,7 +23,6 @@
+     """
+     Вызывается один раз после успешной установки приложения.
+     """
+-    frappe.db.commit()  # Коммит предыдущих транзакций перед началом операций в after_install, если необходимо
+     # Создание ролей выполняется через фикстуры (fixtures/role.json).
+     # Дополнительная логика установки может быть добавлена при необходимости.
+ 
+@@ -36,7 +35,6 @@
+     # Пример: Создание начальных данных
+     # create_initial_data()
+ 
+-    frappe.db.commit()  # Финальный коммит
+     frappe.clear_cache()  # Очистка кэша после установки
+     frappe.msgprint(
+         _(
+@@ -44,27 +42,4 @@
+         ),
+         title=_("Installation Complete"),
+         indicator="green",
+-    )
+-
+-
+-# Пример функции для добавления Custom Fields (не рекомендуется, лучше фикстуры)
+-# def add_custom_fields():
+-#     if not frappe.db.exists("Custom Field", {"dt": "User", "fieldname": "custom_user_department"}):
+-#         frappe.get_doc({
+-#             "doctype": "Custom Field",
+-#             "dt": "User",
+-#             "fieldname": "custom_user_department",
+-#             "label": "Department (Custom)",
+-#             "fieldtype": "Link",
+-#             "options": "Department",
+-#             "insert_after": "role_profile_name" # Пример
+-#         }).insert()
+-
+-# Пример функции для создания начальных данных
+-# def create_initial_data():
+-#     if not frappe.db.exists("ServiceType", {"service_type_name": "Standard Maintenance"}): # Пример DocType
+-#         frappe.get_doc({
+-#             "doctype": "ServiceType",
+-#             "service_type_name": "Standard Maintenance",
+-#             "default_duration_hours": 2
+-#         }).insert()
++    )

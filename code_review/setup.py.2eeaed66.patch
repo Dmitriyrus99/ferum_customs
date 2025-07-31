@@ -1,0 +1,10 @@
+--- a/setup.py
++++ b/setup.py
+@@ -9,5 +9,5 @@
+     packages=find_packages(),
+     include_package_data=True,
+     zip_safe=False,
+-    install_requires=["setuptools"],
+-)
++    install_requires=[],
++)

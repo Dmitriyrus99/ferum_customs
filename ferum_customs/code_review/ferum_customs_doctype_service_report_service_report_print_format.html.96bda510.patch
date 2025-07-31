@@ -1,0 +1,20 @@
+--- a/ferum_customs/doctype/service_report/service_report_print_format.html
++++ b/ferum_customs/doctype/service_report/service_report_print_format.html
+@@ -19,12 +19,12 @@
+     {% for item in doc.work_items %}
+     <tr>
+         <td>{{ loop.index }}</td>
+-        <td>{{ item.description }}</td>
+-        <td>{{ item.quantity }}</td>
+-        <td>{{ item.unit_price }}</td>
+-        <td>{{ item.amount }}</td>
++        <td>{{ item.description|e }}</td>
++        <td>{{ item.quantity|e }}</td>
++        <td>{{ item.unit_price|e }}</td>
++        <td>{{ item.amount|e }}</td>
+     </tr>
+     {% endfor %}
+ </table>
+ 
+-<p>Итого к оплате: {{ doc.total_payable }} ({{ frappe.utils.money_in_words(doc.total_payable) }})</p>
++<p>Итого к оплате: {{ doc.total_payable|e }} ({{ frappe.utils.money_in_words(doc.total_payable) }})</p>

@@ -1,0 +1,2 @@
+- The JSON file is empty, which may not be an issue by itself, but it could indicate that the expected data for custom roles is missing. This could lead to errors or unexpected behavior in the application if it relies on this data.
+- If this file is intended to be populated with data, consider adding a comment or documentation to clarify its purpose and expected structure.

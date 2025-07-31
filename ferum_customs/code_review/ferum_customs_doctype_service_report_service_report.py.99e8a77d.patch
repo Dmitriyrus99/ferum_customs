@@ -1,0 +1,25 @@
+--- a/ferum_customs/doctype/service_report/service_report.py
++++ b/ferum_customs/doctype/service_report/service_report.py
+@@ -21,6 +21,7 @@
+     customer: str | None
+     total_quantity: float
+     total_payable: float
++    posting_date: str | None  # Added missing posting_date attribute
+ 
+     def onload(self) -> None:
+         pass
+@@ -47,7 +48,7 @@
+         posting_date_val = self.get("posting_date")
+         if posting_date_val:
+             if not isinstance(posting_date_val, str):
+-                if isinstance(posting_date_val, datetime.datetime | datetime.date):
++                if isinstance(posting_date_val, (datetime.datetime, datetime.date)):
+                     self.posting_date = posting_date_val.isoformat()
+         else:
+             if self.is_new() and self.meta.get_field("posting_date").reqd:
+@@ -146,4 +147,4 @@
+         from ferum_customs import api
+ 
+         self.calculate_totals()
+-        return cast(str, api.create_invoice_from_report(self.name))
++        return cast(str, api.create_invoice_from_report(self.name))

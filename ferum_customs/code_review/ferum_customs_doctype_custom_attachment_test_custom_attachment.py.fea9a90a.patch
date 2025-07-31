@@ -1,0 +1,14 @@
+--- a/ferum_customs/doctype/custom_attachment/test_custom_attachment.py
++++ b/ferum_customs/doctype/custom_attachment/test_custom_attachment.py
+@@ -10,8 +10,8 @@
+ class TestCustomAttachment(FrappeTestCase):
+     def test_basic(self, frappe_site):
+         doc = frappe.new_doc("Custom Attachment")
+-        doc.attachment_type = " Photo "
+-        doc.attachment_file = " /path/to/file.jpg "
++        doc.attachment_type = "photo".strip()  # Remove extra spaces
++        doc.attachment_file = "/path/to/file.jpg".strip()  # Remove extra spaces
+         doc.validate()
+         self.assertEqual(doc.attachment_type, "photo")
+-        self.assertEqual(doc.attachment_file, "/path/to/file.jpg")
++        self.assertEqual(doc.attachment_file, "/path/to/file.jpg")

@@ -1,0 +1,11 @@
+--- a/frappe-bench/sites/erp.ferumrus.ru/private/backups/20250722_023002-erp_ferumrus_ru-site_config_backup.json
++++ b/frappe-bench/sites/erp.ferumrus.ru/private/backups/20250722_023002-erp_ferumrus_ru-site_config_backup.json
+@@ -1,5 +1,5 @@
+ {
+- "db_name": "_d4c01005bd6191dc",
+- "db_password": "ydV4zKnX2YFhOApS",
+- "db_type": "mariadb"
++  "db_name": "your_db_name",
++  "db_password": "your_secure_password",
++  "db_type": "mariadb"
+ }

@@ -1,0 +1,26 @@
+--- a/ferum_customs/doctype/service_request/service_request.py
++++ b/ferum_customs/doctype/service_request/service_request.py
+@@ -57,7 +57,7 @@
+     def on_submit(self) -> None:
+         """Действия при отправке документа."""
+         if not self.actual_start_datetime:
+-            self.db_set("actual_start_datetime", frappe.utils.now_datetime())
++            self.db_set("actual_start_datetime", now())
+ 
+     def _clean_fields(self) -> None:
+         """Очистка и нормализация полей."""
+@@ -142,7 +142,7 @@
+                 frappe.throw(
+                     _("Нельзя отметить заявку выполненной без связанного отчёта.")
+                 )
+-            if not self.get("completed_on"):
++            if not self.completed_on:
+                 self.completed_on = now()
+ 
+         if self.status == STATUS_ZAKRYTA and not self.get(FIELD_CUSTOM_LINKED_REPORT):
+@@ -165,4 +165,4 @@
+                     _("Недопустимый переход статуса: {0} → {1}").format(
+                         previous.status, self.status
+                     )
+-                )
++                )

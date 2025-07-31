@@ -1,0 +1,3 @@
+- The `attachment` field does not specify any validation for the maximum file size, which could lead to users uploading files larger than the stated limit. Implementing server-side validation is necessary to enforce this limit.
+- There is no indication of whether the `document_title` field has any length restrictions, which could lead to excessively long titles being stored in the database. Consider adding a `length` property to limit the size of the input.
+- The `description` for the `attachment` field should ideally include information about allowed file types to prevent users from uploading unsupported formats.

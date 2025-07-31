@@ -1,0 +1,21 @@
+--- a/docker/entrypoint.sh
++++ b/docker/entrypoint.sh
+@@ -79,9 +79,9 @@
+ chown frappe:frappe "$COMMON_CFG"
+ 
+ echo "==> bench set-config for redis"
+-bench set-config -g redis_cache    "${REDIS_CACHE}" || true
+-bench set-config -g redis_queue    "${REDIS_QUEUE}" || true
+-bench set-config -g redis_socketio "${REDIS_SOCKETIO}" || true
++bench set-config -g redis_cache    "${REDIS_CACHE:-}" || true
++bench set-config -g redis_queue    "${REDIS_QUEUE:-}" || true
++bench set-config -g redis_socketio "${REDIS_SOCKETIO:-}" || true
+ 
+ echo "==> Build assets (non-fatal)"
+ bench build || true
+@@ -90,4 +90,4 @@
+ sed -i '/redis_cache/d;/redis_queue/d;/redis_socketio/d' Procfile || true
+ 
+ echo "==> Starting CMD: $*"
+-exec "$@"
++exec "$@"
