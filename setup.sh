@@ -15,7 +15,6 @@ source .venv_dev/bin/activate
 
 # Upgrade pip, install runtime requirements, and install project with development and test dependencies
 pip install --upgrade pip
-pip install -r requirements.txt
 pip install -e .[dev,test]
 
 # Bootstrap Docker-based ERPNext environment

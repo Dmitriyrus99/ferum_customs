@@ -76,7 +76,7 @@ python3 -m venv .venv_dev
 source .venv_dev/bin/activate
 
 # Install Python dependencies and configure environment
-pip install -r requirements.txt
+pip install .
 cp .env.example .env
 # Edit .env to set TELEGRAM_BOT_TOKEN, SITE_NAME, ADMIN_PASSWORD, FRAPPE_ADMIN_PASSWORD, DB_ROOT_PASSWORD, etc.
 
@@ -182,7 +182,7 @@ The bot internally calls whitelisted functions from ``ferum_customs.api``.
 Pre‑commit hooks format and lint the code. Install development dependencies and enable hooks:
 
 ```bash
-pip install -r requirements-dev.txt
+pip install -e .[dev]
 pre-commit install
 ```
 
