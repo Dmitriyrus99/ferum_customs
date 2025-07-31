@@ -1,9 +1,0 @@
---- ferum_customs/doctype/assigned_engineer_item/test_assigned_engineer_item.py
-+++ ferum_customs/doctype/assigned_engineer_item/test_assigned_engineer_item.py
-@@ -8,7 +8,7 @@
-         doc.engineer = " Engineer User "
-         doc.assignment_date = frappe.utils.now_datetime()
-         doc.validate()
--        self.assertEqual(doc.engineer, "Engineer User")
-+        self.assertEqual(doc.engineer.strip(), "Engineer User")
-         self.assertTrue("T" in doc.assignment_date)  # ISO 8601 check

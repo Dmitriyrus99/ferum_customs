@@ -1,7 +1,0 @@
---- a/fixtures/custom_role.json
-+++ b/fixtures/custom_role.json
-@@ -1,3 +1,3 @@
- [
--    // This is an empty array, which may not be intended.
-+    // This is an empty array, which may not be intended. Consider adding default roles or removing this file if not needed.
- ]
