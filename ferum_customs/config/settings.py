@@ -16,6 +16,9 @@ class Settings(BaseSettings):
     # URL for Frappe API (optional override)
     frappe_url: str | None = None
 
+    # OpenAI API key for optional integrations
+    openai_api_key: str | None = None
+
     model_config = SettingsConfigDict(
         env_file=[".env", ".env.example"],
         env_file_encoding="utf-8",
