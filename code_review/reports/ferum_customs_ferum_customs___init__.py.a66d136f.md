@@ -1,0 +1,1 @@
+The provided code snippet does not contain any bugs, anti-patterns, or security vulnerabilities. It is a simple version declaration in a Python package's `__init__.py` file. No changes are necessary.

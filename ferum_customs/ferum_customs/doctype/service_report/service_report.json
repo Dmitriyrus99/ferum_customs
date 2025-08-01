@@ -101,7 +101,7 @@
             "amend": 1
         },
         {
-            "role": "Проектный менеджер",
+            "role": "Project Manager",
             "read": 1,
             "write": 1,
             "create": 1,
@@ -111,7 +111,7 @@
             "amend": 1
         },
         {
-            "role": "Инженер",
+            "role": "Engineer",
             "read": 1,
             "write": 1,
             "create": 1

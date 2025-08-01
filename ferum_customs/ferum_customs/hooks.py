@@ -32,14 +32,11 @@ from ferum_customs.bench_commands.run_tests import run_tests
 
 bench_commands = [run_tests]
 
+from typing import Any, Dict  # Import Dict for type hinting
 
-from typing import Any
-
-
-def scheduler_events() -> dict[str, Any]:
+def scheduler_events() -> Dict[str, Any]:  # Use Dict for type hinting
     """Return scheduler events configuration for Frappe."""
     return {}
-
 
 try:  # dev-hooks (если есть)
     from ferum_customs.dev_hooks import *

@@ -1,0 +1,15 @@
+--- a/ferum_customs/fixtures/custom_role.json
++++ b/ferum_customs/fixtures/custom_role.json
+@@ -1 +1,11 @@
+-[]
++[
++  {
++    "roleName": "customRole",
++    "permissions": [
++      "read",
++      "write",
++      "delete"
++    ],
++    "description": "A custom role with read, write, and delete permissions."
++  }
++]

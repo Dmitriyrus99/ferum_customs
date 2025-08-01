@@ -46,7 +46,7 @@ frappe.ui.form.on("Service Request", {
 						frm.set_query(engineer_field, function () {
 							return {
 								filters: [
-									["User", "name", "in", ["NON_EXISTENT_USER_SO_LIST_IS_EMPTY"]],
+									["User", "name", "in", []],
 								],
 							};
 						});

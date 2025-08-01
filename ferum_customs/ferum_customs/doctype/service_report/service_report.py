@@ -47,7 +47,7 @@ class ServiceReport(Document):  # type: ignore[misc]
         posting_date_val = self.get("posting_date")
         if posting_date_val:
             if not isinstance(posting_date_val, str):
-                if isinstance(posting_date_val, datetime.datetime | datetime.date):
+                if isinstance(posting_date_val, (datetime.datetime, datetime.date)):
                     self.posting_date = posting_date_val.isoformat()
         else:
             if self.is_new() and self.meta.get_field("posting_date").reqd:

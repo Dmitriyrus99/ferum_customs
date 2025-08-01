@@ -1,26 +1,21 @@
 --- a/ferum_customs/ferum_customs/doctype/service_report_document_item/service_report_document_item.json
 +++ b/ferum_customs/ferum_customs/doctype/service_report_document_item/service_report_document_item.json
-@@ -1,20 +1,3 @@
--{
--    "doctype": "DocType",
--    "name": "Service Report Document Item",
--    "module": "Ferum Customs",
--    "istable": 1,
--    "track_changes": 1,
--    "fields": [
--        {
--            "fieldname": "document_title",
--            "label": "Document Title",
+@@ -8,13 +8,15 @@
+         {
+             "fieldname": "document_title",
+             "label": "Document Title",
 -            "fieldtype": "Data"
--        },
--        {
--            "fieldname": "attachment",
--            "label": "Attachment",
--            "fieldtype": "Attach",
++            "fieldtype": "Data",
++            "reqd": 1
+         },
+         {
+             "fieldname": "attachment",
+             "label": "Attachment",
+             "fieldtype": "Attach",
 -            "description": "Max file size: 10MB"
--        }
--    ]
++            "description": "Max file size: 10MB",
++            "max_file_size": 10485760
+         }
+     ]
 -}
-+- The `attachment` field does not specify a maximum file size validation in the schema. Consider adding a validation rule to enforce the 10MB limit.
-+- The `fieldtype` for `attachment` should ideally include a validation for file types to prevent uploading of potentially harmful files. Consider specifying allowed file types.
-+- The `track_changes` property is set to `1`, which is good for auditing, but ensure that the system has proper access controls to prevent unauthorized changes.
++}

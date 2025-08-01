@@ -1,26 +1,19 @@
 --- a/ferum_customs/ferum_customs/doctype/payroll_entry_custom/test_payroll_entry_custom.py
 +++ b/ferum_customs/ferum_customs/doctype/payroll_entry_custom/test_payroll_entry_custom.py
-@@ -1,15 +1,11 @@
--import pytest
-+1. **Exception Handling**: The broad `except Exception` clause is an anti-pattern. It can catch unexpected exceptions, making debugging difficult. Instead, catch specific exceptions related to the import failure.
- 
--try:
--    import frappe
--    from frappe.tests.utils import FrappeTestCase
+@@ -3,13 +3,13 @@
+ try:
+     import frappe
+     from frappe.tests.utils import FrappeTestCase
 -except Exception:  # pragma: no cover
--    pytest.skip("frappe not available", allow_module_level=True)
-+2. **Test Method Naming**: The test method name `test_total_payable_rounding` should be more descriptive about what it tests, including the expected behavior.
++except ImportError:  # More specific exception handling
+     pytest.skip("frappe not available", allow_module_level=True)
  
-+3. **Rounding Logic**: The test checks if `doc.total_payable` rounds correctly, but it does not include the logic for rounding in the `validate` method. Ensure that the rounding logic is implemented in the `validate` method of the `Payroll Entry Custom` doctype.
  
--class TestPayrollEntryCustom(FrappeTestCase):
+ class TestPayrollEntryCustom(FrappeTestCase):
 -    def test_total_payable_rounding(self, frappe_site):
--        doc = frappe.new_doc("Payroll Entry Custom")
--        doc.total_payable = 1234.567
--        doc.validate()
++    def test_total_payable_rounding(self):
+         doc = frappe.new_doc("Payroll Entry Custom")
+         doc.total_payable = 1234.567
+         doc.validate()
 -        self.assertAlmostEqual(doc.total_payable, 1234.57, places=2)
-+4. **Use of `frappe_site`**: The `frappe_site` fixture is not defined in the provided code. Ensure that it is properly defined or imported if it is necessary for the test.
-+
-+5. **Assertions**: The assertion should be more explicit about what is being tested. Consider adding a message to the assertion for clarity.
-+
-+6. **Test Coverage**: The `# pragma: no cover` comment suggests that this code is intentionally excluded from coverage reports. Ensure that this is necessary and justified.
++        self.assertAlmostEqual(doc.total_payable, 1234.57, places=2)

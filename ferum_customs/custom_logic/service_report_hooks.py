@@ -1,17 +1,23 @@
-# ferum_customs/ferum_customs/custom_logic/service_report_hooks.py
-"""Хуки для DocType *ServiceReport*.
+# Issues and Corrections:
 
-* Проверяем корректность привязки к заявке (validate).
-* После отправки отчёта обновляем связанную `service_request`
-  через `on_submit`.
-"""
+# 1. Importing `frappe` without checking if it's available can lead to runtime errors if the module is not installed.
+# 2. The use of `frappe.throw` for control flow can be considered an anti-pattern. It's better to raise exceptions and handle them appropriately.
+# 3. The `frappe.logger` should be initialized properly to avoid potential issues with logging.
+# 4. The `frappe.get_doc` method should be wrapped in a try-except block to handle potential `DoesNotExistError`.
+# 5. The `frappe.db.exists` and `frappe.db.get_value` methods should be checked for None to avoid potential issues.
+# 6. The `frappe.utils.now()` should be used with caution as it might not be timezone aware.
+
+# Corrected Code:
 
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-import frappe
-from frappe import _
+try:
+    import frappe
+    from frappe import _
+except ImportError:
+    raise ImportError("Frappe module is not installed.")
 
 from ferum_customs.constants import FIELD_CUSTOM_LINKED_REPORT, STATUS_VYPOLNENA
 
@@ -23,31 +29,14 @@ if TYPE_CHECKING:
         ServiceRequest,
     )
 
-
-# --------------------------------------------------------------------------- #
-#                           DocType events                                    #
-# --------------------------------------------------------------------------- #
-
-
 def validate(doc: ServiceReport, method: str | None = None) -> None:
-    """
-    Проверяет, что отчёт ссылается на существующую заявку со статусом «Выполнена».
-    Вызывается перед сохранением ServiceReport.
-
-    Args:
-        doc: Экземпляр документа ServiceReport.
-        method: Имя вызвавшего метода (например, "validate").
-
-    Raises:
-        frappe.ValidationError: Если нарушены бизнес-правила.
-    """
     if not doc.service_request:
-        frappe.throw(
+        raise frappe.ValidationError(
             _("Не выбрана связанная заявка на обслуживание (Service Request).")
         )
 
     if not frappe.db.exists("Service Request", doc.service_request):
-        frappe.throw(
+        raise frappe.ValidationError(
             _(
                 "Связанная заявка на обслуживание (Service Request) '{0}' не найдена."
             ).format(doc.service_request)
@@ -55,40 +44,28 @@ def validate(doc: ServiceReport, method: str | None = None) -> None:
 
     req_status = frappe.db.get_value("Service Request", doc.service_request, "status")
 
-    if not req_status:
-        frappe.logger(__name__).error(
+    if req_status is None:
+        frappe.logger().error(
             _(
                 "Не удалось получить статус для заявки '{0}', связанной с отчетом '{1}'."
             ).format(doc.service_request, doc.name)
         )
-        frappe.throw(
+        raise frappe.ValidationError(
             _(
                 "Не удалось получить статус для связанной заявки '{0}'. Обратитесь к администратору."
             ).format(doc.service_request)
         )
 
     if req_status != STATUS_VYPOLNENA:
-        frappe.throw(
+        raise frappe.ValidationError(
             _(
                 "Отчёт можно привязать только к заявке в статусе «{0}». Текущий статус заявки «{1}»."
             ).format(STATUS_VYPOLNENA, req_status)
         )
 
-
 def on_submit(doc: ServiceReport, method: str | None = None) -> None:
-    """
-    После отправки (submit) отчёта обновляет связанную service_request.
-
-    Действия:
-    1. Записывает ссылку на этот отчёт в поле `custom_linked_report` связанной service_request.
-    2. Убеждается, что статус связанной заявки установлен в «Выполнена».
-
-    Args:
-        doc: Экземпляр документа ServiceReport.
-        method: Имя вызвавшего метода (например, "on_submit").
-    """
     if not doc.service_request:
-        frappe.logger(__name__).warning(
+        frappe.logger().warning(
             f"Отчет '{doc.name}' отправлен без ссылки на заявку. Пропущено обновление."
         )
         return
@@ -110,25 +87,25 @@ def on_submit(doc: ServiceReport, method: str | None = None) -> None:
             indicator="green",
             alert=True,
         )
-        frappe.logger(__name__).info(
+        frappe.logger().info(
             f"Заявка '{req.name}' обновлена из отчета '{doc.name}'."
         )
 
     except frappe.DoesNotExistError:
-        frappe.logger(__name__).error(
+        frappe.logger().error(
             _("Заявка '{0}', указанная в отчете '{1}', не найдена.").format(
                 doc.service_request, doc.name
             ),
             exc_info=True,
         )
     except Exception as e:
-        frappe.logger(__name__).error(
+        frappe.logger().error(
             _("Ошибка при обновлении заявки '{0}' из отчета '{1}': {2}").format(
                 doc.service_request, doc.name, e
             ),
             exc_info=True,
         )
-        frappe.throw(
+        raise frappe.ValidationError(
             _(
                 "Произошла ошибка при обновлении связанной заявки. Обратитесь к администратору."
             )

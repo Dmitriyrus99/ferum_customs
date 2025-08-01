@@ -45,7 +45,7 @@ def validate(doc: ServiceRequest, method: str | None = None) -> None:
 
 def on_update_after_submit(doc: ServiceRequest, method: str | None = None) -> None:
     """Вызывается после обновления отправленного документа."""
-    if doc.status == STATUS_ZAKRYTA:
+    if doc.status == STATUS_ZAKРЫTA:
         _notify_project_manager(doc)
 
 
@@ -91,7 +91,7 @@ def _ensure_customer(doc: ServiceRequest) -> None:
 # --------------------------------------------------------------------------- #
 
 
-@frappe.whitelist()  # type: ignore[misc]
+@frappe.whitelist(allow_guest=False)  # type: ignore[misc]
 def get_engineers_for_object(service_object_name: str) -> list[str]:
     """Возвращает список инженеров, назначенных на объект обслуживания."""
     if not service_object_name:
@@ -130,7 +130,7 @@ def _notify_project_manager(doc: ServiceRequest) -> None:
     try:
         recipients = frappe.get_all(
             "User",
-            filters={"enabled": 1, "roles.role": ROLE_PROEKTNYJ_MENEDZHER},
+            filters={"enabled": 1, "roles.role": ROLE_PROEKTNYJ_MENЕДZHER},
             pluck="name",
             distinct=True,
         )
@@ -146,7 +146,7 @@ def _notify_project_manager(doc: ServiceRequest) -> None:
         if not recipients:
             frappe.logger(__name__).warning(
                 _("Получатели с ролью '{0}' не найдены для уведомления.").format(
-                    ROLE_PROEKTNYJ_MENEDZHER
+                    ROLE_PROEKTNYJ_MENЕДZHER
                 )
             )
             return

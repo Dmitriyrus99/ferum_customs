@@ -1,26 +1,33 @@
 --- a/ferum_customs/ferum_customs/doctype/service_project/service_project.py
 +++ b/ferum_customs/ferum_customs/doctype/service_project/service_project.py
-@@ -5,16 +5,11 @@
+@@ -5,19 +5,14 @@
  
  from __future__ import annotations
  
 -# from typing import TYPE_CHECKING
- import datetime  # Для работы с датами и временем
+-import datetime  # Для работы с датами и временем
++import datetime
  
  import frappe
  from frappe import _
  from frappe.model.document import Document
--
+ 
 -# if TYPE_CHECKING:
 -# from .project_object_item import ProjectObjectItem # Для дочерней таблицы
 -# pass
  
- 
- class ServiceProject(Document):  # type: ignore[misc]
-@@ -30,16 +25,6 @@
+-
+-class ServiceProject(Document):  # type: ignore[misc]
++class ServiceProject(Document):
+     """
+     Класс документа Service Project.
+     """
+@@ -28,17 +23,7 @@
+         """
+         self._validate_dates()
          self._validate_budget()
-         self._format_dates_to_iso()  # Форматируем после валидации, чтобы валидация работала с объектами дат
- 
+-        self._format_dates_to_iso()  # Форматируем после валидации, чтобы валидация работала с объектами дат
+-
 -        # Логика из оригинального файла (service_project.py):
 -        # if self.start_date and self.end_date:
 -        #     if self.end_date < self.start_date:
@@ -30,10 +37,10 @@
 -        # if self.end_date:
 -        #     self.end_date = self.end_date.isoformat()
 -        # Эта логика теперь в _validate_dates() и _format_dates_to_iso()
--
++        self._format_dates_to_iso()
+ 
      def _validate_dates(self) -> None:
          """
-         Проверяет корректность дат начала и окончания проекта.
 @@ -50,11 +35,6 @@
  
          if start_date_val and end_date_val:
@@ -46,7 +53,7 @@
                  start_dt = frappe.utils.get_date(start_date_val)
                  end_dt = frappe.utils.get_date(end_date_val)
  
-@@ -68,12 +48,10 @@
+@@ -68,12 +48,9 @@
                          )
                      )
              except Exception as e:
@@ -56,11 +63,10 @@
                  )
 -                # Можно выбросить ошибку, если формат дат критичен на этом этапе
 -                # frappe.throw(_("Некорректный формат даты начала или окончания проекта."))
-+                frappe.throw(_("Некорректный формат даты начала или окончания проекта."))
  
      def _format_dates_to_iso(self) -> None:
          """
-@@ -83,19 +61,16 @@
+@@ -83,19 +60,16 @@
          for fieldname in date_fields:
              field_value = self.get(fieldname)
              if field_value and not isinstance(field_value, str):
@@ -82,16 +88,18 @@
                      setattr(
                          self,
                          fieldname,
-@@ -108,8 +83,6 @@
+@@ -106,9 +80,7 @@
+                         ),
+                     )
                  except Exception:
-                     pass  # Оставляем как есть, если не парсится или уже в нужном формате
- 
--    # Другие методы могут быть добавлены по необходимости.
+-                    pass  # Оставляем как есть, если не парсится или уже в нужном формате
 -
+-    # Другие методы могут быть добавлены по необходимости.
++                    pass
+ 
      def _validate_budget(self) -> None:
          """Проверяет, что бюджет неотрицательный."""
-         if self.get("budget") is not None:
-@@ -118,4 +91,4 @@
+@@ -118,4 +90,4 @@
                  if budget_val < 0:
                      frappe.throw(_("Бюджет проекта не может быть отрицательным."))
              except (ValueError, TypeError):

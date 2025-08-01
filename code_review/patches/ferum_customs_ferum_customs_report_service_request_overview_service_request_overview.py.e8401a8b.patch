@@ -1,22 +1,19 @@
 --- a/ferum_customs/ferum_customs/report/service_request_overview/service_request_overview.py
 +++ b/ferum_customs/ferum_customs/report/service_request_overview/service_request_overview.py
-@@ -1,6 +1,6 @@
- from __future__ import annotations
- 
--from typing import Any
-+from typing import Any, Optional
- 
- import frappe
- from frappe import _
-@@ -9,7 +9,7 @@
- 
- 
- def execute(
--    filters: dict[str, Any] | None = None
-+    filters: Optional[dict[str, Any]] = None
+@@ -13,11 +13,11 @@
  ) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
      open_count = frappe.db.count(
          "service_request",
+-        {"status": ["not in", (STATUS_ZAKRYTA, STATUS_OTMENENA)]},
++        filters={"status": ["not in", (STATUS_ZAKRYTA, STATUS_OTMENENA)]},
+     )
+     overdue_count = frappe.db.count(
+         "service_request",
+-        {
++        filters={
+             "status": ["not in", (STATUS_ZAKRYTA, STATUS_OTMENENA)],
+             "planned_end_datetime": ("<", frappe.utils.now_datetime()),
+         },
 @@ -26,9 +26,9 @@
      avg_seconds = (
          frappe.db.sql(

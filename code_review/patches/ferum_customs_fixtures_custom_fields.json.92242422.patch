@@ -1,0 +1,39 @@
+--- a/ferum_customs/fixtures/custom_fields.json
++++ b/ferum_customs/fixtures/custom_fields.json
+@@ -21,6 +21,8 @@
+     "fieldtype": "Link",
+     "options": "Service Object",
+     "insert_after": "custom_customer",
++    "in_list_view": 0,
++    "reqd": 0,
+     "module": "Ferum Customs"
+   },
+   {
+@@ -32,6 +34,8 @@
+     "fieldtype": "Link",
+     "options": "User",
+     "insert_after": "custom_service_object_link",
++    "in_list_view": 0,
++    "reqd": 0,
+     "module": "Ferum Customs"
+   },
+   {
+@@ -44,6 +48,8 @@
+     "options": "Service Project",
+     "read_only": 1,
+     "insert_after": "custom_assigned_engineer",
++    "in_list_view": 0,
++    "reqd": 0,
+     "module": "Ferum Customs"
+   },
+   {
+@@ -57,6 +63,8 @@
+     "read_only": 1,
+     "no_copy": 1,
+     "insert_after": "custom_project",
++    "in_list_view": 0,
++    "reqd": 0,
+     "module": "Ferum Customs"
+   }
+-]
++]

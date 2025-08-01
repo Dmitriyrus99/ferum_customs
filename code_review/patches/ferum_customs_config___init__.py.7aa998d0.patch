@@ -1,5 +1,0 @@
---- a/ferum_customs/config/__init__.py
-+++ b/ferum_customs/config/__init__.py
-@@ -1 +1 @@
--__version__ = "0.0.1"
-+- No issues found. The code is clean and follows standard practices.

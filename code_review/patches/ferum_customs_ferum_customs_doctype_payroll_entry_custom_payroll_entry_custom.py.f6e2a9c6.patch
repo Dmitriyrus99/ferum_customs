@@ -1,6 +1,6 @@
 --- a/ferum_customs/ferum_customs/doctype/payroll_entry_custom/payroll_entry_custom.py
 +++ b/ferum_customs/ferum_customs/doctype/payroll_entry_custom/payroll_entry_custom.py
-@@ -7,15 +7,6 @@
+@@ -7,14 +7,6 @@
  
  import frappe
  from frappe.model.document import Document
@@ -12,11 +12,10 @@
 -
 -# if TYPE_CHECKING:
 -# pass
--
+ 
  
  class PayrollEntryCustom(Document):  # type: ignore[misc]
-     total_payable: float | None
-@@ -38,33 +29,24 @@
+@@ -38,25 +30,19 @@
          self._round_total_deductions()
          self._calculate_net_payable()
  
@@ -29,55 +28,49 @@
          """
          Округляет поле `total_payable` до двух знаков после запятой, если оно установлено и является числом.
          """
--        if self.get("total_payable") is not None:
-+        if self.total_payable is not None:
+         if self.get("total_payable") is not None:
              try:
 -                # Преобразуем в float перед округлением, на случай если это строка или Decimal
--                payable_float = float(self.total_payable or 0.0)
-+                payable_float = float(self.total_payable)
+                 payable_float = float(self.total_payable or 0.0)
                  self.total_payable = round(payable_float, 2)
              except (ValueError, TypeError):
 -                # Если значение не может быть преобразовано в float, логируем или выбрасываем ошибку.
 -                # В данном случае, просто не изменяем значение, если оно не числовое.
 -                # Это может быть обработано другими валидациями (например, тип поля Currency).
 -                pass  # Или frappe.log_error(...)
-+                frappe.log_error(f"Invalid total_payable value: {self.total_payable}")
++                frappe.log_error(
++                    f"Invalid total_payable value: {self.total_payable}",
++                    "PayrollEntryCustom _round_total_payable"
++                )
  
      def _round_total_deductions(self) -> None:
--        if self.get("total_deductions") is not None:
-+        if self.total_deductions is not None:
-             try:
--                deductions_float = float(self.total_deductions or 0.0)
-+                deductions_float = float(self.total_deductions)
+         if self.get("total_deductions") is not None:
+@@ -64,7 +50,10 @@
+                 deductions_float = float(self.total_deductions or 0.0)
                  self.total_deductions = round(deductions_float, 2)
              except (ValueError, TypeError):
 -                pass
-+                frappe.log_error(f"Invalid total_deductions value: {self.total_deductions}")
++                frappe.log_error(
++                    f"Invalid total_deductions value: {self.total_deductions}",
++                    "PayrollEntryCustom _round_total_deductions"
++                )
  
      def _calculate_net_payable(self) -> None:
          try:
-@@ -72,7 +54,6 @@
+@@ -72,8 +61,11 @@
              ded = float(self.total_deductions or 0.0)
              self.net_payable = round(pay - ded, 2)
          except (ValueError, TypeError):
 -            # Если не удалось привести к числам, не задаем значение
              self.net_payable = None
++            frappe.log_error(
++                "Failed to calculate net_payable due to invalid values",
++                "PayrollEntryCustom _calculate_net_payable"
++            )
  
      def before_save(self) -> None:
-@@ -102,9 +83,9 @@
-                 exc_info=True,
-             )
- 
--        base_salary = float(self.get("base_salary", 0.0) or 0.0)
--        additional_pay = float(self.get("additional_pay", 0.0) or 0.0)
--        total_deduction = float(self.get("total_deduction", 0.0) or 0.0)
-+        base_salary = float(self.get("base_salary", 0.0))
-+        additional_pay = float(self.get("additional_pay", 0.0))
-+        total_deduction = float(self.get("total_deduction", 0.0))
- 
-         self.total_payable = (
-             base_salary + additional_pay + total_bonus - total_deduction
-@@ -113,8 +94,5 @@
+         """Расчитывает ``total_payable`` с учетом бонусов из Service Report."""
+@@ -113,8 +105,5 @@
          if self.total_payable is None:
              self.total_payable = 0.0
  

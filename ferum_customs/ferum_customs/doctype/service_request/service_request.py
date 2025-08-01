@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING
 import frappe
 from frappe import _
 from frappe.model.document import Document
-from frappe.utils import get_datetime, now
+from frappe.utils import get_datetime, now_datetime
 
 from ferum_customs.constants import (
     FIELD_CUSTOM_LINKED_REPORT,
@@ -57,7 +57,7 @@ class ServiceRequest(Document):  # type: ignore[misc]
     def on_submit(self) -> None:
         """Действия при отправке документа."""
         if not self.actual_start_datetime:
-            self.db_set("actual_start_datetime", frappe.utils.now_datetime())
+            self.db_set("actual_start_datetime", now_datetime())
 
     def _clean_fields(self) -> None:
         """Очистка и нормализация полей."""
@@ -143,7 +143,7 @@ class ServiceRequest(Document):  # type: ignore[misc]
                     _("Нельзя отметить заявку выполненной без связанного отчёта.")
                 )
             if not self.get("completed_on"):
-                self.completed_on = now()
+                self.completed_on = now_datetime()
 
         if self.status == STATUS_ZAKRYTA and not self.get(FIELD_CUSTOM_LINKED_REPORT):
             frappe.throw(_("Нельзя закрыть заявку без связанного отчёта."))

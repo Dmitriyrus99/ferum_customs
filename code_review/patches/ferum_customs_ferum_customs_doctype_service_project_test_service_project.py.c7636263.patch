@@ -1,27 +1,20 @@
 --- a/ferum_customs/ferum_customs/doctype/service_project/test_service_project.py
 +++ b/ferum_customs/ferum_customs/doctype/service_project/test_service_project.py
-@@ -1,16 +1,11 @@
--import pytest
-+1. **Use of `try-except` for module import**: Instead of using a try-except block to skip tests, consider using pytest's built-in functionality to conditionally skip tests based on the availability of the module.
- 
--try:
--    import frappe
--    from frappe.tests.utils import FrappeTestCase
+@@ -3,14 +3,14 @@
+ try:
+     import frappe
+     from frappe.tests.utils import FrappeTestCase
 -except Exception:  # pragma: no cover
--    pytest.skip("frappe not available", allow_module_level=True)
-+2. **Incorrect use of `assertRaises`**: The method `assertRaises` is not available in `FrappeTestCase`. Instead, use `pytest.raises` for asserting exceptions in pytest.
++except ImportError:  # More specific exception
+     pytest.skip("frappe not available", allow_module_level=True)
  
-+3. **Potential for incorrect date validation**: The test case sets `end_date` to a date before `start_date`, which is correct for testing validation, but ensure that the validation logic in the `Service Project` doctype is implemented correctly to handle this case.
  
--class TestServiceProject(FrappeTestCase):
+ class TestServiceProject(FrappeTestCase):
 -    def test_date_validation(self, frappe_site):
--        doc = frappe.new_doc("Service Project")
--        doc.start_date = frappe.utils.now_datetime()
--        doc.end_date = frappe.utils.add_days(doc.start_date, -1)
--        with self.assertRaises(frappe.ValidationError):
++    def test_date_validation(self):
+         doc = frappe.new_doc("Service Project")
+         doc.start_date = frappe.utils.now_datetime()
+         doc.end_date = frappe.utils.add_days(doc.start_date, -1)
+         with self.assertRaises(frappe.ValidationError):
 -            doc.validate()
-+4. **Missing test case for valid dates**: It would be beneficial to add a test case that checks for valid date scenarios to ensure the validation logic is comprehensive.
-+
-+5. **Use of `frappe.utils.now_datetime()`**: Ensure that the function `now_datetime()` is appropriate for the context of the test, as it may return the current time which could lead to flaky tests if run at different times.
-+
-+6. **Lack of docstring**: Consider adding a docstring to the test class to describe its purpose and the tests it contains.
++            doc.validate()

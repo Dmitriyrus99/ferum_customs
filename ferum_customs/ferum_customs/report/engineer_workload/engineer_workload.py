@@ -11,14 +11,15 @@ from ferum_customs.constants import STATUS_OTMENENA, STATUS_ZAKRYTA
 def execute(
     filters: dict[str, Any] | None = None
 ) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    # Use parameterized queries to prevent SQL injection
     rows = frappe.db.sql(
         """
-        select custom_assigned_engineer as engineer, count(*) as total
-        from `tabservice_request`
-        where status not in (%s, %s)
-          and custom_assigned_engineer is not null
-        group by custom_assigned_engineer
-        order by total desc
+        SELECT custom_assigned_engineer AS engineer, COUNT(*) AS total
+        FROM `tabservice_request`
+        WHERE status NOT IN (%s, %s)
+          AND custom_assigned_engineer IS NOT NULL
+        GROUP BY custom_assigned_engineer
+        ORDER BY total DESC
         """,
         (STATUS_ZAKRYTA, STATUS_OTMENENA),
         as_dict=True,

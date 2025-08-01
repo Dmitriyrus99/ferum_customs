@@ -6,14 +6,14 @@
              "fieldtype": "Link",
 -            "options": "User"
 +            "options": "User",
-+            "reqd": 1  // Added required field validation
++            "reqd": 1
          },
          {
              "fieldname": "assignment_date",
              "label": "Assignment Date",
 -            "fieldtype": "Datetime"
 +            "fieldtype": "Datetime",
-+            "reqd": 1  // Added required field validation
++            "reqd": 1
          }
      ]
 -}

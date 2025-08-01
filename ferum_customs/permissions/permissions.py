@@ -28,23 +28,20 @@ def get_service_request_pqc(user: str | None = None) -> PQCConditions | None:
         )
         return {"name": ("=", f"__no_records_user_not_found_{user}")}
 
-    # Поле 'customer' в User DocType должно быть кастомным, если вы его используете для PQC.
-    # Предположим, оно называется 'custom_linked_customer_for_user' в User.
-    # user_linked_customer = user_doc.get("custom_linked_customer_for_user")
-    # Если вы используете стандартное поле 'company' для привязки к клиенту (что нетипично) или другое, адаптируйте.
-    # Для примера, если пользователь-заказчик привязан к документу Customer через поле 'party' (стандартное для Portal User)
-    # или через кастомное поле 'customer' в User.
-    user_linked_customer = user_doc.get(
-        "customer"
-    )  # Предполагаем, что в User есть поле 'customer' (Link to Customer)
+    # Ensure the field 'customer' exists in the User DocType
+    user_linked_customer = user_doc.get("customer")
+    if user_linked_customer is None:
+        frappe.logger(__name__).warning(
+            f"User '{user}' does not have a linked customer while applying PQC for service_request."
+        )
+        return {"name": ("=", f"__no_records_no_linked_customer_{user}")}
 
     is_customer_role = frappe.has_role(ROLE_ZAKAZCHIK, user) or frappe.has_role(
         ROLE_CUSTOMER, user
     )
 
-    if is_customer_role and user_linked_customer:
+    if is_customer_role:
         # Пользователь с ролью "Заказчик" и привязанным клиентом видит только заявки своего клиента.
-        # service_request теперь имеет поле custom_customer
         return {"custom_customer": user_linked_customer}
 
     return None

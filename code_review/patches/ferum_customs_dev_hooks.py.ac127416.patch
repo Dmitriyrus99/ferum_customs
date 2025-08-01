@@ -1,11 +1,8 @@
 --- a/ferum_customs/dev_hooks.py
 +++ b/ferum_customs/dev_hooks.py
-@@ -1,6 +1,2 @@
--"""Local development hooks.
--Add overrides or additional hook definitions here.
--"""
--
--# Example: extend fixtures
--# fixtures = ["demo_fixture"]
-+- The code snippet is empty and does not contain any functional code to review for bugs, anti-patterns, or security vulnerabilities.
-+- Consider adding actual hook definitions or overrides to make the file useful.
+@@ -4,3 +4,5 @@
+ 
+ # Example: extend fixtures
+ # fixtures = ["demo_fixture"]
++
++# No issues found in the provided code snippet.

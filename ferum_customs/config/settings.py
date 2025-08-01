@@ -1,4 +1,4 @@
-from pydantic import BaseSettings  # Correct import for BaseSettings
+from pydantic import BaseSettings
 
 class Settings(BaseSettings):
     """
@@ -18,8 +18,8 @@ class Settings(BaseSettings):
     # OpenAI API key for optional integrations
     openai_api_key: str | None = None
 
-    class Config:  # Use Config class instead of model_config
-        env_file = ".env"  # Use a single .env file
+    class Config:
+        env_file = ".env"
         env_file_encoding = "utf-8"
         extra = "ignore"
 

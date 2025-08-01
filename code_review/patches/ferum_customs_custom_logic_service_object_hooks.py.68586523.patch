@@ -1,10 +1,6 @@
 --- a/ferum_customs/custom_logic/service_object_hooks.py
 +++ b/ferum_customs/custom_logic/service_object_hooks.py
-@@ -9,14 +9,9 @@
- from frappe import _  # Для перевода строк
- 
- if TYPE_CHECKING:
--    # Замените на актуальный путь к вашему DocType Service Object, если он определен.
+@@ -13,10 +13,6 @@
      from ferum_customs.ferum_customs.doctype.service_object.service_object import (
          ServiceObject,
      )
@@ -15,20 +11,16 @@
  
  def validate(doc: ServiceObject, method: str | None = None) -> None:
      """
-@@ -31,34 +26,21 @@
-         frappe.ValidationError: Если серийный номер не уникален.
-     """
-     if doc.get("serial_no"):
--        # Удаляем возможные пробелы по краям перед проверкой
+@@ -34,25 +30,18 @@
+         # Удаляем возможные пробелы по краям перед проверкой
          serial_no_cleaned = doc.serial_no.strip()
--        if not serial_no_cleaned:  # Если после очистки строка пустая
+         if not serial_no_cleaned:  # Если после очистки строка пустая
 -            # Можно решить, считать ли это ошибкой или просто проигнорировать
 -            # frappe.throw(_("Серийный номер не может состоять только из пробелов."))
--            return
-+        if not serial_no_cleaned:
 +            frappe.throw(_("Серийный номер не может состоять только из пробелов."))
+             return
  
--        # Формируем фильтры для поиска дубликатов.
+         # Формируем фильтры для поиска дубликатов.
 -        # Ищем Service Object с таким же serial_no, но с другим именем (doc.name).
 -        # Это гарантирует, что мы не найдем сам текущий документ при его редактировании.
          filters = {
@@ -46,10 +38,9 @@
              error_message = _(
                  "Серийный номер '{0}' уже используется другим объектом обслуживания: {1}."
              ).format(serial_no_cleaned, existing_doc_name)
-             frappe.throw(error_message, title=_("Ошибка уникальности"))
- 
--    # Сюда можно добавить другие проверки для ServiceObject.
--    # Например, проверка связанных полей, форматов и т.д.
--    # if doc.installation_date and doc.installation_date > frappe.utils.today():
+@@ -61,4 +50,4 @@
+     # Сюда можно добавить другие проверки для ServiceObject.
+     # Например, проверка связанных полей, форматов и т.д.
+     # if doc.installation_date and doc.installation_date > frappe.utils.today():
 -    #     frappe.throw(_("Дата установки не может быть в будущем."))
-+    # Проверка на наличие других бизнес-правил может быть добавлена здесь.
++    #     frappe.throw(_("Дата установки не может быть в будущем."))

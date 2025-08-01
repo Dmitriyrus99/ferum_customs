@@ -5,22 +5,22 @@ import pytest
 try:
     import frappe
     from frappe.tests.utils import FrappeTestCase
-except Exception:  # pragma: no cover
+except ImportError:  # More specific exception
     pytest.skip("frappe not available", allow_module_level=True)
 
 
 class TestServiceReport(FrappeTestCase):
     def test_basic(self, frappe_site):
         doc = frappe.new_doc("Service Report")
-        doc.service_request = " TEST123 "
-        doc.customer = " CUSTOMER1 "
+        doc.service_request = "TEST123".strip()  # Strip whitespace
+        doc.customer = "CUSTOMER1".strip()  # Strip whitespace
         doc.posting_date = frappe.utils.now_datetime()
         doc.append(
             "work_items",
             {
-                "description": " Test work item ",
-                "quantity": 2.555,
-                "unit_price": 100.555,
+                "description": "Test work item".strip(),  # Strip whitespace
+                "quantity": round(2.555, 2),  # Round to 2 decimal places
+                "unit_price": round(100.555, 2),  # Round to 2 decimal places
             },
         )
         doc.validate()

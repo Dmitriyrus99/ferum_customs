@@ -1,13 +1,11 @@
 # Copyright (c) 2025 Ferum LLC and contributors
 # For license information, please see license.txt
 
-# import frappe
 from frappe.model.document import Document
 
-
-class ServiceReportDocumentItem(Document):  # type: ignore[misc]
-    # Эта строка (pass) означает, что в этом классе нет специфической логики.
-    # Frappe будет использовать стандартное поведение для дочерних документов.
-    # Если вам понадобится добавить валидации или другую логику для каждой строки
-    # этой таблицы на сервере, вы можете сделать это здесь.
+class ServiceReportDocumentItem(Document):
+    # This class currently does not contain any specific logic.
+    # Frappe will use the default behavior for child documents.
+    # If you need to add validations or other logic for each row
+    # of this table on the server, you can do so here.
     pass

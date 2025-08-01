@@ -1,57 +1,58 @@
 [
-{
-  "doctype": "DocType",
-  "custom": 1,
-  "name": "Service Request",
-  "module": "Ferum Customs",
-  "engine": "InnoDB",
-  "is_submittable": 1,
-  "naming_series": "SR-.YYYY.-.#####",
-  "title_field": "subject",
-  "workflow_name": "Service Request Workflow",
-  "track_changes": 1,
-  "track_seen": 1,
-  "track_views": 1,
-  "allow_rename": 1,
-  "fields": [
-    {
-      "fieldname": "request_datetime",
-      "label": "Дата и время заявки",
-      "fieldtype": "Datetime",
-      "default": "Now",
-      "read_only": 1,
-      "in_list_view": 1
-    },
-    {
-      "fieldname": "subject",
-      "label": "Тема",
-      "fieldtype": "Data",
-      "reqd": 1,
-      "in_list_view": 1
-    },
-    {
-      "fieldname": "customer_email",
-      "label": "Email клиента",
-      "fieldtype": "Data",
-      "options": "Email",
-      "in_list_view": 1
-    },
-    {
-      "fieldname": "status",
-      "label": "Статус",
-      "fieldtype": "Data",
-      "read_only": 1,
-      "in_list_view": 1,
-      "no_copy": 1
-    },
-    {
-      "fieldname": "duration_hours",
-      "label": "Длительность (часы)",
-      "fieldtype": "Float",
-      "precision": 2,
-      "read_only": 1,
-      "no_copy": 1
-    }
-  ]
-}
+  {
+    "doctype": "DocType",
+    "custom": 1,
+    "name": "Service Request",
+    "module": "Ferum Customs",
+    "engine": "InnoDB",
+    "is_submittable": 1,
+    "naming_series": "SR-.YYYY.-.#####",
+    "title_field": "subject",
+    "workflow_name": "Service Request Workflow",
+    "track_changes": 1,
+    "track_seen": 1,
+    "track_views": 1,
+    "allow_rename": 1,
+    "fields": [
+      {
+        "fieldname": "request_datetime",
+        "label": "Дата и время заявки",
+        "fieldtype": "Datetime",
+        "default": "frappe.utils.now_datetime",
+        "read_only": 1,
+        "in_list_view": 1
+      },
+      {
+        "fieldname": "subject",
+        "label": "Тема",
+        "fieldtype": "Data",
+        "reqd": 1,
+        "in_list_view": 1
+      },
+      {
+        "fieldname": "customer_email",
+        "label": "Email клиента",
+        "fieldtype": "Data",
+        "options": "Email",
+        "in_list_view": 1
+      },
+      {
+        "fieldname": "status",
+        "label": "Статус",
+        "fieldtype": "Select",
+        "options": "\nOpen\nClosed\nPending",
+        "read_only": 1,
+        "in_list_view": 1,
+        "no_copy": 1
+      },
+      {
+        "fieldname": "duration_hours",
+        "label": "Длительность (часы)",
+        "fieldtype": "Float",
+        "precision": 2,
+        "read_only": 1,
+        "no_copy": 1
+      }
+    ]
+  }
 ]

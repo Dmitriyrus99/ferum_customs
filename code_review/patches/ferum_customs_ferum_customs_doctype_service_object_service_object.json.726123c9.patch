@@ -1,6 +1,6 @@
 --- a/ferum_customs/ferum_customs/doctype/service_object/service_object.json
 +++ b/ferum_customs/ferum_customs/doctype/service_object/service_object.json
-@@ -1,52 +1,56 @@
+@@ -1,52 +1,52 @@
  [
 -{
 -  "doctype": "DocType",
@@ -75,20 +75,17 @@
 +        "label": "Клиент",
 +        "fieldtype": "Link",
 +        "options": "Customer",
-+        "in_list_view": 1,
-+        "reqd": 1  // Added required field
++        "in_list_view": 1
 +      },
 +      {
 +        "fieldname": "location",
 +        "label": "Расположение",
-+        "fieldtype": "Data",
-+        "reqd": 0  // Optional field, no change needed
++        "fieldtype": "Data"
 +      },
 +      {
 +        "fieldname": "description",
 +        "label": "Описание",
-+        "fieldtype": "Text",
-+        "reqd": 0  // Optional field, no change needed
++        "fieldtype": "Text"
 +      },
 +      {
 +        "fieldname": "status",
@@ -96,8 +93,7 @@
 +        "fieldtype": "Select",
 +        "options": "Active\nInactive\nUnder Maintenance",
 +        "default": "Active",
-+        "in_list_view": 1,
-+        "reqd": 1  // Added required field
++        "in_list_view": 1
 +      }
 +    ],
 +    "permissions": [

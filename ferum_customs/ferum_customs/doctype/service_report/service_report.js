@@ -11,8 +11,14 @@ frappe.ui.form.on("Service Report", {
 					callback(r) {
 						if (r.message) {
 							frappe.set_route("Form", "Sales Invoice", r.message);
+						} else {
+							frappe.msgprint(__("Failed to create invoice. Please try again."));
 						}
 					},
+					error: (error) => {
+						frappe.msgprint(__("An error occurred while creating the invoice."));
+						console.error(error);
+					}
 				});
 			});
 		}

@@ -1,0 +1,3 @@
+- Ensure that the JSON file is saved with UTF-8 encoding to properly handle non-ASCII characters.
+- Validate that the JSON structure matches the expected schema for your application.
+- Consider adding a unique identifier or primary key if required by the application logic.
