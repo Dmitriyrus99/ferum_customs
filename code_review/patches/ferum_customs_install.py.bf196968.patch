@@ -1,0 +1,81 @@
+--- a/ferum_customs/install.py
++++ b/ferum_customs/install.py
+@@ -1,70 +1,13 @@
+-# ferum_customs/install.py
+-"""
+-Код, выполняемый после установки приложения `ferum_customs`.
++- **Unnecessary Commits**: The `frappe.db.commit()` calls before and after the main logic in `after_install()` are unnecessary since there are no database operations performed before the first commit. Remove the first commit.
++  
++- **Commented Code**: The commented-out code for adding custom fields and creating initial data should either be removed or implemented properly. Leaving commented code can lead to confusion.
+ 
+-Может использоваться для создания начальных данных, ролей,
+-пользовательских полей (хотя фикстуры предпочтительнее для этого),
+-или других настроек, необходимых для работы приложения.
+-"""
++- **Security Vulnerability**: The code does not handle exceptions that may arise during database operations. Wrap database operations in try-except blocks to handle potential errors gracefully.
+ 
+-import frappe
+-from frappe import _  # Для возможных сообщений
++- **Hardcoded Strings**: The strings used for messages and field names should be defined as constants or retrieved from a configuration to avoid hardcoding.
+ 
+-# Импорт констант ролей, если они используются
+-# from .constants import (
+-#     ROLE_PROEKTNYJ_MENEDZHER,
+-#     ROLE_OFIS_MENEDZHER,
+-#     ROLE_INZHENER,
+-#     ROLE_ZAKAZCHIK
+-# )
++- **Lack of Logging**: There is no logging for the installation process. Consider adding logging to track the installation steps and any issues that may arise.
+ 
++- **Potential Race Conditions**: If multiple installations are run concurrently, there could be race conditions when checking for existing records. Use transactions or locks where necessary.
+ 
+-def after_install() -> None:
+-    """
+-    Вызывается один раз после успешной установки приложения.
+-    """
+-    frappe.db.commit()  # Коммит предыдущих транзакций перед началом операций в after_install, если необходимо
+-    # Создание ролей выполняется через фикстуры (fixtures/role.json).
+-    # Дополнительная логика установки может быть добавлена при необходимости.
+-
+-    # Пример: Добавление пользовательских полей программно (обычно делается через fixtures/custom_field.json)
+-    # add_custom_fields()
+-
+-    # Пример: Установка прав доступа по умолчанию (обычно делается через fixtures/custom_docperm.json)
+-    # setup_default_permissions()
+-
+-    # Пример: Создание начальных данных
+-    # create_initial_data()
+-
+-    frappe.db.commit()  # Финальный коммит
+-    frappe.clear_cache()  # Очистка кэша после установки
+-    frappe.msgprint(
+-        _(
+-            "Ferum Customs application installed successfully. Please check system settings and user roles."
+-        ),
+-        title=_("Installation Complete"),
+-        indicator="green",
+-    )
+-
+-
+-# Пример функции для добавления Custom Fields (не рекомендуется, лучше фикстуры)
+-# def add_custom_fields():
+-#     if not frappe.db.exists("Custom Field", {"dt": "User", "fieldname": "custom_user_department"}):
+-#         frappe.get_doc({
+-#             "doctype": "Custom Field",
+-#             "dt": "User",
+-#             "fieldname": "custom_user_department",
+-#             "label": "Department (Custom)",
+-#             "fieldtype": "Link",
+-#             "options": "Department",
+-#             "insert_after": "role_profile_name" # Пример
+-#         }).insert()
+-
+-# Пример функции для создания начальных данных
+-# def create_initial_data():
+-#     if not frappe.db.exists("ServiceType", {"service_type_name": "Standard Maintenance"}): # Пример DocType
+-#         frappe.get_doc({
+-#             "doctype": "ServiceType",
+-#             "service_type_name": "Standard Maintenance",
+-#             "default_duration_hours": 2
+-#         }).insert()
++- **Use of `frappe.clear_cache()`**: This should be done with caution as it may affect other operations. Ensure that it is necessary in the context of installation.

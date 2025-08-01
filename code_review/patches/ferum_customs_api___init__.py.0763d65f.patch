@@ -1,0 +1,195 @@
+--- a/ferum_customs/api/__init__.py
++++ b/ferum_customs/api/__init__.py
+@@ -1,181 +1,19 @@
+-from typing import Any, cast
++- **Security Vulnerability**: The `@whitelist()` decorator is used without proper validation. This can expose the functions to unauthorized access. Consider implementing authentication and authorization checks.
++  
++- **Error Handling**: The `except Exception` blocks are too broad. It is better to catch specific exceptions to avoid masking other potential issues. Consider catching specific exceptions like `frappe.DoesNotExist` or `frappe.ValidationError`.
+ 
+-import frappe
+-from fastapi import FastAPI
+-from frappe import _, whitelist
+-from frappe.exceptions import PermissionError
++- **Type Hinting**: The use of `cast` is not necessary in many places. Instead of casting, ensure that the data returned is of the expected type. This can help avoid runtime errors.
+ 
+-from ferum_customs.constants import SERVICE_REQUEST_STATUSES, STATUS_OTKRYTA
++- **Logging**: The logging statements do not include sufficient context. Consider adding more details to the logs, such as the user who performed the action or the timestamp.
+ 
+-app = FastAPI()
++- **Input Validation**: The `bot_create_service_request` and `bot_update_service_request_status` functions do not validate the input parameters. Ensure that inputs are sanitized and validated to prevent injection attacks.
+ 
++- **Return Types**: The return type of `bot_create_service_request` and `bot_upload_attachment` should be explicitly defined as `str` instead of using `cast`.
+ 
+-@app.get("/")
+-def root() -> dict[str, bool]:
+-    return {"ok": True}
++- **Use of `ignore_permissions=True`**: This can lead to unauthorized data manipulation. Ensure that this is only used when absolutely necessary and that proper checks are in place.
+ 
++- **Potential for SQL Injection**: The use of `frappe.db.exists` with a dictionary can be safe, but ensure that the values being passed are sanitized to prevent SQL injection.
+ 
+-@app.get("/health")
+-def health() -> dict[str, str]:
+-    return {"status": "ok"}
++- **Inconsistent Return Types**: The functions `validate_service_request` and `validate_service_report` return `None` in some cases. It would be better to have a consistent return type, such as always returning a dictionary or raising an exception.
+ 
+-
+-@whitelist()  # type: ignore[misc]
+-def validate_service_request(docname: str) -> dict[str, Any] | None:
+-    """Return the service request document as a dict after permission check."""
+-    if not frappe.has_permission("Service Request", "read"):
+-        frappe.throw(_("Not permitted"), PermissionError)
+-
+-    try:
+-        doc = frappe.get_doc("Service Request", docname)
+-        return cast(dict[str, Any], doc.as_dict())
+-    except Exception:
+-        frappe.log_error(frappe.get_traceback(), "Error validating Service Request")
+-        raise
+-
+-
+-@whitelist()  # type: ignore[misc]
+-def on_submit_service_request(docname: str) -> None:
+-    """Hook executed when a Service Request is submitted."""
+-    frappe.logger(__name__).info(f"Service Request '{docname}' submitted")
+-
+-
+-@whitelist()  # type: ignore[misc]
+-def cancel_service_request(docname: str) -> None:
+-    """Hook executed when a Service Request is cancelled."""
+-    frappe.logger(__name__).info(f"Service Request '{docname}' cancelled")
+-
+-
+-@whitelist()  # type: ignore[misc]
+-def validate_service_report(docname: str) -> dict[str, Any] | None:
+-    """Return the service report document as a dict after permission check."""
+-    if not frappe.has_permission("Service Report", "read"):
+-        frappe.throw(_("Not permitted"), PermissionError)
+-
+-    try:
+-        doc = frappe.get_doc("Service Report", docname)
+-        return cast(dict[str, Any], doc.as_dict())
+-    except Exception:
+-        frappe.log_error(frappe.get_traceback(), "Error validating Service Report")
+-        raise
+-
+-
+-@whitelist()  # type: ignore[misc]
+-def on_submit_service_report(docname: str) -> None:
+-    """Hook executed when a Service Report is submitted."""
+-    frappe.logger(__name__).info(f"Service Report '{docname}' submitted")
+-
+-
+-@whitelist()  # type: ignore[misc]
+-def create_invoice_from_report(service_report: str) -> str:
+-    """Create a Sales Invoice draft from a submitted Service Report.
+-
+-    Args:
+-        service_report: ID of the Service Report document.
+-
+-    Returns:
+-        The name of the created Sales Invoice document.
+-    """
+-    if not service_report:
+-        frappe.throw(_("Service Report ID is required"))
+-
+-    if frappe.db.exists(
+-        "Sales Invoice", {"service_report": service_report, "docstatus": ["<", 2]}
+-    ):
+-        frappe.throw(_("Sales Invoice already exists for this Service Report."))
+-
+-    sr = frappe.get_doc("Service Report", service_report)
+-    try:
+-        sr.calculate_totals()
+-    except Exception as exc:
+-        frappe.logger(__name__).warning(
+-            f"Failed recalculating totals for Service Report '{service_report}': {exc}",
+-            exc_info=True,
+-        )
+-
+-    invoice = frappe.get_doc(
+-        {
+-            "doctype": "Sales Invoice",
+-            "customer": sr.get("customer"),
+-            "service_report": service_report,
+-            "items": [],
+-        }
+-    )
+-
+-    for item in sr.get("work_items", []):
+-        invoice.append(
+-            "items",
+-            {
+-                "description": item.get("description"),
+-                "qty": item.get("quantity"),
+-                "rate": item.get("unit_price"),
+-                "amount": item.get("amount"),
+-            },
+-        )
+-
+-    invoice.insert(ignore_permissions=True)
+-    return cast(str, invoice.name)
+-
+-
+-@whitelist()  # type: ignore[misc]
+-def bot_create_service_request(
+-    subject: str,
+-    customer: str | None = None,
+-    description: str | None = None,
+-) -> str:
+-    """Create a Service Request document on behalf of the Telegram bot."""
+-
+-    doc = frappe.get_doc(
+-        {
+-            "doctype": "Service Request",
+-            "subject": subject,
+-            "status": STATUS_OTKRYTA,
+-            "custom_customer": customer,
+-            "description": description,
+-        }
+-    )
+-    doc.insert(ignore_permissions=True)
+-    return cast(str, doc.name)
+-
+-
+-@whitelist()  # type: ignore[misc]
+-def bot_update_service_request_status(docname: str, status: str) -> None:
+-    """Update the status of a Service Request from the bot."""
+-
+-    if status not in SERVICE_REQUEST_STATUSES:
+-        frappe.throw(_("Invalid status: {0}").format(status))
+-
+-    sr = frappe.get_doc("Service Request", docname)
+-    sr.status = status
+-    sr.save(ignore_permissions=True)
+-
+-
+-@whitelist()  # type: ignore[misc]
+-def bot_upload_attachment(docname: str, file_url: str, attachment_type: str) -> str:
+-    """Create a Custom Attachment linked to a Service Request."""
+-
+-    ca = frappe.get_doc(
+-        {
+-            "doctype": "Custom Attachment",
+-            "parent_reference_sr": docname,
+-            "attachment_file": file_url,
+-            "attachment_type": attachment_type,
+-        }
+-    )
+-    ca.insert(ignore_permissions=True)
+-    return cast(str, ca.name)
+-
+-
+-@whitelist()  # type: ignore[misc]
+-def bot_get_service_requests(status: str | None = None) -> list[dict[str, Any]]:
+-    """Return a list of Service Requests filtered by status."""
+-
+-    filters = {"status": status} if status else {}
+-    return cast(
+-        list[dict[str, Any]],
+-        frappe.get_all(
+-            "Service Request",
+-            filters=filters,
+-            fields=["name", "subject", "status"],
+-        ),
+-    )
++- **Missing Docstrings**: Some functions lack detailed docstrings explaining parameters and return types. Ensure all functions have comprehensive documentation.

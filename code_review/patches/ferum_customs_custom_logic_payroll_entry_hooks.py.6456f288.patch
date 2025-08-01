@@ -1,0 +1,61 @@
+--- a/ferum_customs/custom_logic/payroll_entry_hooks.py
++++ b/ferum_customs/custom_logic/payroll_entry_hooks.py
+@@ -48,30 +48,23 @@
+     """Calculate ``total_payable`` before saving."""
+ 
+     total_bonus = 0.0
+-    try:
+-        if doc.get("employee") and doc.get("start_date") and doc.get("end_date"):
+-            reports = frappe.get_all(
+-                "ServiceReport",
+-                filters={
+-                    "custom_assigned_engineer": doc.employee,
+-                    "posting_date": ["between", [doc.start_date, doc.end_date]],
+-                    "docstatus": 1,
+-                },
+-                fields=["custom_bonus_amount"],
+-            )
+-            for r in reports:
+-                try:
+-                    total_bonus += float(r.get("custom_bonus_amount") or 0)
+-                except (TypeError, ValueError):
+-                    frappe.logger(__name__).warning(
+-                        f"Invalid bonus value in ServiceReport '{r}' while calculating payroll"
+-                    )
+-
+-    except Exception as exc:
+-        frappe.logger(__name__).error(
+-            f"Error fetching ServiceReport bonuses for '{doc.name}': {exc}",
+-            exc_info=True,
++    if doc.get("employee") and doc.get("start_date") and doc.get("end_date"):
++        reports = frappe.get_all(
++            "ServiceReport",
++            filters={
++                "custom_assigned_engineer": doc.employee,
++                "posting_date": ["between", [doc.start_date, doc.end_date]],
++                "docstatus": 1,
++            },
++            fields=["custom_bonus_amount"],
+         )
++        for r in reports:
++            try:
++                total_bonus += float(r.get("custom_bonus_amount") or 0)
++            except (TypeError, ValueError):
++                frappe.logger(__name__).warning(
++                    f"Invalid bonus value in ServiceReport '{r}' while calculating payroll"
++                )
+ 
+     base_salary = float(doc.get("base_salary", 0.0) or 0.0)
+     additional_pay = float(doc.get("additional_pay", 0.0) or 0.0)
+@@ -79,8 +72,8 @@
+ 
+     doc.total_payable = base_salary + additional_pay + total_bonus - total_deduction
+ 
+-    if doc.get("total_payable") is None:
++    if doc.total_payable is None:
+         doc.total_payable = 0.0
+ 
+-    if isinstance(doc.get("total_payable"), float | int):
+-        doc.total_payable = round(doc.total_payable, 2)
++    if isinstance(doc.total_payable, (float, int)):
++        doc.total_payable = round(doc.total_payable, 2)

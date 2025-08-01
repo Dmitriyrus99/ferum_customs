@@ -1,0 +1,5 @@
+--- a/ferum_customs/fixtures/client_script.json
++++ b/ferum_customs/fixtures/client_script.json
+@@ -1 +1 @@
+-[]
++- The JSON file is empty. If this is intentional, it should be documented. If not, consider adding valid JSON data.

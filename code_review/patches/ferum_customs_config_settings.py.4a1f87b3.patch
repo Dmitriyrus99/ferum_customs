@@ -1,0 +1,11 @@
+--- a/ferum_customs/config/settings.py
++++ b/ferum_customs/config/settings.py
+@@ -21,6 +21,6 @@
+     class Config:  # Use Config class instead of model_config
+         env_file = ".env"  # Use a single .env file
+         env_file_encoding = "utf-8"
+-        extra = "ignore"
++        extra = "forbid"  # Change to "forbid" to prevent unexpected fields
+ 
+-settings = Settings()
++settings = Settings()

@@ -1,0 +1,66 @@
+--- a/ferum_customs/ferum_customs/doctype/service_request/service_request.json
++++ b/ferum_customs/ferum_customs/doctype/service_request/service_request.json
+@@ -1,57 +1,6 @@
+-[
+-{
+-  "doctype": "DocType",
+-  "custom": 1,
+-  "name": "Service Request",
+-  "module": "Ferum Customs",
+-  "engine": "InnoDB",
+-  "is_submittable": 1,
+-  "naming_series": "SR-.YYYY.-.#####",
+-  "title_field": "subject",
+-  "workflow_name": "Service Request Workflow",
+-  "track_changes": 1,
+-  "track_seen": 1,
+-  "track_views": 1,
+-  "allow_rename": 1,
+-  "fields": [
+-    {
+-      "fieldname": "request_datetime",
+-      "label": "Дата и время заявки",
+-      "fieldtype": "Datetime",
+-      "default": "Now",
+-      "read_only": 1,
+-      "in_list_view": 1
+-    },
+-    {
+-      "fieldname": "subject",
+-      "label": "Тема",
+-      "fieldtype": "Data",
+-      "reqd": 1,
+-      "in_list_view": 1
+-    },
+-    {
+-      "fieldname": "customer_email",
+-      "label": "Email клиента",
+-      "fieldtype": "Data",
+-      "options": "Email",
+-      "in_list_view": 1
+-    },
+-    {
+-      "fieldname": "status",
+-      "label": "Статус",
+-      "fieldtype": "Data",
+-      "read_only": 1,
+-      "in_list_view": 1,
+-      "no_copy": 1
+-    },
+-    {
+-      "fieldname": "duration_hours",
+-      "label": "Длительность (часы)",
+-      "fieldtype": "Float",
+-      "precision": 2,
+-      "read_only": 1,
+-      "no_copy": 1
+-    }
+-  ]
+-}
+-]
++- The `default` value for `request_datetime` should not be set to "Now" as it may not be interpreted correctly. It should be set to a proper default value or handled in the backend logic.
++- The `options` field for `customer_email` should not be set to "Email". Instead, it should be validated in the backend to ensure it is a valid email format.
++- The `fieldtype` for `status` and `duration_hours` should be reviewed to ensure they meet the requirements for the data being stored. Consider using an enumerated type for `status` if it has a limited set of values.
++- The `read_only` fields should be carefully considered to ensure they are not inadvertently modified in the application logic.
++- Ensure that the `naming_series` is unique and does not conflict with existing naming conventions in the system.
++- Consider adding validation rules for required fields to ensure data integrity.

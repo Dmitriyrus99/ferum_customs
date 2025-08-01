@@ -1,0 +1,44 @@
+--- a/ferum_customs/ferum_customs/doctype/custom_attachment/custom_attachment.json
++++ b/ferum_customs/ferum_customs/doctype/custom_attachment/custom_attachment.json
+@@ -8,31 +8,35 @@
+             "fieldname": "attachment_type",
+             "label": "Attachment Type",
+             "fieldtype": "Select",
+-            "options": "photo\ndocument"
++            "options": "\nphoto\ndocument"
+         },
+         {
+             "fieldname": "parent_reference_sr",
+             "label": "Parent Service Request",
+             "fieldtype": "Link",
+-            "options": "Service Request"
++            "options": "Service Request",
++            "reqd": 1
+         },
+         {
+             "fieldname": "parent_reference_srep",
+             "label": "Parent Service Report",
+             "fieldtype": "Link",
+-            "options": "Service Report"
++            "options": "Service Report",
++            "reqd": 1
+         },
+         {
+             "fieldname": "parent_reference_so",
+             "label": "Parent Service Object",
+             "fieldtype": "Link",
+-            "options": "Service Object"
++            "options": "Service Object",
++            "reqd": 1
+         },
+         {
+             "fieldname": "attachment_file",
+             "label": "Attachment File",
+             "fieldtype": "Attach",
+-            "description": "Max file size: 10MB"
++            "description": "Max file size: 10MB",
++            "reqd": 1
+         }
+     ]
+-}
++}

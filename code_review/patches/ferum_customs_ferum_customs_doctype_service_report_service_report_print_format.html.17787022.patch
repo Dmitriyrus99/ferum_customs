@@ -1,0 +1,44 @@
+--- a/ferum_customs/ferum_customs/doctype/service_report/service_report_print_format.html
++++ b/ferum_customs/ferum_customs/doctype/service_report/service_report_print_format.html
+@@ -1,30 +1,13 @@
+-<h2>Акт выполненных работ</h2>
+-<p>Номер отчета: {{ doc.name }}</p>
+-<p>Дата: {{ frappe.utils.formatdate(doc.posting_date) }}</p>
+-<p>Клиент: {{ frappe.get_doc('Customer', doc.customer).customer_name }}</p>
+-{% set sr = frappe.get_doc('Service Request', doc.service_request) %}
+-<p>Проект: {{ doc.service_request }}</p>
+-{% if sr.custom_assigned_engineer %}
+-<p>Ответственный инженер: {{ frappe.get_cached_value('User', sr.custom_assigned_engineer, 'full_name') or sr.custom_assigned_engineer }}</p>
+-{% endif %}
+-{% if sr.custom_service_object_link %}
+-{% set so = frappe.get_doc('Service Object', sr.custom_service_object_link) %}
+-<p>Объект: {{ so.object_name }} {% if so.location %}({{ so.location }}){% endif %}</p>
+-{% endif %}
++1. **Potential Security Vulnerability**: Directly rendering user input (e.g., `doc.customer`, `sr.custom_assigned_engineer`, etc.) without sanitization can lead to XSS attacks. Use `frappe.utils.escape_html()` to sanitize these values before rendering.
+ 
+-<table>
+-    <tr>
+-        <th>#</th><th>Описание</th><th>Кол-во</th><th>Цена</th><th>Сумма</th>
+-    </tr>
+-    {% for item in doc.work_items %}
+-    <tr>
+-        <td>{{ loop.index }}</td>
+-        <td>{{ item.description }}</td>
+-        <td>{{ item.quantity }}</td>
+-        <td>{{ item.unit_price }}</td>
+-        <td>{{ item.amount }}</td>
+-    </tr>
+-    {% endfor %}
+-</table>
++2. **Inefficient Data Fetching**: The code fetches documents multiple times (e.g., `frappe.get_doc()` and `frappe.get_cached_value()`). Consider caching the results or using a single query to reduce database calls.
+ 
+-<p>Итого к оплате: {{ doc.total_payable }} ({{ frappe.utils.money_in_words(doc.total_payable) }})</p>
++3. **Missing Error Handling**: There is no error handling for cases where documents may not exist (e.g., if `doc.service_request` or `sr.custom_service_object_link` is invalid). Implement checks to ensure the document exists before accessing its properties.
++
++4. **Hardcoded Strings**: The table headers and other strings are hardcoded in Russian. Consider using a localization approach to support multiple languages.
++
++5. **Use of `or` in Template**: The use of `or` in `frappe.get_cached_value('User', sr.custom_assigned_engineer, 'full_name') or sr.custom_assigned_engineer` may lead to unexpected results if `sr.custom_assigned_engineer` is falsy. Ensure that the fallback logic is appropriate.
++
++6. **Loop Indexing**: The use of `loop.index` is fine, but ensure that the index is meaningful in the context of the data being displayed. If the data can be manipulated, consider using a more secure method to generate indices.
++
++7. **Formatting of Money Values**: Ensure that `doc.total_payable` is properly formatted as a currency value before rendering to avoid any potential formatting issues.

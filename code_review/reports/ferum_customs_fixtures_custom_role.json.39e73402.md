@@ -1,0 +1,2 @@
+- The JSON file is empty. If this is intended to represent a custom role, it should contain at least one valid JSON object that defines the role's properties.
+- Ensure that the file is not left empty if it is meant to be populated with data, as this could lead to issues when the application expects roles to be defined.

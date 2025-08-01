@@ -1,0 +1,16 @@
+--- a/ferum_customs/ferum_customs/doctype/service_report/service_report.json
++++ b/ferum_customs/ferum_customs/doctype/service_report/service_report.json
+@@ -114,7 +114,11 @@
+             "role": "Инженер",
+             "read": 1,
+             "write": 1,
+-            "create": 1
++            "create": 1,
++            "delete": 0,  // Added delete permission to maintain consistency
++            "submit": 0,  // Added submit permission to maintain consistency
++            "cancel": 0,  // Added cancel permission to maintain consistency
++            "amend": 0    // Added amend permission to maintain consistency
+         }
+     ]
+-}
++}

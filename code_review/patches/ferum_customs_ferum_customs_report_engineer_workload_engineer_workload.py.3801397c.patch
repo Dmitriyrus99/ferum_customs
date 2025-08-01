@@ -1,0 +1,53 @@
+--- a/ferum_customs/ferum_customs/report/engineer_workload/engineer_workload.py
++++ b/ferum_customs/ferum_customs/report/engineer_workload/engineer_workload.py
+@@ -1,43 +1,11 @@
+-from __future__ import annotations
++1. **SQL Injection Vulnerability**: The SQL query uses string interpolation for the `status` values, which can lead to SQL injection. Use parameterized queries instead.
++   
++   **Correction**: Change the SQL query to use placeholders for parameters.
+ 
+-from typing import Any
++2. **Type Hinting**: The type hint for `filters` should be `Optional[dict[str, Any]]` instead of `dict[str, Any] | None`.
+ 
+-import frappe
+-from frappe import _
++3. **Unused Parameter**: The `filters` parameter is not used in the function. If it's not needed, consider removing it.
+ 
+-from ferum_customs.constants import STATUS_OTMENENA, STATUS_ZAKRYTA
++4. **Import Optimization**: The import statement for `_` from `frappe` can be optimized by importing only what is necessary.
+ 
+-
+-def execute(
+-    filters: dict[str, Any] | None = None
+-) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+-    rows = frappe.db.sql(
+-        """
+-        select custom_assigned_engineer as engineer, count(*) as total
+-        from `tabservice_request`
+-        where status not in (%s, %s)
+-          and custom_assigned_engineer is not null
+-        group by custom_assigned_engineer
+-        order by total desc
+-        """,
+-        (STATUS_ZAKRYTA, STATUS_OTMENENA),
+-        as_dict=True,
+-    )
+-
+-    columns = [
+-        {
+-            "label": _("Engineer"),
+-            "fieldname": "engineer",
+-            "fieldtype": "Link",
+-            "options": "User",
+-            "width": 250,
+-        },
+-        {
+-            "label": _("Open Requests"),
+-            "fieldname": "total",
+-            "fieldtype": "Int",
+-            "width": 120,
+-        },
+-    ]
+-
+-    return columns, rows
++5. **Return Type Consistency**: Ensure that the return type matches the expected output, especially if the function can return `None` in some cases.

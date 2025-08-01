@@ -1,0 +1,48 @@
+--- a/ferum_customs/bench_commands/run_tests.py
++++ b/ferum_customs/bench_commands/run_tests.py
+@@ -1,13 +1,37 @@
+-1. **Directory Traversal Vulnerability**: The code does not properly sanitize the `app` and `test_path` inputs, which could allow for directory traversal attacks. Use `os.path.abspath()` and validate against a base directory.
+-   
+-2. **Environment Variable Injection**: Setting `os.environ["SITE_NAME"]` directly can lead to issues if the environment variable is used elsewhere in the application. Consider using a context manager or a safer method to handle environment variables.
++import os
++import sys
++import click
++import logging
++import pytest
+ 
+-3. **Error Handling**: Raising a `ValueError` without catching it may cause the program to exit unexpectedly. Consider using `click.ClickException` for better integration with Click's error handling.
++# Configure logging
++logging.basicConfig(level=logging.INFO)
+ 
+-4. **Exit Code Handling**: Using `exit()` directly can be problematic in some contexts (e.g., when this script is imported as a module). Instead, consider returning the exit code or using `sys.exit()`.
++BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+ 
+-5. **Missing Type Hint for `test_path`**: The `test_path` parameter should have a type hint for consistency and clarity.
++def validate_path(path: str) -> str:
++    abs_path = os.path.abspath(path)
++    if not abs_path.startswith(BASE_DIR):
++        raise click.ClickException("Invalid test path: directory traversal detected.")
++    return abs_path
+ 
+-6. **Lack of Logging**: There is no logging for the execution of tests, which can be useful for debugging and monitoring.
++@click.command()
++@click.argument('app')
++@click.argument('test_path', type=str)
++def run_tests(app: str, test_path: str) -> int:
++    # Validate paths
++    app = validate_path(app)
++    test_path = validate_path(test_path)
+ 
+-7. **Potential for Unhandled Exceptions**: If `pytest.main()` raises an exception, it will not be caught, leading to an unhandled exception. Consider wrapping it in a try-except block.
++    # Set environment variable safely
++    os.environ["SITE_NAME"] = app
++
++    try:
++        logging.info(f"Running tests for app: {app} at path: {test_path}")
++        return pytest.main([test_path])
++    except Exception as e:
++        logging.error(f"An error occurred while running tests: {e}")
++        return 1
++
++if __name__ == "__main__":
++    sys.exit(run_tests())

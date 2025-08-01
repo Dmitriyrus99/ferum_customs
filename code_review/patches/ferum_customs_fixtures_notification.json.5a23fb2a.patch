@@ -1,0 +1,17 @@
+--- a/ferum_customs/fixtures/notification.json
++++ b/ferum_customs/fixtures/notification.json
+@@ -2,7 +2,7 @@
+   {
+     "doctype": "Notification",
+     "name": "Service Request Status Change",
+-    "enabled": 1,
++    "enabled": true,
+     "document_type": "Service Request",
+     "subject": "Статус заявки {{ doc.name }} изменен на {{ doc.status }}",
+     "message": "Заявка {{ doc.name }} находится в статусе {{ doc.status }}.",
+@@ -11,4 +11,4 @@
+     "channel": "Email",
+     "recipients": [{"receiver_by_role": "Проектный менеджер"}]
+   }
+-]
++]

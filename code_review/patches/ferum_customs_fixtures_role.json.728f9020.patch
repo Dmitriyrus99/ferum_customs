@@ -1,0 +1,14 @@
+--- a/ferum_customs/fixtures/role.json
++++ b/ferum_customs/fixtures/role.json
+@@ -1,7 +1,4 @@
+-[
+-  {
+-    "doctype": "Role",
+-    "name": "Проектный менеджер",
+-    "role_name": "Проектный менеджер"
+-  }
+-]
++- The JSON structure is valid, but ensure that the encoding supports the characters used (UTF-8).
++- Consider adding a unique identifier for the role if it will be used in a database to avoid potential conflicts.
++- Ensure that the role names are sanitized and validated before being used in any application logic to prevent injection attacks.
++- If this file is exposed publicly, ensure that sensitive information is not included.

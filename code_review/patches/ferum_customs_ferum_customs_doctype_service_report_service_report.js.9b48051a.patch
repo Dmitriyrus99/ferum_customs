@@ -1,0 +1,33 @@
+--- a/ferum_customs/ferum_customs/doctype/service_report/service_report.js
++++ b/ferum_customs/ferum_customs/doctype/service_report/service_report.js
+@@ -1,20 +1,11 @@
+-/// <reference path="../../../typings/frappe.d.ts" />
++1. **Hardcoded Strings**: The button label "Создать счёт" is hardcoded. Consider using a translation function or a constant for better maintainability.
++   
++2. **Error Handling**: There is no error handling in the callback of the `frappe.call`. If the API call fails, the user will not receive any feedback. Add an error handler to inform the user.
+ 
+-frappe.ui.form.on("Service Report", {
+-	refresh(frm) {
+-		if (frm.doc.docstatus === 1) {
+-			frm.add_custom_button(__("Создать счёт"), () => {
+-				frappe.call({
+-					method: "ferum_customs.api.create_invoice_from_report",
+-					args: { service_report: frm.doc.name },
+-					freeze: true,
+-					callback(r) {
+-						if (r.message) {
+-							frappe.set_route("Form", "Sales Invoice", r.message);
+-						}
+-					},
+-				});
+-			});
+-		}
+-	},
+-});
++3. **Security Vulnerability**: Ensure that the `create_invoice_from_report` method on the server side properly validates the `service_report` argument to prevent unauthorized access or data manipulation.
++
++4. **Potential Race Condition**: If the user clicks the button multiple times before the first call completes, it could lead to multiple invoices being created. Consider disabling the button after the first click until the call completes.
++
++5. **Use of `frm.doc.name`**: Ensure that `frm.doc.name` is always defined and valid before passing it to the API. Add a check to confirm that `frm.doc.name` exists.
++
++6. **Callback Function**: The callback function should also handle cases where `r.message` is not defined or is an error message.
