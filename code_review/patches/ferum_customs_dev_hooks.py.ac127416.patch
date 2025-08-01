@@ -1,9 +1,0 @@
---- a/ferum_customs/dev_hooks.py
-+++ b/ferum_customs/dev_hooks.py
-@@ -4,3 +4,5 @@
- 
- # Example: extend fixtures
- # fixtures = ["demo_fixture"]
-+
-+# No issues found in the provided code snippet.
-

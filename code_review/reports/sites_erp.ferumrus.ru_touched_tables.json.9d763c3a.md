@@ -1,4 +1,0 @@
-- Ensure that the JSON file is properly formatted and valid. The provided JSON is correctly formatted.
-- Consider renaming the file to a more descriptive name if it doesn't accurately describe the contents.
-- If this JSON file is used for configuration or sensitive data, ensure proper access controls are in place to prevent unauthorized access.
-- If this JSON file is part of a larger application, ensure that it is not exposed to the client-side unless necessary, to prevent information leakage.

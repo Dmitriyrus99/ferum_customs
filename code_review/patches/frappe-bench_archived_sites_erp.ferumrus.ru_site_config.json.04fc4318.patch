@@ -1,9 +1,0 @@
---- a/frappe-bench/archived/sites/erp.ferumrus.ru/site_config.json
-+++ b/frappe-bench/archived/sites/erp.ferumrus.ru/site_config.json
-@@ -1,5 +1,5 @@
- {
-  "db_name": "_d4c01005bd6191dc",
-- "db_password": "uj8z3o22YMLWYLlC",
-+ "db_password": "REPLACE_WITH_SECURE_PASSWORD",
-  "db_type": "mariadb"
- }

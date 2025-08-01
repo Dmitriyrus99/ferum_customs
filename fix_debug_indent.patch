@@ -1,0 +1,22 @@
+*** a/scripts/gpt_full_review.py
+--- b/scripts/gpt_full_review.py
+@@
+-    all_files = list(iter_source_files(scan_path, repo_path))
+-    console.log(f"[bold blue]DEBUG:[/] найдено {len(all_files)} файлов для анализа")
+-    for _p in all_files[:10]:
+-        console.log(f"[blue]DEBUG sample →[/] {_p}")
+
++        all_files = list(iter_source_files(scan_path, repo_path))
+
++
+
++        # ───────── DEBUG: сколько файлов найдено ─────────
+
++        console.log(f"[bold blue]DEBUG:[/] найдено {len(all_files)} файлов для анализа")
+
++        for _p in all_files[:10]:
+
++            console.log(f"[blue]DEBUG sample →[/] {_p}")
+
++        # ─────────────────────────────────────────────────
+

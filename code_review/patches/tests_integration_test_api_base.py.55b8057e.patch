@@ -1,8 +1,0 @@
---- a/tests/integration/test_api_base.py
-+++ b/tests/integration/test_api_base.py
-@@ -11,4 +11,4 @@
- 
- def test_root_endpoint():
-     response = client.get("/")
--    assert response.status_code in (200, 404)
-+    assert response.status_code == 200

@@ -22,7 +22,7 @@ wheels/
 *.egg
 tags
 MANIFEST
-
+.mypy_cache/
 # Environments
 .env
 .venv
