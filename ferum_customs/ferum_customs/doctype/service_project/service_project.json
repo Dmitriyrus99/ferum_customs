@@ -5,8 +5,9 @@
     "name": "Service Project",
     "module": "Ferum Customs",
     "engine": "InnoDB",
-    "track_changes": 0,
+    "track_changes": 1,
     "title_field": "project_name",
+    "description": "This DocType represents a service project.",
     "fields": [
       {
         "fieldname": "project_name",

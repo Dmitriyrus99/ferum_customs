@@ -25,7 +25,7 @@ permission_query_conditions = {
 
 get_notification_config = "ferum_customs.notifications.notifications.get_notification_config"
 
-# ── актуальный список фикстур: только данные, без описаний DocType ──
+# Fixtures for the app
 fixtures = [
     "Custom Field",
     "Notification",
@@ -37,12 +37,13 @@ fixtures = [
 ]
 
 # Bench commands: custom CLI tools for this app
-bench_commands = [
-    {
-        "command": run_tests,
-        "description": "Run custom tests for Ferum Customs"
-    },
-]
+def get_bench_commands() -> Dict[str, Any]:
+    return [
+        {
+            "command": run_tests,
+            "description": "Run custom tests for Ferum Customs"
+        },
+    ]
 
 def scheduler_events() -> Dict[str, Any]:  # Use Dict for type hinting
     """Return scheduler events configuration for Frappe."""

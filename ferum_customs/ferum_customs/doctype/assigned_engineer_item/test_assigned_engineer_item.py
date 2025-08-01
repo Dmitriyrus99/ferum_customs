@@ -21,4 +21,19 @@ class TestAssignedEngineerItem(FrappeTestCase):
         self.assertEqual(doc.engineer.strip(), "Engineer User")
         
         # Assert that the assignment date is in ISO format
-        self.assertIn("T", doc.assignment_date)  # Use assertIn for better readability
+        self.assertIn("T", doc.assignment_date)  # Check for 'T' in ISO format
+
+    def test_engineer_name_empty(self) -> None:
+        """Test that an empty engineer name raises a validation error."""
+        doc = frappe.new_doc("Assigned Engineer Item")
+        doc.engineer = "   "  # Only whitespace
+        with self.assertRaises(frappe.ValidationError):
+            doc.validate()
+
+    def test_invalid_assignment_date(self) -> None:
+        """Test that an invalid assignment date raises a validation error."""
+        doc = frappe.new_doc("Assigned Engineer Item")
+        doc.engineer = "Engineer User"
+        doc.assignment_date = "invalid-date"  # Invalid date format
+        with self.assertRaises(frappe.ValidationError):
+            doc.validate()

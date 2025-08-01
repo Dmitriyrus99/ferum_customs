@@ -24,8 +24,13 @@ services:
     command: >
       bash -c "bench new-site --force test.localhost --db-root-password ${DB_ROOT_PASSWORD} --admin-password ${ADMIN_PASSWORD} && \
                bench --site test.localhost install-app erpnext && \
-               bench --site test.localhost install-app ferum_customs && \
-               pytest -q tests/"
+               bench --site test.localhost install-app ferum_customs"
+
+  test:
+    image: frappe/erpnext
+    depends_on:
+      - frappe
+    command: pytest -q tests/
 
   db:
     image: mariadb:${MARIADB_TAG:-10.6}

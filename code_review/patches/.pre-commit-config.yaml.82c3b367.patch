@@ -1,0 +1,39 @@
+--- a/.pre-commit-config.yaml
++++ b/.pre-commit-config.yaml
+@@ -24,8 +24,6 @@
+         exclude: '^\\.venv_dev/'
+       - id: check-toml
+         exclude: '^\\.venv_dev/'
+-      - id: check-yaml
+-        exclude: '^(?:\.venv_dev/|\.codex/tasks/)'
+       - id: debug-statements
+         exclude: '^\\.venv_dev/'
+ 
+@@ -70,7 +68,7 @@
+       - id: ruff
+         name: "Run ruff import sorter"
+         args: ["--select=I", "--fix"]
+-        exclude: '^(?:\.venv_dev/|scripts/)' 
++        exclude: '^(?:\.venv_dev/|scripts/)'
+ 
+       - id: ruff
+         name: "Run ruff linter"
+@@ -100,7 +98,6 @@
+           - --explicit-package-bases
+           - ferum_customs/ferum_customs
+         additional_dependencies:
+-          - fastapi==0.115.14
+           - pydantic-settings
+         exclude: '^\.venv_dev/'
+ 
+@@ -112,7 +109,9 @@
+         language: python
+         files: ^ferum_customs/fixtures/.*\.json$
+ 
++  # Consider adding hooks for testing and security checks
++
+ ci:
+     autoupdate_schedule: weekly
+     skip: []
+-    submodules: false
++    submodules: false

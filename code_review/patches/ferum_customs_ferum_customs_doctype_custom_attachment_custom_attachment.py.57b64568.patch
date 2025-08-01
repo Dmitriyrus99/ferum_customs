@@ -1,0 +1,29 @@
+--- a/ferum_customs/ferum_customs/doctype/custom_attachment/custom_attachment.py
++++ b/ferum_customs/ferum_customs/doctype/custom_attachment/custom_attachment.py
+@@ -4,6 +4,7 @@
+ """
+ 
+ from __future__ import annotations
++from typing import Optional
+ 
+ import frappe
+ from frappe import _  # Для возможных пользовательских сообщений
+@@ -12,8 +13,11 @@
+ class CustomAttachment(Document):
+     """
+     Класс документа CustomAttachment.
++    
++    Attributes:
++        attachment_type (Optional[str]): Тип вложения.
+     """
+-    attachment_type: str | None = None
++    attachment_type: Optional[str] = None
+ 
+     def validate(self) -> None:
+         """
+@@ -69,4 +73,4 @@
+     # и вызывается через hooks.py.
+     # def on_trash(self) -> None:
+     #     # Логика удаления физического файла и связанной File DocType записи.
+-    #     pass
++    #     pass

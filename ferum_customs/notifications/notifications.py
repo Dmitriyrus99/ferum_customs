@@ -8,7 +8,7 @@
 Возвращает словарь, описывающий условия для отправки стандартных уведомлений Frappe.
 """
 
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 from frappe import _  # Для перевода возможных строк в будущем
 

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import frappe
+from typing import Union
 
 ROLES = [
     "Проектный менеджер",
@@ -10,7 +11,7 @@ ROLES = [
     "Заказчик",
 ]
 
-SERVICE_REQUEST_PERMS: list[dict[str, int | str]] = [
+SERVICE_REQUEST_PERMS: list[dict[str, Union[int, str]]] = [
     {
         "parent": "Service Request",
         "role": "Проектный менеджер",
@@ -74,7 +75,7 @@ def create_role(role_name: str) -> None:
     role.insert(ignore_permissions=True)
 
 
-def create_docperm(perm: dict[str, int | str]) -> None:
+def create_docperm(perm: dict[str, Union[int, str]]) -> None:
     """Insert DocPerm if it is missing."""
     filters = {
         "parent": perm["parent"],

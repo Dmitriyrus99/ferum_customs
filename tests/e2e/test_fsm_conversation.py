@@ -1,4 +1,5 @@
 import importlib
+import os
 from datetime import datetime, timezone
 from types import SimpleNamespace
 from typing import TYPE_CHECKING, cast
@@ -21,11 +22,13 @@ else:
 async def test_fsm_start_handler():
     """Test the start handler of the FSM to ensure it transitions to the correct state."""
     
-    bot_token = "12345:TOKEN"  # Replace with a method to retrieve from environment
-    bot = Bot(token=bot_token)
-    storage = MemoryStorage()
-    key = StorageKey(bot_id=bot.id or 0, chat_id=123, user_id=123)
-    state = FSMContext(storage=storage, key=key)
+    bot_token = os.getenv("BOT_TOKEN")  # Retrieve from environment
+    assert bot_token is not None, "BOT_TOKEN must be set in the environment"
+    
+    bot: Bot = Bot(token=bot_token)
+    storage: MemoryStorage = MemoryStorage()
+    key: StorageKey = StorageKey(bot_id=bot.id or 0, chat_id=123, user_id=123)
+    state: FSMContext = FSMContext(storage=storage, key=key)
 
     message = cast(
         aiogram_types.Message,

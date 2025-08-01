@@ -4,7 +4,7 @@
 import json
 import sys
 from pathlib import Path
-from typing import List
+from typing import List, Optional
 
 
 def check_file(path: Path) -> bool:
@@ -29,6 +29,8 @@ def main(paths: List[str]) -> int:
         if path.suffix == ".json" and path.exists():
             if not check_file(path):
                 ok = False
+        else:
+            print(f"{path}: not a valid JSON file or does not exist")
     return 0 if ok else 1
 
 

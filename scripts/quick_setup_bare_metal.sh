@@ -8,8 +8,21 @@ if [[ "$EUID" -ne 0 ]]; then
   exit 1
 fi
 
-apt update
-apt install -y mariadb-server redis-server python3-dev python3-venv python3-pip nodejs npm
+# Check for existing installations
+if dpkg -l | grep -q mariadb-server; then
+  echo "MariaDB is already installed."
+else
+  apt update
+  apt install -y mariadb-server
+fi
+
+if dpkg -l | grep -q redis-server; then
+  echo "Redis is already installed."
+else
+  apt install -y redis-server
+fi
+
+apt install -y python3-dev python3-venv python3-pip nodejs npm
 
 # Optionally install yarn for frontend asset builds
 if command -v npm >/dev/null 2>&1; then
@@ -26,7 +39,7 @@ if [[ -z "$MYSQL_ROOT_PWD" ]]; then
 fi
 
 # Securely set the MariaDB root password
-mysql -u root -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '${MYSQL_ROOT_PWD}'; FLUSH PRIVILEGES;"
+mysql -u root -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '${MYSQL_ROOT_PWD//\'/\\\'}'; FLUSH PRIVILEGES;"
 
 # 3. Install bench CLI
 if command -v pipx >/dev/null 2>&1; then

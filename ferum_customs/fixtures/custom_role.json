@@ -1,7 +1,7 @@
 [
     {
         "doctype": "Role",
-        "role_name": "Custom Role Name",
+        "role_name": "custom_role_name",
         "description": "Description of the custom role."
     }
 ]

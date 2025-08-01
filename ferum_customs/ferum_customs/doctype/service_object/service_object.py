@@ -7,6 +7,7 @@ from __future__ import annotations
 from frappe.model.document import Document
 import frappe
 from frappe import _
+from typing import Optional
 
 
 class ServiceObject(Document):
@@ -14,10 +15,12 @@ class ServiceObject(Document):
     Класс документа ServiceObject.
     """
 
-    linked_service_project: str | None = None
-    object_name: str | None = None
-    warranty_expiry_date: str | None = None
-    purchase_date: str | None = None
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.linked_service_project: Optional[str] = None
+        self.object_name: Optional[str] = None
+        self.warranty_expiry_date: Optional[str] = None
+        self.purchase_date: Optional[str] = None
 
     def validate(self) -> None:
         """

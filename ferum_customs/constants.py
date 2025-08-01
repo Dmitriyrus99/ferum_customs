@@ -10,7 +10,13 @@
 
 Использование констант вместо "магических строк" улучшает читаемость,
 сопровождаемость и уменьшает вероятность ошибок из-за опечаток.
+
+Примеры использования:
+- Используйте STATUS_OPEN для проверки статуса заявки.
+- Используйте ROLE_ADMINISTRATOR для проверки прав доступа пользователя.
 """
+
+from typing import List
 
 # --- Статусы Заявок на обслуживание (service_request) ---
 STATUS_OPEN: str = "Open"
@@ -27,13 +33,13 @@ STATUS_VYPOLNENA: str = "Выполнена"
 STATUS_ZAKRYTA: str = "Закрыта"
 STATUS_OTMENENA: str = "Отменена"
 
-SERVICE_REQUEST_STATUSES: tuple[str, ...] = (
+SERVICE_REQUEST_STATUSES: List[str] = [
     STATUS_OTKRYTA,
     STATUS_V_RABOTE,
     STATUS_VYPOLNENA,
     STATUS_ZAKRYTA,
     STATUS_OTMENENA,
-)
+]
 
 # --- Роли Пользователей ---
 ROLE_SYSTEM_MANAGER: str = "System Manager"
@@ -59,8 +65,10 @@ FIELD_CUSTOM_PROJECT: str = "custom_project"
 FIELD_CUSTOM_LINKED_REPORT: str = "custom_linked_report"
 
 # --- Другие константы ---
-# DEFAULT_COMPANY: str = "Ferum LLC"  # Consider using environment variables
-# MAX_LOGIN_ATTEMPTS: int = 5  # Consider using environment variables
+import os
+
+DEFAULT_COMPANY: str = os.getenv("DEFAULT_COMPANY", "Ferum LLC")
+MAX_LOGIN_ATTEMPTS: int = int(os.getenv("MAX_LOGIN_ATTEMPTS", 5))
 
 __all__ = [
     "STATUS_OPEN",

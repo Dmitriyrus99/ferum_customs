@@ -1,0 +1,26 @@
+--- a/ferum_customs/ferum_customs/report/service_request_overview/service_request_overview.json
++++ b/ferum_customs/ferum_customs/report/service_request_overview/service_request_overview.json
+@@ -10,6 +10,22 @@
+     {
+       "role": "Проектный менеджер",
+       "doctype": "Report"
++    },
++    {
++      "role": "Менеджер",
++      "doctype": "Report"
++    },
++    {
++      "role": "Администратор",
++      "doctype": "Report"
++    }
++  ],
++  "description": "This report provides an overview of service requests.",
++  "version": "1.0.0",
++  "changelog": [
++    {
++      "date": "2023-10-01",
++      "changes": "Initial creation of the report."
+     }
+   ]
+-}
++}

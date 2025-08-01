@@ -1,21 +1,21 @@
 {
     "frappe": {
         "resolution": {
-            "commit_hash": null,
-            "branch": null
+            "commit_hash": "latest_commit_hash_here",  // Specify the latest commit hash for tracking
+            "branch": "main"  // Specify the branch for consistency
         },
-        "required": [],
-        "idx": 1,
-        "version": "15.74.1"
+        "required": [],  // List of required apps, if any
+        "idx": 1,  // Index for ordering apps
+        "version": "15.74.1"  // Current version of the app
     },
     "ferum_customs": {
-        "is_repo": true,
+        "is_repo": true,  // Indicates if this app is a repository
         "resolution": {
-            "commit_hash": "e5761a1d54de8961ee6b774fa2b8cb1603659ee5",
-            "branch": "main"
+            "commit_hash": "e5761a1d54de8961ee6b774fa2b8cb1603659ee5",  // Commit hash for the specific version
+            "branch": "main"  // Branch for the app
         },
-        "required": [],
-        "idx": 2,
-        "version": "0.0.1"
+        "required": [],  // List of required apps, if any
+        "idx": 2,  // Index for ordering apps
+        "version": "0.0.1"  // Current version of the app
     }
 }

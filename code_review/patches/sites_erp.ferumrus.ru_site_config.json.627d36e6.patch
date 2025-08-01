@@ -1,0 +1,12 @@
+--- a/sites/erp.ferumrus.ru/site_config.json
++++ b/sites/erp.ferumrus.ru/site_config.json
+@@ -1,7 +1,7 @@
+ {
+   "db_host": "db",
+   "db_name": "_542e78bbae70abce",
+-  "db_password": "${DB_PASSWORD}",  // Use environment variable for secure password
++  "db_password": "${DB_PASSWORD}",
+   "db_type": "mariadb",
+   "host_name": "https://erp.ferumrus.ru",
+   "maintenance_mode": 0,
+

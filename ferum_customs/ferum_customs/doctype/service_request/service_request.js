@@ -11,7 +11,7 @@ frappe.ui.form.on("Service Request", {
 	 * Handler for the change event of 'service_object_link'.
 	 * Requests engineers and sets filter for 'assigned_engineer'.
 	 */
-	service_object_link(frm) {
+	service_object_link(frm: any) {
 		const engineer_field = "assigned_engineer";
 
 		if (!frm.doc.service_object_link) {
@@ -26,7 +26,7 @@ frappe.ui.form.on("Service Request", {
 		frappe.call({
 			method: "ferum_customs.custom_logic.service_request_hooks.get_engineers_for_object",
 			args: { service_object_name: frm.doc.service_object_link },
-			callback(r) {
+			callback(r: any) {
 				frm.dashboard.clear_indicator();
 				if (r.message && Array.isArray(r.message)) {
 					if (r.message.length > 0) {
@@ -74,7 +74,7 @@ frappe.ui.form.on("Service Request", {
 				}
 				frm.refresh_field(engineer_field);
 			},
-			error(r) {
+			error(r: any) {
 				frm.dashboard.clear_indicator();
 				console.error("Error retrieving engineer list:", r);
 				frm.set_query(engineer_field, null);
@@ -91,7 +91,7 @@ frappe.ui.form.on("Service Request", {
 		});
 	},
 
-	refresh(frm) {
+	refresh(frm: any) {
 		// Common logic: setting add_fetch and engineer filters
 		frm.add_fetch("service_object_link", "linked_service_project", "project");
 
@@ -130,7 +130,7 @@ frappe.ui.form.on("Service Request", {
 		}
 	},
 
-	validate(frm) {
+	validate(frm: any) {
 		// Implement validation logic or remove if not needed
 		return true;
 	},

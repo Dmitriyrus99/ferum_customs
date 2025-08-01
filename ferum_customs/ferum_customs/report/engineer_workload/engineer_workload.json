@@ -10,6 +10,10 @@
     {
       "doctype": "Role",
       "role": "Проектный менеджер"
+    },
+    {
+      "doctype": "Role",
+      "role": "Другие роли"  // Consider adding more roles as needed
     }
   ]
 }

@@ -1,0 +1,24 @@
+--- a/scripts/fix-missing-db.sh
++++ b/scripts/fix-missing-db.sh
+@@ -2,6 +2,7 @@
+ set -euo pipefail
+ 
+ # Fix missing Frappe site DB and admin access
++# Usage: Ensure DB_ROOT_PASSWORD and ADMIN_PASSWORD are set in the environment
+ 
+ # Default inputs
+ SITE_NAME="${SITE_NAME:-erp.ferumrus.ru}"
+@@ -36,6 +37,12 @@
+ fi
+ echo "✅ Using DB_NAME=${DB_NAME}"
+ 
++# Check if the site exists
++if ! docker compose exec frappe bash -c "bench --site $SITE_NAME list-sites | grep -q $SITE_NAME"; then
++  echo "❌ Site ${SITE_NAME} does not exist" >&2
++  exit 1
++fi
++
+ # Create database and user if they don't exist
+ docker compose exec -T db mariadb -h db -P 3306 -uroot -p"$DB_ROOT_PASSWORD" <<EOF
+ CREATE DATABASE IF NOT EXISTS \`$DB_NAME\`;
+

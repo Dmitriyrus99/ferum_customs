@@ -1,0 +1,16 @@
+--- a/tests/conftest.py
++++ b/tests/conftest.py
+@@ -2,6 +2,7 @@
+ import types
+ import pytest
+ from typing import Any, Callable, Dict
++from unittest.mock import MagicMock
+ 
+ # Provide minimal aiogram stubs so tests can run without the real library
+ if "aiogram" not in sys.modules:
+@@ -148,4 +149,4 @@
+     frappe.has_permission = lambda *args, **kwargs: True
+     sys.modules["frappe"] = frappe
+     yield frappe
+-    sys.modules.pop("frappe", None)
++    sys.modules.pop("frappe", None)

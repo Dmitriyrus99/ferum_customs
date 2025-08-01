@@ -1,8 +1,13 @@
 import importlib
 from types import SimpleNamespace
-from typing import Dict
+from typing import Dict, Optional
 
 import pytest
+
+
+def throw(msg: str, exc: Optional[Exception] = None) -> None:
+    """Raise a validation error with a message."""
+    raise frappe_stub.ValidationError(msg)
 
 
 def test_validate_duplicate_serial(frappe_stub) -> None:
@@ -15,10 +20,6 @@ def test_validate_duplicate_serial(frappe_stub) -> None:
     frappe_stub.db.exists = mock_exists
     captured: Dict[str, str] = {}
 
-    def throw(msg: str, exc: Exception | None = None) -> None:
-        captured["msg"] = msg
-        raise frappe_stub.ValidationError(msg)
-
     frappe_stub.throw = throw
 
     hooks = importlib.import_module("ferum_customs.custom_logic.service_object_hooks")
@@ -27,7 +28,8 @@ def test_validate_duplicate_serial(frappe_stub) -> None:
     doc: SimpleNamespace = SimpleNamespace(serial_no="SN123", name="SO-0001")
     doc.get = lambda k, d=None: getattr(doc, k, d)
     
-    with pytest.raises(frappe_stub.ValidationError):
+    with pytest.raises(frappe_stub.ValidationError) as exc_info:
         hooks.validate(doc)
     
+    captured["msg"] = str(exc_info.value)
     assert "Серийный номер" in captured["msg"]

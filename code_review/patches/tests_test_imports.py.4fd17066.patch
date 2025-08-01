@@ -1,0 +1,25 @@
+--- a/tests/test_imports.py
++++ b/tests/test_imports.py
+@@ -1,17 +1,18 @@
+ import importlib
+ from typing import List
+-
+ 
+ def test_basic_imports() -> None:
+     """Ensure that core dependencies are available for import.
+ 
+     This test checks that the specified core modules can be imported successfully.
+-    If any module is not found, an AssertionError will be raised.
++    If any module is not found, an AssertionError will be raised. All specified modules
++    should be importable without errors.
+     """
+     modules: List[str] = ["aiogram", "fastapi", "requests_oauthlib"]
+ 
+     for module in modules:
+         try:
+-            _ = importlib.import_module(module)
++            importlib.import_module(module)
++            print(f"Module '{module}' imported successfully.")
+         except ImportError as exc:
+-            raise AssertionError(f"Module '{module}' not found: {exc}") from exc
++            raise AssertionError(f"Module '{module}' not found: {exc}") from exc

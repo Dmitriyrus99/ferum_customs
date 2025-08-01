@@ -1,0 +1,26 @@
+--- a/ui-tests/package.json
++++ b/ui-tests/package.json
+@@ -2,10 +2,15 @@
+   "name": "ui-tests",
+   "version": "1.0.0",
+   "private": true,
++  "description": "UI tests for the application using Playwright",
++  "repository": {
++    "type": "git",
++    "url": "https://github.com/your-repo/ui-tests.git"
++  },
+   "scripts": {
+     "test": "playwright test",
+-    "lint": "eslint '**/*.js'",
+-    "format": "prettier --write '**/*.{js,ts,json,md}'",
++    "lint": "eslint '**/*.{js,ts}'",
++    "format": "prettier --write '**/*.{js,ts,json,md,css,html}'",
+     "test:coverage": "playwright test --coverage"
+   },
+   "devDependencies": {
+@@ -13,4 +18,4 @@
+     "eslint": "^8.44.0",
+     "prettier": "^2.7.1"
+   }
+-}
++}

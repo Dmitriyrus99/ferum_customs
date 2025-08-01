@@ -4,6 +4,7 @@ Python-контроллер для DocType "Custom Attachment".
 """
 
 from __future__ import annotations
+from typing import Optional
 
 import frappe
 from frappe import _  # Для возможных пользовательских сообщений
@@ -12,8 +13,11 @@ from frappe.model.document import Document
 class CustomAttachment(Document):
     """
     Класс документа CustomAttachment.
+    
+    Attributes:
+        attachment_type (Optional[str]): Тип вложения.
     """
-    attachment_type: str | None = None
+    attachment_type: Optional[str] = None
 
     def validate(self) -> None:
         """

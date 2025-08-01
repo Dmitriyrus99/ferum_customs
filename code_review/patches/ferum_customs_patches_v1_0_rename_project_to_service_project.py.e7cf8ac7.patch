@@ -1,0 +1,17 @@
+--- a/ferum_customs/patches/v1_0/rename_project_to_service_project.py
++++ b/ferum_customs/patches/v1_0/rename_project_to_service_project.py
+@@ -13,7 +13,7 @@
+                 "Project",
+                 "Service Project",
+                 force=True,
+-                ignore_permissions=True,
++                ignore_permissions=True,  # Ensure this is necessary for your use case
+             )
+             frappe.logger().info("Successfully renamed 'Project' to 'Service Project'.")
+         except Exception as e:
+@@ -25,4 +25,4 @@
+     elif not frappe.db.exists("DocType", "Project"):
+         frappe.logger().info("DocType 'Project' does not exist. Skipping rename.")
+     elif frappe.db.exists("DocType", "Service Project"):
+-        frappe.logger().info("DocType 'Service Project' already exists. Skipping rename.")
++        frappe.logger().info("DocType 'Service Project' already exists. Skipping rename.")

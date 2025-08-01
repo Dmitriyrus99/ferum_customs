@@ -1,0 +1,25 @@
+--- a/ferum_customs/openai_utils.py
++++ b/ferum_customs/openai_utils.py
+@@ -36,15 +36,13 @@
+         response = openai.ChatCompletion.create(
+             model=model,
+             messages=[{"role": "user", "content": sanitized_prompt}],
+-            max_tokens=max_tokens,
+-            stop=None  # Define stop sequences if necessary
++            max_tokens=max_tokens
+         )
+         return response.choices[0].message['content'].strip()
+     except openai.error.OpenAIError as e:
+         logger.error(f"An error occurred: {e}")
+         return None
+ 
+-# Ensure input prompt is sanitized
+ def sanitize_input(prompt: str) -> str:
+     """
+     Sanitizes the input prompt to prevent potential security issues.
+@@ -56,4 +54,4 @@
+     - str: The sanitized prompt.
+     """
+     # Implement sanitization logic as needed
+-    return prompt.strip()  # Example of basic sanitization
++    return prompt.strip()  # Example of basic sanitization

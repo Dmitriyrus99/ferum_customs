@@ -1,0 +1,65 @@
+--- a/ferum_customs/permissions/permissions.py
++++ b/ferum_customs/permissions/permissions.py
+@@ -1,13 +1,13 @@
+ # ferum_customs/permissions/permissions.py
+ """
+-Динамические условия для запросов разрешений (Permission Query Conditions).
++Dynamic conditions for permission queries (Permission Query Conditions).
+ 
+ This module provides dynamic conditions for permission queries based on user roles and linked customers.
+ """
+ 
+ from __future__ import annotations
+ 
+-from typing import Union, Dict, List, Tuple
++from typing import Optional, Dict, List, Tuple
+ import frappe
+ 
+ from ferum_customs.constants import ROLE_CUSTOMER, ROLE_ZAKAZCHIK
+@@ -17,15 +17,15 @@
+ 
+ 
+ @frappe.whitelist()
+-def get_service_request_pqc(user: str | None = None) -> PQCConditions | None:
++def get_service_request_pqc(user: Optional[str] = None) -> Optional[PQCConditions]:
+     """
+     Get permission query conditions for service requests based on the user's roles and linked customer.
+ 
+     Args:
+-        user (str | None): The username of the user. If None, the current session user is used.
++        user (Optional[str]): The username of the user. If None, the current session user is used.
+ 
+     Returns:
+-        PQCConditions | None: A dictionary of conditions for permission queries or None if no conditions apply.
++        Optional[PQCConditions]: A dictionary of conditions for permission queries or None if no conditions apply.
+     """
+     if user is None:
+         user = frappe.session.user
+@@ -36,7 +36,7 @@
+     try:
+         user_doc = frappe.get_cached_doc("User", user)
+     except frappe.DoesNotExistError:
+-        frappe.logger(__name__).warning(
++        frappe.log(__name__).warning(
+             f"User '{user}' not found while applying PQC for service_request."
+         )
+         return {"name": ("=", f"__no_records_user_not_found_{user}")}
+@@ -44,7 +44,7 @@
+     # Ensure the field 'customer' exists in the User DocType
+     user_linked_customer = user_doc.get("customer")
+     if user_linked_customer is None:
+-        frappe.logger(__name__).warning(
++        frappe.log(__name__).warning(
+             f"User '{user}' does not have a linked customer while applying PQC for service_request."
+         )
+         return {"name": ("=", f"__no_records_no_linked_customer_{user}")}
+@@ -54,7 +54,7 @@
+     )
+ 
+     if is_customer_role:
+-        # Пользователь с ролью "Заказчик" и привязанным клиентом видит только заявки своего клиента.
++        # A user with the role "Customer" and a linked customer can only see requests for their customer.
+         return {"custom_customer": ("=", user_linked_customer)}
+ 
+-    return None
++    return None

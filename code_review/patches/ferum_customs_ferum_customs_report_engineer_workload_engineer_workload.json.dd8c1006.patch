@@ -1,0 +1,14 @@
+--- a/ferum_customs/ferum_customs/report/engineer_workload/engineer_workload.json
++++ b/ferum_customs/ferum_customs/report/engineer_workload/engineer_workload.json
+@@ -10,6 +10,10 @@
+     {
+       "doctype": "Role",
+       "role": "Проектный менеджер"
++    },
++    {
++      "doctype": "Role",
++      "role": "Другие роли"  // Consider adding more roles as needed
+     }
+   ]
+-}
++}

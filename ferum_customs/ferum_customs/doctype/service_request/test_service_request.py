@@ -36,6 +36,7 @@ class TestServiceRequest(FrappeTestCase):
         frappe.db.rollback()
 
     def create_service_request_doc(self, status: str = STATUS_OTKRYTA, submit_doc: bool = False) -> Optional[frappe.Document]:
+        """Create a Service Request document with the given status."""
         sr = frappe.new_doc("Service Request")
         sr.subject = "Test SR - " + frappe.generate_hash(length=5)
         sr.custom_customer = self.test_customer_name
@@ -56,6 +57,7 @@ class TestServiceRequest(FrappeTestCase):
         return sr
 
     def test_sr_creation_and_custom_fields(self, frappe_site) -> None:
+        """Test creation of Service Request and custom fields."""
         sr = self.create_service_request_doc()
         self.assertEqual(sr.custom_customer, self.test_customer_name)
         self.assertEqual(sr.custom_service_object_link, self.actual_test_so_name)
@@ -64,6 +66,7 @@ class TestServiceRequest(FrappeTestCase):
         self.assertEqual(fetched_sr.custom_project, self.actual_test_sp_name)
 
     def test_validate_vyapolnena_requires_linked_report(self, frappe_site) -> None:
+        """Test that a linked report is required to mark the request as completed."""
         sr = self.create_service_request_doc(status=STATUS_OTKRYTA, submit_doc=True)
         sr.status = STATUS_VYPOLNENA
 
@@ -71,12 +74,14 @@ class TestServiceRequest(FrappeTestCase):
             sr.save()
 
     def test_hook_get_engineers_for_object(self, frappe_site) -> None:
+        """Test the hook to get engineers for the service object."""
         from ferum_customs.custom_logic.service_request_hooks import get_engineers_for_object
 
         engineers = get_engineers_for_object(self.actual_test_so_name)
         self.assertIn(self.test_engineer_user_email, engineers)
 
     def test_sr_controller_internal_methods_with_custom_fields(self, frappe_site) -> None:
+        """Test internal methods of Service Request controller with custom fields."""
         sr_doc = frappe.new_doc("Service Request")
         sr_doc.subject = " Test Subject for Cleaning "
         sr_doc.planned_start_datetime = now_datetime()
@@ -97,6 +102,7 @@ class TestServiceRequest(FrappeTestCase):
 
     @patch("frappe.sendmail")
     def test_notify_project_manager_on_close(self, mock_sendmail_func, frappe_site) -> None:
+        """Test notification to project manager when the service request is closed."""
         sr = self.create_service_request_doc(status=STATUS_OTKRYTA, submit_doc=True)
 
         sr.reload()

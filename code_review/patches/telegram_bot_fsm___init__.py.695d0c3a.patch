@@ -1,0 +1,14 @@
+--- a/telegram_bot/fsm/__init__.py
++++ b/telegram_bot/fsm/__init__.py
+@@ -2,8 +2,10 @@
+ 
+ This module contains the state definitions used in the finite state machine
+ for managing the bot's behavior and transitions based on user interactions.
++
++States are defined to handle various user inputs and guide the conversation flow.
+ """
+ 
+ from .states import SomeState
+ 
+-__all__ = ["SomeState"]
++__all__ = ["SomeState"]

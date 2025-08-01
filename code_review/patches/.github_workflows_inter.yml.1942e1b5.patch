@@ -1,0 +1,17 @@
+--- a/.github/workflows/inter.yml
++++ b/.github/workflows/inter.yml
+@@ -14,7 +14,7 @@
+       - uses: actions/checkout@v4
+       - uses: actions/setup-python@v5
+         with:
+-          python-version: '3.12'  # Consider using a variable for flexibility
++          python-version: ${{ secrets.PYTHON_VERSION }}  # Use a variable for flexibility
+           cache: 'pip'
+       - name: Install dependencies
+         run: |
+@@ -30,4 +30,4 @@
+ 
+       - name: Clean up
+         if: always()  # Ensure cleanup runs even if tests fail
+-        run: docker compose down
++        run: docker compose down

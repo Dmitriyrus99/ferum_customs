@@ -13,23 +13,22 @@ if TYPE_CHECKING:
         ServiceObject,
     )
 
-def validate(doc: ServiceObject, method: Optional[str] = None) -> None:
+def validate(doc: ServiceObject) -> None:
     """
     Checks the uniqueness of the service object's serial number.
     This check is an example of a business requirement.
 
     Args:
         doc: An instance of the Service Object document.
-        method: The name of the calling method (e.g., "validate").
 
     Raises:
-        frappe.ValidationError: If the serial number is not unique.
+        frappe.ValidationError: If the serial number is not unique or empty.
     """
     if doc.get("serial_no"):
         serial_no_cleaned = doc.serial_no.strip()
         if not serial_no_cleaned:
-            return  # Consider whether to throw an error for empty serial numbers
-
+            frappe.throw(_("Serial number cannot be empty."), title=_("Validation Error"))
+        
         filters = {
             "serial_no": serial_no_cleaned,
             "name": ["!=", doc.name],

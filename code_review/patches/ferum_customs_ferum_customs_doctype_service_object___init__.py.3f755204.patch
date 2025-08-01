@@ -1,0 +1,11 @@
+--- a/ferum_customs/ferum_customs/doctype/service_object/__init__.py
++++ b/ferum_customs/ferum_customs/doctype/service_object/__init__.py
+@@ -1 +1,7 @@
+-__version__ = "0.0.1"
++"""
++Service Object module for Ferum Customs.
++
++This module contains the definitions and functionalities related to service objects.
++"""
++
++__version__ = "0.0.1"  # PEP 440 compliant versioning

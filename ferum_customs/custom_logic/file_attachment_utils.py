@@ -1,14 +1,14 @@
 # ferum_customs/custom_logic/file_attachment_utils.py
 """Utilities for working with file attachments.
 
-Contains a function for safely deleting attachment files.
+Contains functions for safely deleting attachment files and handling related operations.
 """
 
 from __future__ import annotations
 
 import os
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 import frappe  # Frappe logger integrated with the system
 from frappe import _
@@ -154,7 +154,7 @@ def delete_attachment_file_from_filesystem(
         )
 
 
-def on_custom_attachment_trash(doc: FrappeDocument, method: str | None = None) -> None:
+def on_custom_attachment_trash(doc: FrappeDocument, method: Optional[str] = None) -> None:
     """
     Called when a CustomAttachment record is deleted (on_trash).
     Deletes the associated physical file and, if present, the File record.

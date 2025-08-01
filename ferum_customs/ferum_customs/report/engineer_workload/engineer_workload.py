@@ -12,6 +12,15 @@ from ferum_customs.constants import STATUS_OTMENENA, STATUS_ZAKRYTA
 def execute(
     filters: Optional[dict] = None
 ) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
+    """
+    Execute the engineer workload report.
+
+    Args:
+        filters (Optional[dict]): Optional filters for the report.
+
+    Returns:
+        Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]: A tuple containing the columns and rows of the report.
+    """
     rows = frappe.db.sql(
         """
         SELECT custom_assigned_engineer AS engineer, COUNT(*) AS total

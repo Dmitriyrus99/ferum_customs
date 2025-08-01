@@ -1,0 +1,9 @@
+--- a/frappe-bench/sites/erp.ferumrus.ru/site_config.json
++++ b/frappe-bench/sites/erp.ferumrus.ru/site_config.json
+@@ -1,5 +1,5 @@
+ {
+   "db_name": "_d4c01005bd6191dc",
+-  "db_password": "REDACTED",  // Consider using environment variables for sensitive data
++  "db_password": "REDACTED",  // Use environment variables for sensitive data (e.g., using dotenv or similar)
+   "db_type": "mariadb"
+ }

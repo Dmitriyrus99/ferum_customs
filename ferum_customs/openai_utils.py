@@ -36,15 +36,13 @@ def get_chat_completion(prompt: str, model: Optional[str] = "gpt-4", max_tokens:
         response = openai.ChatCompletion.create(
             model=model,
             messages=[{"role": "user", "content": sanitized_prompt}],
-            max_tokens=max_tokens,
-            stop=None  # Define stop sequences if necessary
+            max_tokens=max_tokens
         )
         return response.choices[0].message['content'].strip()
     except openai.error.OpenAIError as e:
         logger.error(f"An error occurred: {e}")
         return None
 
-# Ensure input prompt is sanitized
 def sanitize_input(prompt: str) -> str:
     """
     Sanitizes the input prompt to prevent potential security issues.

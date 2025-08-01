@@ -2,6 +2,8 @@
 set -euo pipefail
 
 # System Status Check for Ferum Customizations
+# Version: 1.0.0
+# This script checks the status of services, environment configuration, and runs necessary bench commands.
 
 check_service() {
   local service_name=$1

@@ -13,9 +13,9 @@ except ImportError:
 class TestServiceReport(FrappeTestCase):
     def test_basic(self, frappe_site: str) -> None:
         """Test the basic functionality of the Service Report DocType."""
-        doc = frappe.new_doc("Service Report")
-        doc.service_request = "TEST123".strip()
-        doc.customer = "CUSTOMER1".strip()
+        doc: Any = frappe.new_doc("Service Report")
+        doc.service_request = frappe.get_env("SERVICE_REQUEST", "TEST123").strip()
+        doc.customer = frappe.get_env("CUSTOMER", "CUSTOMER1").strip()
         doc.posting_date = frappe.utils.now_datetime()
         doc.append(
             "work_items",
@@ -26,10 +26,14 @@ class TestServiceReport(FrappeTestCase):
             },
         )
         doc.validate()
+        
+        # Validate posting date format
         self.assertTrue(
             doc.posting_date.endswith("Z")
             or re.match(r".*\+\d{2}:\d{2}", doc.posting_date.isoformat())
         )
+        
+        # Validate work items
         for item in doc.work_items:
             self.assertEqual(item.description, "Test work item")
             self.assertAlmostEqual(item.quantity, 2.56, places=2)

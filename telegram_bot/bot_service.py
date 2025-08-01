@@ -12,6 +12,7 @@ whitelisted API methods defined in :mod:`ferum_customs.api`.
 """
 
 from __future__ import annotations
+from typing import Optional
 
 from aiogram import Bot, Dispatcher
 from aiogram.fsm.context import FSMContext
@@ -50,8 +51,8 @@ app = FastAPI(title="Ferum Bot Service")
 
 
 def _create_dispatcher(
-    bot: Bot | None = None,
-    storage: BaseStorage | None = None,
+    bot: Optional[Bot] = None,
+    storage: Optional[BaseStorage] = None,
 ) -> Dispatcher:
     """Instantiate dispatcher with in‑memory storage."""
     
@@ -65,7 +66,7 @@ def _create_dispatcher(
 
 
 def get_dispatcher(
-    *, bot: Bot | None = None, storage: BaseStorage | None = None
+    *, bot: Optional[Bot] = None, storage: Optional[BaseStorage] = None
 ) -> Dispatcher:
     """Return a dispatcher instance for external usage (e.g. tests)."""
 
@@ -86,7 +87,7 @@ async def start_handler(bot: Bot, message: Message, state: FSMContext) -> None:
 
 
 @app.on_event("startup")
-async def startup_event() -> None:  # pragma: no cover - example implementation
+async def startup_event() -> None:
     """Hook that runs on service startup."""
     
     # Initialize any necessary resources or configurations here.
@@ -94,7 +95,7 @@ async def startup_event() -> None:  # pragma: no cover - example implementation
 
 
 @app.on_event("shutdown")
-async def shutdown_event() -> None:  # pragma: no cover - example implementation
+async def shutdown_event() -> None:
     """Hook that runs on service shutdown."""
     
     await dispatcher.storage.close()

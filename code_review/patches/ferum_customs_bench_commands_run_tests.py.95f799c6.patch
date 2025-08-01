@@ -1,0 +1,47 @@
+--- a/ferum_customs/bench_commands/run_tests.py
++++ b/ferum_customs/bench_commands/run_tests.py
+@@ -3,6 +3,7 @@
+ import click
+ import pytest
+ import logging
++from typing import Optional
+ 
+ # Configure logging
+ logging.basicConfig(level=logging.INFO)
+@@ -16,6 +17,7 @@
+ 
+     :param app: The name of the app to test.
+     :param test_path: The path to the test files.
++    :raises click.ClickException: If there is a directory traversal attempt or test execution failure.
+     """
+     # Directory Traversal Protection
+     base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+@@ -26,7 +28,7 @@
+         raise click.ClickException("Invalid path: potential directory traversal detected.")
+ 
+     # Environment Variable Handling
+-    original_site_name = os.environ.get("SITE_NAME")
++    original_site_name: Optional[str] = os.environ.get("SITE_NAME")
+     os.environ["SITE_NAME"] = app
+ 
+     try:
+@@ -46,7 +48,12 @@
+             os.environ.pop("SITE_NAME", None)
+ 
+ def run_pytest(test_path: str) -> int:
+-    """Run pytest on the specified test path."""
++    """Run pytest on the specified test path.
++
++    :param test_path: The path to the test files.
++    :return: The exit code from pytest.
++    :raises click.ClickException: If an error occurs while running tests.
++    """
+     try:
+         return pytest.main([test_path])
+     except Exception as e:
+@@ -54,4 +61,4 @@
+         raise click.ClickException(f"An error occurred while running tests: {e}")
+ 
+ if __name__ == '__main__':
+-    run_tests()
++    run_tests()

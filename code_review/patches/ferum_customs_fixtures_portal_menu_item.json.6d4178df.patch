@@ -1,0 +1,27 @@
+--- a/ferum_customs/fixtures/portal_menu_item.json
++++ b/ferum_customs/fixtures/portal_menu_item.json
+@@ -1,14 +1,14 @@
+ [
+   {
+     "name": "Service-Requests",
+-    "doctype": "portal menu item",
+-    "title": "Service Requests",
+-    "route": "service-requests",
+-    "reference_doctype": "Service Request",
+-    "role": "Customer",
+-    "enabled": true,
+-    "parent": "Portal Menu",
+-    "parenttype": "Portal Menu",
+-    "parentfield": "items"
++    "doctype": "Portal Menu Item",  // The name of the DocType
++    "title": "Service Requests",      // Display title in the portal
++    "route": "service-requests",      // Route for the menu item
++    "reference_doctype": "Service Request", // Reference to the related DocType
++    "role": "Customer",                // Role required to see this menu item
++    "enabled": true,                   // Indicates if the menu item is active
++    "parent": "Portal Menu",           // Parent menu under which this item falls
++    "parenttype": "Portal Menu",       // Type of the parent
++    "parentfield": "items"             // Field in the parent DocType where this item is stored
+   }
+-]
++]

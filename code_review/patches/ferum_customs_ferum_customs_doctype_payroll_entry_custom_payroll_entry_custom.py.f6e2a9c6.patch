@@ -1,0 +1,60 @@
+--- a/ferum_customs/ferum_customs/doctype/payroll_entry_custom/payroll_entry_custom.py
++++ b/ferum_customs/ferum_customs/doctype/payroll_entry_custom/payroll_entry_custom.py
+@@ -11,9 +11,9 @@
+ 
+ 
+ class PayrollEntryCustom(Document):
+-    total_payable: Optional[float]
+-    total_deductions: Optional[float]
+-    net_payable: Optional[float]
++    total_payable: Optional[float] = None
++    total_deductions: Optional[float] = None
++    net_payable: Optional[float] = None
+     """
+     Класс документа PayrollEntryCustom.
+     """
+@@ -37,7 +37,7 @@
+         """
+         if self.get("total_payable") is not None:
+             try:
+-                payable_float = float(self.total_payable or 0.0)
++                payable_float = float(self.get("total_payable") or 0.0)
+                 self.total_payable = round(payable_float, 2)
+             except (ValueError, TypeError):
+                 pass  # Log error if necessary
+@@ -45,15 +45,15 @@
+     def _round_total_deductions(self) -> None:
+         if self.get("total_deductions") is not None:
+             try:
+-                deductions_float = float(self.total_deductions or 0.0)
++                deductions_float = float(self.get("total_deductions") or 0.0)
+                 self.total_deductions = round(deductions_float, 2)
+             except (ValueError, TypeError):
+                 pass
+ 
+     def _calculate_net_payable(self) -> None:
+         try:
+-            pay = float(self.total_payable or 0.0)
+-            ded = float(self.total_deductions or 0.0)
++            pay = float(self.get("total_payable") or 0.0)
++            ded = float(self.get("total_deductions") or 0.0)
+             self.net_payable = round(pay - ded, 2)
+         except (ValueError, TypeError):
+             self.net_payable = None
+@@ -66,8 +66,8 @@
+                 reports = frappe.get_all(
+                     "ServiceReport",
+                     filters={
+-                        "custom_assigned_engineer": self.employee,
+-                        "posting_date": ["between", [self.start_date, self.end_date]],
++                        "custom_assigned_engineer": self.get("employee"),
++                        "posting_date": ["between", [self.get("start_date"), self.get("end_date")]],
+                         "docstatus": 1,
+                     },
+                     fields=["custom_bonus_amount"],
+@@ -97,4 +97,4 @@
+             self.total_payable = 0.0
+ 
+         if isinstance(self.total_payable, (float, int)):
+-            self.total_payable = round(self.total_payable, 2)
++            self.total_payable = round(self.total_payable, 2)

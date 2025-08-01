@@ -1,0 +1,20 @@
+--- a/ferum_customs/ferum_customs/doctype/service_report_document_item/service_report_document_item.json
++++ b/ferum_customs/ferum_customs/doctype/service_report_document_item/service_report_document_item.json
+@@ -1,6 +1,6 @@
+ {
+     "doctype": "DocType",
+-    "name": "Service_Report_Document_Item",
++    "name": "service_report_document_item",
+     "module": "ferum_customs",
+     "istable": 1,
+     "track_changes": 1,
+@@ -18,5 +18,7 @@
+             "fieldtype": "Attach",
+             "description": "Max file size: 10MB. Allowed file types: .pdf, .docx, .jpg, .png."
+         }
+-    ]
+-}
++    ],
++    "description": "DocType for reporting service document items.",
++    "version": "1.0.0"
++}

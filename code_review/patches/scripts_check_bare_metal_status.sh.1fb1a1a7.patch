@@ -1,0 +1,42 @@
+--- a/scripts/check_bare_metal_status.sh
++++ b/scripts/check_bare_metal_status.sh
+@@ -20,8 +20,14 @@
+ fi
+ 
+ echo "== Checking MariaDB and Redis services =="
+-systemctl is-active --quiet mariadb || { echo "❌ MariaDB is not running"; exit 1; }
+-systemctl is-active --quiet redis-server || { echo "❌ Redis is not running"; exit 1; }
++if ! systemctl is-active --quiet mariadb; then
++  echo "❌ MariaDB is not running"
++  exit 1
++fi
++if ! systemctl is-active --quiet redis-server; then
++  echo "❌ Redis is not running"
++  exit 1
++fi
+ echo "✅ MariaDB and Redis are running"
+ 
+ echo "== Checking Pydantic settings =="
+@@ -37,9 +43,18 @@
+ echo "✅ Pydantic settings loaded"
+ 
+ echo "== Running bench migrations, build, and restart =="
+-bench --site "$SITE_NAME" migrate
+-bench build
+-bench restart
++if ! bench --site "$SITE_NAME" migrate; then
++  echo "❌ Migration failed" >&2
++  exit 1
++fi
++if ! bench build; then
++  echo "❌ Build failed" >&2
++  exit 1
++fi
++if ! bench restart; then
++  echo "❌ Restart failed" >&2
++  exit 1
++fi
+ echo "✅ Bench migrations, build, and restart completed"
+ 
+-echo "=== Post-installation checks completed successfully ==="
++echo "=== Post-installation checks completed successfully ==="

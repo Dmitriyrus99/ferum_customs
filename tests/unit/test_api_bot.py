@@ -1,13 +1,14 @@
 import importlib
 from types import SimpleNamespace
 from ferum_customs.constants import STATUS_OTKRYTA
+from unittest.mock import MagicMock
 
-def test_bot_create_and_update(frappe_stub) -> None:
+def test_bot_create_and_update(frappe_stub: MagicMock) -> None:
     api = importlib.reload(importlib.import_module("ferum_customs.api"))
 
     calls = {}
 
-    def get_doc(arg1, arg2=None):
+    def get_doc(arg1: str, arg2: str = None) -> SimpleNamespace:
         if isinstance(arg1, dict):
             doc = SimpleNamespace(name="SR001")
 
@@ -35,12 +36,12 @@ def test_bot_create_and_update(frappe_stub) -> None:
     assert calls["status"] == STATUS_OTKRYTA
 
 
-def test_bot_upload_attachment(frappe_stub) -> None:
+def test_bot_upload_attachment(frappe_stub: MagicMock) -> None:
     api = importlib.reload(importlib.import_module("ferum_customs.api"))
 
     recorded = {}
 
-    def get_doc(arg1, arg2=None):
+    def get_doc(arg1: str, arg2: str = None) -> SimpleNamespace:
         if isinstance(arg1, dict):
             doc = SimpleNamespace(name="CA001")
 

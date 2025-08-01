@@ -17,7 +17,9 @@
         },
         {
             "role": "Employee",
-            "read": 1
+            "read": 1,
+            "write": 1,  // Added write permission for employees
+            "create": 1  // Added create permission for employees
         }
     ],
     "fields": [
@@ -27,7 +29,7 @@
             "fieldtype": "Currency",
             "read_only": 1,
             "precision": 2,
-            "options": "currency",
+            "options": "currency",  // Ensure this is linked to a currency master
             "default": 0.00
         },
         {
@@ -35,7 +37,7 @@
             "label": "Total Deductions",
             "fieldtype": "Currency",
             "precision": 2,
-            "options": "currency",
+            "options": "currency",  // Ensure this is linked to a currency master
             "default": 0.00
         },
         {
@@ -44,7 +46,7 @@
             "fieldtype": "Currency",
             "read_only": 1,
             "precision": 2,
-            "options": "currency",
+            "options": "currency",  // Ensure this is linked to a currency master
             "default": 0.00
         }
     ]

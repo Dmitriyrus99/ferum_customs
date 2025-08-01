@@ -7,48 +7,48 @@
   "is_active": 1,
   "send_email_alert": 0,
   "states": [
-    { "state": "Open", "doc_status": 1, "allow_edit": "Project Manager" },
-    { "state": "In Progress", "doc_status": 0, "allow_edit": "Project Manager" },
-    { "state": "Completed", "doc_status": 0, "allow_edit": "Project Manager" },
-    { "state": "Closed", "doc_status": 1, "allow_edit": "Project Manager" },
-    { "state": "Cancelled", "doc_status": 2, "allow_edit": "Project Manager" }
+    { "state": "Open", "doc_status": 1, "allow_edit": ["Project Manager"] },
+    { "state": "In Progress", "doc_status": 0, "allow_edit": ["Project Manager"] },
+    { "state": "Completed", "doc_status": 0, "allow_edit": ["Project Manager"] },
+    { "state": "Closed", "doc_status": 1, "allow_edit": ["Project Manager"] },
+    { "state": "Cancelled", "doc_status": 2, "allow_edit": ["Project Manager"] }
   ],
   "transitions": [
     {
       "state": "Open",
       "action": "Assign",
       "next_state": "In Progress",
-      "allowed": "Project Manager"
+      "allowed": ["Project Manager"]
     },
     {
       "state": "Open",
       "action": "Cancel Request",
       "next_state": "Cancelled",
-      "allowed": "Project Manager"
+      "allowed": ["Project Manager"]
     },
     {
       "state": "In Progress",
       "action": "Complete Work",
       "next_state": "Completed",
-      "allowed": "Project Manager"
+      "allowed": ["Project Manager"]
     },
     {
       "state": "Completed",
       "action": "Return to Work",
       "next_state": "In Progress",
-      "allowed": "Project Manager"
+      "allowed": ["Project Manager"]
     },
     {
       "state": "Completed",
       "action": "Close Request",
       "next_state": "Closed",
-      "allowed": "Project Manager"
+      "allowed": ["Project Manager"]
     },
     {
       "state": "Closed",
       "action": "Reopen Request",
       "next_state": "Completed",
-      "allowed": "Project Manager"
+      "allowed": ["Project Manager"]
     }
   ]
 }

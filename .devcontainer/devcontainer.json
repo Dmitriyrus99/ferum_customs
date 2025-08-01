@@ -6,5 +6,5 @@
       "version": "latest"
     }
   },
-  "postCreateCommand": "usermod -aG docker $(whoami) # Add current user to Docker group for permissions"
+  "postCreateCommand": "echo 'Please restart the container for the changes to take effect.'"
 }

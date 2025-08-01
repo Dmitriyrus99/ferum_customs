@@ -10,14 +10,14 @@ class Settings(BaseSettings):
     telegram_bot_token: SecretStr
 
     # Frappe/ERPNext settings
-    site_name: Optional[str] = None
-    admin_password: Optional[SecretStr] = None
+    site_name: Optional[str] = None  # Name of the Frappe site
+    admin_password: Optional[SecretStr] = None  # Admin password for Frappe site
 
     # URL for Frappe API (optional override)
-    frappe_url: Optional[str] = None
+    frappe_url: Optional[str] = None  # Base URL for Frappe API
 
     # OpenAI API key for optional integrations
-    openai_api_key: Optional[SecretStr] = None
+    openai_api_key: Optional[SecretStr] = None  # API key for OpenAI integrations
 
     class Config:
         env_file = ".env"

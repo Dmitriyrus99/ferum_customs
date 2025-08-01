@@ -13,7 +13,7 @@ def execute() -> None:
                 "Project",
                 "Service Project",
                 force=True,
-                ignore_permissions=True,
+                ignore_permissions=True,  # Ensure this is necessary for your use case
             )
             frappe.logger().info("Successfully renamed 'Project' to 'Service Project'.")
         except Exception as e:
