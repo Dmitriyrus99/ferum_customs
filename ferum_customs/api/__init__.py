@@ -1,7 +1,7 @@
 from typing import Any, cast, List, Dict, Optional
 
 import frappe
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from frappe import _, whitelist
 from frappe.exceptions import PermissionError
 
@@ -29,9 +29,11 @@ def validate_service_request(docname: str) -> Optional[Dict[str, Any]]:
     try:
         doc = frappe.get_doc("Service Request", docname)
         return cast(Dict[str, Any], doc.as_dict())
-    except Exception:
+    except frappe.DoesNotExistError:
+        frappe.throw(_("Service Request not found"), frappe.DoesNotExistError)
+    except Exception as e:
         frappe.log_error(frappe.get_traceback(), "Error validating Service Request")
-        raise
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @whitelist()  # type: ignore[misc]
@@ -55,9 +57,11 @@ def validate_service_report(docname: str) -> Optional[Dict[str, Any]]:
     try:
         doc = frappe.get_doc("Service Report", docname)
         return cast(Dict[str, Any], doc.as_dict())
-    except Exception:
+    except frappe.DoesNotExistError:
+        frappe.throw(_("Service Report not found"), frappe.DoesNotExistError)
+    except Exception as e:
         frappe.log_error(frappe.get_traceback(), "Error validating Service Report")
-        raise
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @whitelist()  # type: ignore[misc]

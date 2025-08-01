@@ -1,82 +1,43 @@
 --- a/ferum_customs/api/__init__.py
 +++ b/ferum_customs/api/__init__.py
-@@ -1,4 +1,4 @@
--from typing import Any, cast
-+from typing import Any, cast, List, Dict, Optional
+@@ -1,7 +1,7 @@
+ from typing import Any, cast, List, Dict, Optional
  
  import frappe
- from fastapi import FastAPI
-@@ -11,24 +11,24 @@
+-from fastapi import FastAPI
++from fastapi import FastAPI, HTTPException
+ from frappe import _, whitelist
+ from frappe.exceptions import PermissionError
  
- 
- @app.get("/")
--def root() -> dict[str, bool]:
-+def root() -> Dict[str, bool]:
-     return {"ok": True}
- 
- 
- @app.get("/health")
--def health() -> dict[str, str]:
-+def health() -> Dict[str, str]:
-     return {"status": "ok"}
- 
- 
- @whitelist()  # type: ignore[misc]
--def validate_service_request(docname: str) -> dict[str, Any] | None:
-+def validate_service_request(docname: str) -> Optional[Dict[str, Any]]:
-     """Return the service request document as a dict after permission check."""
-     if not frappe.has_permission("Service Request", "read"):
-         frappe.throw(_("Not permitted"), PermissionError)
- 
+@@ -29,9 +29,11 @@
      try:
          doc = frappe.get_doc("Service Request", docname)
--        return cast(dict[str, Any], doc.as_dict())
-+        return cast(Dict[str, Any], doc.as_dict())
-     except Exception:
+         return cast(Dict[str, Any], doc.as_dict())
+-    except Exception:
++    except frappe.DoesNotExistError:
++        frappe.throw(_("Service Request not found"), frappe.DoesNotExistError)
++    except Exception as e:
          frappe.log_error(frappe.get_traceback(), "Error validating Service Request")
-         raise
-@@ -47,14 +47,14 @@
+-        raise
++        raise HTTPException(status_code=500, detail=str(e))
  
  
  @whitelist()  # type: ignore[misc]
--def validate_service_report(docname: str) -> dict[str, Any] | None:
-+def validate_service_report(docname: str) -> Optional[Dict[str, Any]]:
-     """Return the service report document as a dict after permission check."""
-     if not frappe.has_permission("Service Report", "read"):
-         frappe.throw(_("Not permitted"), PermissionError)
- 
+@@ -55,9 +57,11 @@
      try:
          doc = frappe.get_doc("Service Report", docname)
--        return cast(dict[str, Any], doc.as_dict())
-+        return cast(Dict[str, Any], doc.as_dict())
-     except Exception:
+         return cast(Dict[str, Any], doc.as_dict())
+-    except Exception:
++    except frappe.DoesNotExistError:
++        frappe.throw(_("Service Report not found"), frappe.DoesNotExistError)
++    except Exception as e:
          frappe.log_error(frappe.get_traceback(), "Error validating Service Report")
-         raise
-@@ -120,8 +120,8 @@
- @whitelist()  # type: ignore[misc]
- def bot_create_service_request(
-     subject: str,
--    customer: str | None = None,
--    description: str | None = None,
-+    customer: Optional[str] = None,
-+    description: Optional[str] = None,
- ) -> str:
-     """Create a Service Request document on behalf of the Telegram bot."""
- 
-@@ -167,15 +167,15 @@
+-        raise
++        raise HTTPException(status_code=500, detail=str(e))
  
  
  @whitelist()  # type: ignore[misc]
--def bot_get_service_requests(status: str | None = None) -> list[dict[str, Any]]:
-+def bot_get_service_requests(status: Optional[str] = None) -> List[Dict[str, Any]]:
-     """Return a list of Service Requests filtered by status."""
- 
-     filters = {"status": status} if status else {}
-     return cast(
--        list[dict[str, Any]],
-+        List[Dict[str, Any]],
-         frappe.get_all(
-             "Service Request",
+@@ -178,4 +182,4 @@
              filters=filters,
              fields=["name", "subject", "status"],
          ),

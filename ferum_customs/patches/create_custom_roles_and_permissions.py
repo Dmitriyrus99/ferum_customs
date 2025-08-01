@@ -68,7 +68,7 @@ SERVICE_REQUEST_PERMS: list[dict[str, int | str]] = [
 def create_role(role_name: str) -> None:
     """Ensure that a Role with the given name exists."""
 
-    if frappe.db.exists("Role", {"role_name": role_name}):
+    if frappe.db.exists("Role", role_name):
         return
 
     role = frappe.get_doc({"doctype": "Role", "role_name": role_name})

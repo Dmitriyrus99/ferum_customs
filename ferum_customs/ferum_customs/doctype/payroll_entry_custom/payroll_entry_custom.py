@@ -8,6 +8,14 @@ from __future__ import annotations
 import frappe
 from frappe.model.document import Document
 
+# from typing import TYPE_CHECKING
+
+
+# from frappe import _ # Если будут пользовательские сообщения
+
+# if TYPE_CHECKING:
+# pass
+
 
 class PayrollEntryCustom(Document):  # type: ignore[misc]
     total_payable: float | None
@@ -30,19 +38,25 @@ class PayrollEntryCustom(Document):  # type: ignore[misc]
         self._round_total_deductions()
         self._calculate_net_payable()
 
+        # Логика из оригинального файла (payroll_entry_custom.py):
+        # if self.total_payable is not None:
+        #     self.total_payable = round(float(self.total_payable), 2)
+        # Эта логика теперь в _round_total_payable()
+
     def _round_total_payable(self) -> None:
         """
         Округляет поле `total_payable` до двух знаков после запятой, если оно установлено и является числом.
         """
         if self.get("total_payable") is not None:
             try:
+                # Преобразуем в float перед округлением, на случай если это строка или Decimal
                 payable_float = float(self.total_payable or 0.0)
                 self.total_payable = round(payable_float, 2)
             except (ValueError, TypeError):
-                frappe.log_error(
-                    f"Invalid total_payable value: {self.total_payable}",
-                    "PayrollEntryCustom _round_total_payable"
-                )
+                # Если значение не может быть преобразовано в float, логируем или выбрасываем ошибку.
+                # В данном случае, просто не изменяем значение, если оно не числовое.
+                # Это может быть обработано другими валидациями (например, тип поля Currency).
+                pass  # Или frappe.log_error(...)
 
     def _round_total_deductions(self) -> None:
         if self.get("total_deductions") is not None:
@@ -50,10 +64,7 @@ class PayrollEntryCustom(Document):  # type: ignore[misc]
                 deductions_float = float(self.total_deductions or 0.0)
                 self.total_deductions = round(deductions_float, 2)
             except (ValueError, TypeError):
-                frappe.log_error(
-                    f"Invalid total_deductions value: {self.total_deductions}",
-                    "PayrollEntryCustom _round_total_deductions"
-                )
+                pass
 
     def _calculate_net_payable(self) -> None:
         try:
@@ -61,11 +72,8 @@ class PayrollEntryCustom(Document):  # type: ignore[misc]
             ded = float(self.total_deductions or 0.0)
             self.net_payable = round(pay - ded, 2)
         except (ValueError, TypeError):
+            # Если не удалось привести к числам, не задаем значение
             self.net_payable = None
-            frappe.log_error(
-                "Failed to calculate net_payable due to invalid values",
-                "PayrollEntryCustom _calculate_net_payable"
-            )
 
     def before_save(self) -> None:
         """Расчитывает ``total_payable`` с учетом бонусов из Service Report."""
@@ -105,5 +113,8 @@ class PayrollEntryCustom(Document):  # type: ignore[misc]
         if self.total_payable is None:
             self.total_payable = 0.0
 
-        if isinstance(self.total_payable, (float, int)):
+        if isinstance(self.total_payable, float | int):
             self.total_payable = round(self.total_payable, 2)
+
+    # Другие методы жизненного цикла (before_save, on_submit, etc.) могут быть добавлены по необходимости.
+    # before_save: Логика расчета total_payable находится в custom_logic.payroll_entry_hooks.before_save

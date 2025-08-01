@@ -4,8 +4,8 @@
      "print": 1,
      "email": 1,
      "if_owner": 0,
--    "match": ""
-+    "match": null
+-    "match": null
++    "match": ""
    },
    {
      "doctype": "DocPerm",
@@ -13,8 +13,8 @@
      "print": 1,
      "email": 1,
      "if_owner": 0,
--    "match": ""
-+    "match": null
+-    "match": null
++    "match": ""
    },
    {
      "doctype": "DocPerm",
@@ -22,8 +22,8 @@
      "print": 1,
      "email": 1,
      "if_owner": 1,
--    "match": ""
-+    "match": null
+-    "match": null
++    "match": ""
    },
    {
      "doctype": "DocPerm",
@@ -31,8 +31,8 @@
      "print": 1,
      "email": 1,
      "if_owner": 1,
--    "match": ""
-+    "match": null
+-    "match": null
++    "match": ""
    },
    {
      "doctype": "DocPerm",
@@ -40,8 +40,8 @@
      "print": 1,
      "email": 1,
      "if_owner": 0,
--    "match": ""
-+    "match": null
+-    "match": null
++    "match": ""
    },
    {
      "doctype": "DocPerm",
@@ -49,8 +49,8 @@
      "print": 1,
      "email": 1,
      "if_owner": 0,
--    "match": ""
-+    "match": null
+-    "match": null
++    "match": ""
    }
 -]
 +]

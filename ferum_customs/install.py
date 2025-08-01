@@ -13,7 +13,7 @@ from frappe import _  # Для возможных сообщений
 # Импорт констант ролей, если они используются
 # from .constants import (
 #     ROLE_PROEKTNYJ_MENEDZHER,
-#     ROLE_OFIS_MENEDZHER,
+#     ROLE_OFIS_MENЕДZHER,
 #     ROLE_INZHENER,
 #     ROLE_ZAKAZCHIK
 # )

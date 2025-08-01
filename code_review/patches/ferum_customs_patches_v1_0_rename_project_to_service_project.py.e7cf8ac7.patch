@@ -1,24 +1,11 @@
 --- a/ferum_customs/patches/v1_0/rename_project_to_service_project.py
 +++ b/ferum_customs/patches/v1_0/rename_project_to_service_project.py
-@@ -1,7 +1,6 @@
- # ferum_customs/patches/v1_0/rename_project_to_service_project.py
- import frappe
- from frappe.model.rename_doc import rename_doc
--
- 
- def execute() -> None:
-     """Renames DocType 'Project' to 'Service Project' if needed."""
-@@ -20,12 +19,11 @@
-             print("Successfully renamed 'Project' to 'Service Project'.")
-         except Exception as e:
-             frappe.log_error(
--                f"Error renaming DocType Project to Service Project: {e}", "Patch Error"
-+                message=f"Error renaming DocType Project to Service Project: {e}", 
-+                title="Patch Error"
+@@ -22,8 +22,8 @@
+                 message=f"Error renaming DocType Project to Service Project: {e}", 
+                 title="Patch Error"
              )
-             print(f"Error during rename: {e}")
--        # frappe.db.commit() # Usually not needed as patches run in their own transaction.
--        # Keep if there's a specific reason for intermediate commit in a more complex patch.
+-            print(f"Error during rename: {e}")
++            frappe.throw(_("Error during rename: {0}").format(e))
      elif not frappe.db.exists("DocType", "Project"):
          print("DocType 'Project' does not exist. Skipping rename.")
      elif frappe.db.exists("DocType", "Service Project"):

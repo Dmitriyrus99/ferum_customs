@@ -2,7 +2,7 @@
   "charts": [
     {"chart": "Engineer Workload", "width": "Full"}
   ],
-  "content": "[]",
+  "content": [],
   "custom_blocks": [],
   "docstatus": 0,
   "doctype": "Workspace",

@@ -27,7 +27,7 @@ def get_notification_config() -> Dict[str, Any]:
                 "doc.get_doc_before_save() and doc.status != doc.get_doc_before_save().status"
             ),
             # Получатели уведомлений
-            "send_to_roles": [ROLE_PROEKTNYJ_MENЕДZHER],
+            "send_to_roles": [ROLE_PROEKTNYJ_MENEDZHER],
             # Темы и сообщения можно шаблонизировать через Jinja
             "subject": _("Статус заявки {{ doc.name }} изменён на {{ doc.status }}"),
             "message": _(
@@ -48,7 +48,7 @@ def get_notification_config() -> Dict[str, Any]:
         },
         # "ServiceReport": { # Пример для другого DocType
         #     "condition": "doc.docstatus == 1", # Отправлять при отправке (submit) ServiceReport
-        #     "send_to_roles": [ROLE_PROEKTNYJ_MENЕДZHER],
+        #     "send_to_roles": [ROLE_PROEKTNYJ_MENEDZHER],
         #     "subject": _("Отчет о выполненных работах {{ doc.name }} был отправлен"),
         #     "message": _("Отчет {{ doc.name }} для заявки {{ doc.service_request }} был отправлен.") # service_request - стандартное поле в ServiceReport
         # }

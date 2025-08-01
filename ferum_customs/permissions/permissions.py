@@ -42,6 +42,6 @@ def get_service_request_pqc(user: str | None = None) -> PQCConditions | None:
 
     if is_customer_role:
         # Пользователь с ролью "Заказчик" и привязанным клиентом видит только заявки своего клиента.
-        return {"custom_customer": user_linked_customer}
+        return {"custom_customer": ("=", user_linked_customer)}
 
     return None

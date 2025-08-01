@@ -2,13 +2,13 @@
   "doctype": "Report",
   "name": "Service Request Overview",
   "report_name": "Service Request Overview",
-  "ref_doctype": "Service Request",
+  "ref_doctype": "service_request",
   "report_type": "Script Report",
   "is_standard": "Yes",
-  "add_total_row": false,
+  "add_total_row": 0,
   "roles": [
     {
-      "role": "Project Manager"
+      "role": "Проектный менеджер"
     }
   ]
 }

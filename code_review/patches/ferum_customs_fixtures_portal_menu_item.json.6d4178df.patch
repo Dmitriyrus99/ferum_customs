@@ -1,13 +1,12 @@
 --- a/ferum_customs/fixtures/portal_menu_item.json
 +++ b/ferum_customs/fixtures/portal_menu_item.json
-@@ -6,8 +6,8 @@
-     "route": "service-requests",
-     "reference_doctype": "Service Request",
+@@ -8,6 +8,7 @@
      "role": "Customer",
--    "enabled": 1,
-+    "enabled": true,
+     "enabled": true,
      "parent": "Portal Menu",
-     "parenttype": "Portal Menu"
+-    "parenttype": "Portal Menu"
++    "parenttype": "Portal Menu",
++    "parentfield": "items"
    }
 -]
 +]

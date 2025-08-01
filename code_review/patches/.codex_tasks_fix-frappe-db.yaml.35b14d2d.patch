@@ -1,0 +1,28 @@
+--- a/.codex/tasks/fix-frappe-db.yaml
++++ b/.codex/tasks/fix-frappe-db.yaml
+@@ -25,8 +25,8 @@
+       fi
+ 
+       # Передаём переменные окружения для последующих шагов
+-      echo "::set-env name=DB_NAME::$DB_NAME"
+-      echo "::set-env name=DB_PASSWORD::$DB_PASSWORD"
++      echo "DB_NAME=$DB_NAME" >> $GITHUB_ENV
++      echo "DB_PASSWORD=$DB_PASSWORD" >> $GITHUB_ENV
+       echo "Используемое имя БД: $DB_NAME"
+ 
+   - name: Подключение к MariaDB и создание базы и пользователя (если не существует)
+@@ -39,7 +39,7 @@
+       FLUSH PRIVILEGES;
+       EOF
+     env:
+-      DB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
++      DB_ROOT_PASSWORD: ${{ secrets.DB_ROOT_PASSWORD }}
+ 
+   - name: Проверка доступности БД из контейнера Frappe
+     run: |
+@@ -51,4 +51,4 @@
+       docker compose exec frappe bash -c \
+         "bench --site $SITE_NAME set-admin-password '$ADMIN_PASSWORD'"
+     env:
+-      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
++      ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}

@@ -10,14 +10,14 @@
             "fieldtype": "Currency",
             "read_only": 1,
             "precision": 2,
-            "options": "RUB"
+            "options": "currency"
         },
         {
             "fieldname": "total_deductions",
             "label": "Total Deductions",
             "fieldtype": "Currency",
             "precision": 2,
-            "options": "RUB"
+            "options": "currency"
         },
         {
             "fieldname": "net_payable",
@@ -25,7 +25,7 @@
             "fieldtype": "Currency",
             "read_only": 1,
             "precision": 2,
-            "options": "RUB"
+            "options": "currency"
         }
     ]
 }

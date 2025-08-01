@@ -1,111 +1,17 @@
 --- a/ferum_customs/custom_logic/file_attachment_utils.py
 +++ b/ferum_customs/custom_logic/file_attachment_utils.py
-@@ -27,7 +27,7 @@
- def _resolve_attachment_path(file_url: str, is_private: bool) -> tuple[Path, Path, str]:
-     """Validate ``file_url`` and return the resolved attachment path, base dir and safe name."""
-     base_folder = "private" if is_private else "public"
--    prefix = f"/{base_folder}/files/" if is_private else "/files/"
-+    prefix = f"/{base_folder}/files/"
- 
-     if not file_url.startswith(prefix):
-         msg = (
-@@ -53,12 +53,7 @@
+@@ -53,7 +53,7 @@
      base_dir = Path(frappe.get_site_path(base_folder, "files")).resolve(strict=True)
      file_path = (base_dir / safe_name).resolve()
  
--    is_safe_path = (
--        file_path.is_relative_to(base_dir)
--        if hasattr(Path, "is_relative_to")
--        else str(file_path).startswith(str(base_dir))
--    )
--    if not is_safe_path:
-+    if not file_path.is_relative_to(base_dir):
+-    if not file_path.is_relative_to(base_dir):
++    if not str(file_path).startswith(str(base_dir)):
          logger.error(
              "Path traversal attempt or incorrect path resolution for attachment URL: '%s'. Resolved path: '%s', Base dir: '%s'",
              file_url,
-@@ -122,14 +117,12 @@
-         logger.info(
-             f"File '{file_path}' (from URL '{file_url}') not found on filesystem. Nothing to delete."
-         )
--        # Это не ошибка, файл мог быть удален ранее.
-         return
- 
-     if not file_path.is_file():
-         logger.warning(
-             f"Path '{file_path}' (from URL '{file_url}') is not a file. Skipping deletion."
-         )
--        # Не выбрасываем ошибку, но логируем.
-         return
- 
-     try:
-@@ -137,7 +130,6 @@
-         logger.info(
-             f"Successfully deleted attachment file: '{file_path}' (from URL '{file_url}') by user '{frappe.session.user}'"
-         )
--        # frappe.msgprint(_("Файл {0} успешно удален из файловой системы.").format(safe_name), alert=True, indicator="green") # Может быть излишним, если это фоновый процесс
-     except OSError as e:
-         logger.error(
-             f"OS error while deleting file '{file_path}' (URL: '{file_url}') by user '{frappe.session.user}': {e}",
-@@ -162,11 +154,6 @@
-         )
- 
- 
--# Хук для DocType "CustomAttachment", который будет вызывать удаление файла
--# Этот хук должен быть прописан в hooks.py:
--# "CustomAttachment": {
--#     "on_trash": "ferum_customs.custom_logic.file_attachment_utils.on_custom_attachment_trash"
--# }
- def on_custom_attachment_trash(doc: FrappeDocument, method: str | None = None) -> None:
-     """
-     Вызывается при удалении записи CustomAttachment (on_trash).
-@@ -176,18 +163,13 @@
-         doc: Экземпляр документа CustomAttachment.
-         method: Имя вызвавшего метода.
-     """
--    file_url = doc.get("attachment_file")  # Поле типа Attach хранит URL файла
--    is_private_file = doc.get(
--        "is_private", False
--    )  # Предположим, есть поле 'is_private'
-+    file_url = doc.get("attachment_file")
-+    is_private_file = doc.get("is_private", False)
- 
-     if file_url:
-         try:
--            # 1. Удаляем физический файл
-             delete_attachment_file_from_filesystem(file_url, is_private=is_private_file)
- 
--            # 2. Удаляем связанную запись DocType "File", если она существует
--            # Это также удалит оптимизированные файлы и резервные копии, если они были созданы Frappe
-             file_doc_name = frappe.db.get_value("File", {"file_url": file_url})
-             if file_doc_name:
-                 frappe.delete_doc(
-@@ -209,28 +191,10 @@
-                 f"Error during on_trash for CustomAttachment '{doc.name}' (file URL: {file_url}): {e}",
-                 exc_info=True,
-             )
--            # Не прерываем процесс удаления записи CustomAttachment, но логируем ошибку
-             frappe.msgprint(
-                 _(
-                     "Ошибка при удалении связанного файла для {0}. Файл мог остаться в системе. Сообщите администратору."
+@@ -197,4 +197,4 @@
                  ).format(doc.name),
                  title=_("Ошибка удаления файла"),
                  indicator="orange",
 -            )
--
--
--# Пример хука для стандартного DocType "File", если требуется дополнительная логика.
--# Этот хук должен быть прописан в hooks.py:
--# "File": {
--# "on_trash": "ferum_customs.custom_logic.file_attachment_utils.on_general_file_trash"
--# }
--# def on_general_file_trash(doc: "FrappeDocument", method: str | None = None):
--# """
--# Вызывается при удалении стандартной записи File (on_trash).
--# Frappe обычно сам удаляет физический файл при удалении File DocType.
--# Этот хук нужен, только если требуется *дополнительная* логика.
--# """
--# logger.info(f"Standard File DocType '{doc.name}' (URL: {doc.file_url}) is being trashed. Custom logic can be added here.")
--# # Физический файл УЖЕ ДОЛЖЕН БЫТЬ удален стандартной логикой Frappe к этому моменту,
--# # или будет удален сразу после этого хука.
--# # Не нужно вызывать delete_attachment_file_from_filesystem(), если нет особых причин.
 +            )

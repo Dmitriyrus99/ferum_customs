@@ -1,22 +1,17 @@
 --- a/ferum_customs/ferum_customs/doctype/service_report/service_report.json
 +++ b/ferum_customs/ferum_customs/doctype/service_report/service_report.json
-@@ -101,7 +101,7 @@
-             "amend": 1
-         },
-         {
--            "role": "Проектный менеджер",
-+            "role": "Project Manager",
-             "read": 1,
-             "write": 1,
-             "create": 1,
-@@ -111,10 +111,10 @@
-             "amend": 1
-         },
-         {
--            "role": "Инженер",
-+            "role": "Engineer",
-             "read": 1,
-             "write": 1,
+@@ -72,8 +72,8 @@
+             "fieldname": "status",
+             "label": "Status",
+             "fieldtype": "Select",
+-            "options": "draft\nsubmitted\ncancelled",
+-            "default": "draft",
++            "options": "Draft\nSubmitted\nCancelled",
++            "default": "Draft",
+             "read_only": 1,
+             "hidden": 1,
+             "print_hide": 1
+@@ -117,4 +117,4 @@
              "create": 1
          }
      ]

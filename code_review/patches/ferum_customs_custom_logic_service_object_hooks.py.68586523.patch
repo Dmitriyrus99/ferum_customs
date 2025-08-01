@@ -44,3 +44,4 @@
      # if doc.installation_date and doc.installation_date > frappe.utils.today():
 -    #     frappe.throw(_("Дата установки не может быть в будущем."))
 +    #     frappe.throw(_("Дата установки не может быть в будущем."))
+

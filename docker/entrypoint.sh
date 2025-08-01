@@ -25,7 +25,7 @@ if [[ -n "$SITE_NAME" ]]; then
   if [[ ! -f "$INIT_LOCK_FILE" ]]; then
     echo "==> First-time init for site $SITE_NAME"
 
-    mkdir -p sites
+    mkdir -p "sites/${SITE_NAME}"
 
     if [[ ! -f "sites/${SITE_NAME}/site_config.json" ]]; then
       echo "==> Creating site $SITE_NAME"

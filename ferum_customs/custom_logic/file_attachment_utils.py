@@ -53,7 +53,7 @@ def _resolve_attachment_path(file_url: str, is_private: bool) -> tuple[Path, Pat
     base_dir = Path(frappe.get_site_path(base_folder, "files")).resolve(strict=True)
     file_path = (base_dir / safe_name).resolve()
 
-    if not file_path.is_relative_to(base_dir):
+    if not str(file_path).startswith(str(base_dir)):
         logger.error(
             "Path traversal attempt or incorrect path resolution for attachment URL: '%s'. Resolved path: '%s', Base dir: '%s'",
             file_url,

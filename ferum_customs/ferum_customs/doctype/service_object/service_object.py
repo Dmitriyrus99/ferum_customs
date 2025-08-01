@@ -5,6 +5,8 @@ Python-контроллер для DocType "Service Object".
 
 from __future__ import annotations
 from frappe.model.document import Document
+import frappe
+from frappe import _
 
 
 class ServiceObject(Document):
@@ -24,9 +26,9 @@ class ServiceObject(Document):
         self._clean_fields()
 
         # Пример дополнительной валидации:
-        # if self.get("warranty_expiry_date") and self.get("purchase_date"):
-        #     if self.warranty_expiry_date < self.purchase_date:
-        #         frappe.throw(_("Дата окончания гарантии не может быть раньше даты покупки."))
+        if self.get("warranty_expiry_date") and self.get("purchase_date"):
+            if self.warranty_expiry_date < self.purchase_date:
+                frappe.throw(_("Дата окончания гарантии не может быть раньше даты покупки."))
 
     def _clean_fields(self) -> None:
         """
@@ -37,5 +39,5 @@ class ServiceObject(Document):
         ):
             self.linked_service_project = self.linked_service_project.strip()
 
-        # if self.get("object_name"):
-        #     self.object_name = self.object_name.strip()
+        if self.get("object_name") and isinstance(self.object_name, str):
+            self.object_name = self.object_name.strip()

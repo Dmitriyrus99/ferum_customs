@@ -1,20 +1,23 @@
 --- a/ferum_customs/ferum_customs/doctype/assigned_engineer_item/assigned_engineer_item.json
 +++ b/ferum_customs/ferum_customs/doctype/assigned_engineer_item/assigned_engineer_item.json
-@@ -9,12 +9,14 @@
-             "fieldname": "engineer",
-             "label": "Engineer",
-             "fieldtype": "Link",
--            "options": "User"
-+            "options": "User",
-+            "reqd": 1
-         },
-         {
-             "fieldname": "assignment_date",
-             "label": "Assignment Date",
--            "fieldtype": "Datetime"
-+            "fieldtype": "Datetime",
-+            "reqd": 1
+@@ -18,5 +18,19 @@
+             "fieldtype": "Datetime",
+             "reqd": 1
          }
++    ],
++    "permissions": [
++        {
++            "role": "System Manager",
++            "read": 1,
++            "write": 1,
++            "create": 1,
++            "delete": 1
++        },
++        {
++            "role": "Engineer",
++            "read": 1,
++            "write": 1
++        }
      ]
 -}
 +}

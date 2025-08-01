@@ -79,8 +79,10 @@ class ServiceProject(Document):
                             else dt_obj.isoformat()
                         ),
                     )
-                except Exception:
-                    pass
+                except Exception as e:
+                    frappe.logger(__name__).warning(
+                        f"Could not convert string date field '{fieldname}' to ISO format for Service Project '{self.name}': {e}"
+                    )
 
     def _validate_budget(self) -> None:
         """Проверяет, что бюджет неотрицательный."""

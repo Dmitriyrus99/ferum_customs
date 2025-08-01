@@ -1,42 +1,17 @@
 --- a/ferum_customs/ferum_customs/doctype/service_report/service_report_print_format.html
 +++ b/ferum_customs/ferum_customs/doctype/service_report/service_report_print_format.html
-@@ -1,15 +1,15 @@
- <h2>Акт выполненных работ</h2>
--<p>Номер отчета: {{ doc.name }}</p>
--<p>Дата: {{ frappe.utils.formatdate(doc.posting_date) }}</p>
--<p>Клиент: {{ frappe.get_doc('Customer', doc.customer).customer_name }}</p>
-+<p>Номер отчета: {{ doc.name | e }}</p>
-+<p>Дата: {{ frappe.utils.formatdate(doc.posting_date) | e }}</p>
-+<p>Клиент: {{ frappe.get_doc('Customer', doc.customer).customer_name | e }}</p>
+@@ -5,7 +5,7 @@
  {% set sr = frappe.get_doc('Service Request', doc.service_request) %}
--<p>Проект: {{ doc.service_request }}</p>
-+<p>Проект: {{ doc.service_request | e }}</p>
+ <p>Проект: {{ doc.service_request | e }}</p>
  {% if sr.custom_assigned_engineer %}
--<p>Ответственный инженер: {{ frappe.get_cached_value('User', sr.custom_assigned_engineer, 'full_name') or sr.custom_assigned_engineer }}</p>
-+<p>Ответственный инженер: {{ frappe.get_cached_value('User', sr.custom_assigned_engineer, 'full_name') or sr.custom_assigned_engineer | e }}</p>
+-<p>Ответственный инженер: {{ frappe.get_cached_value('User', sr.custom_assigned_engineer, 'full_name') or sr.custom_assigned_engineer | e }}</p>
++<p>Ответственный инженер: {{ frappe.get_cached_value('User', sr.custom_assigned_engineer, 'full_name') | e }}</p>
  {% endif %}
  {% if sr.custom_service_object_link %}
  {% set so = frappe.get_doc('Service Object', sr.custom_service_object_link) %}
--<p>Объект: {{ so.object_name }} {% if so.location %}({{ so.location }}){% endif %}</p>
-+<p>Объект: {{ so.object_name | e }} {% if so.location %}({{ so.location | e }}){% endif %}</p>
- {% endif %}
- 
- <table>
-@@ -19,12 +19,12 @@
-     {% for item in doc.work_items %}
-     <tr>
-         <td>{{ loop.index }}</td>
--        <td>{{ item.description }}</td>
--        <td>{{ item.quantity }}</td>
--        <td>{{ item.unit_price }}</td>
--        <td>{{ item.amount }}</td>
-+        <td>{{ item.description | e }}</td>
-+        <td>{{ item.quantity | e }}</td>
-+        <td>{{ item.unit_price | e }}</td>
-+        <td>{{ item.amount | e }}</td>
-     </tr>
+@@ -27,4 +27,4 @@
      {% endfor %}
  </table>
  
--<p>Итого к оплате: {{ doc.total_payable }} ({{ frappe.utils.money_in_words(doc.total_payable) }})</p>
+-<p>Итого к оплате: {{ doc.total_payable | e }} ({{ frappe.utils.money_in_words(doc.total_payable) | e }})</p>
 +<p>Итого к оплате: {{ doc.total_payable | e }} ({{ frappe.utils.money_in_words(doc.total_payable) | e }})</p>

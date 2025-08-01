@@ -3,7 +3,7 @@ import pytest
 try:
     import frappe
     from frappe.tests.utils import FrappeTestCase
-except ImportError:  # More specific exception
+except ImportError:
     pytest.skip("frappe not available", allow_module_level=True)
 
 
@@ -12,5 +12,5 @@ class TestServiceProject(FrappeTestCase):
         doc = frappe.new_doc("Service Project")
         doc.start_date = frappe.utils.now_datetime()
         doc.end_date = frappe.utils.add_days(doc.start_date, -1)
-        with self.assertRaises(frappe.ValidationError):
+        with self.assertRaises(frappe.exceptions.ValidationError):  # Use specific exception
             doc.validate()

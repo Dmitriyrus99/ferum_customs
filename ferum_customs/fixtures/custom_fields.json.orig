@@ -1,0 +1,70 @@
+[
+  {
+    "doctype": "Custom Field",
+    "name": "service_request-custom_customer",
+    "dt": "Service Request",
+    "fieldname": "custom_customer",
+    "label": "Клиент",
+    "fieldtype": "Link",
+    "options": "Customer",
+    "insert_after": "status",
+    "in_list_view": 1,
+    "reqd": 0,
+    "module": "Ferum Customs"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "service_request-custom_service_object_link",
+    "dt": "Service Request",
+    "fieldname": "custom_service_object_link",
+    "label": "Объект обслуживания",
+    "fieldtype": "Link",
+    "options": "Service Object",
+    "insert_after": "custom_customer",
+    "in_list_view": 0,
+    "reqd": 0,
+    "module": "Ferum Customs"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "service_request-custom_assigned_engineer",
+    "dt": "Service Request",
+    "fieldname": "custom_assigned_engineer",
+    "label": "Назначенный инженер",
+    "fieldtype": "Link",
+    "options": "User",
+    "insert_after": "custom_service_object_link",
+    "in_list_view": 0,
+    "reqd": 0,
+    "module": "Ferum Customs"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "service_request-custom_project",
+    "dt": "Service Request",
+    "fieldname": "custom_project",
+    "label": "Проект",
+    "fieldtype": "Link",
+    "options": "Service Project",
+    "read_only": 1,
+    "insert_after": "custom_assigned_engineer",
+    "in_list_view": 0,
+    "reqd": 0,
+    "module": "Ferum Customs"
+  },
+  {
+    "doctype": "Custom Field",
+    "name": "service_request-custom_linked_report",
+    "dt": "Service Request",
+    "fieldname": "custom_linked_report",
+    "label": "Связанный отчет",
+    "fieldtype": "Link",
+    "options": "Service Report",
+    "read_only": 1,
+    "no_copy": 1,
+    "insert_after": "custom_project",
+    "in_list_view": 0,
+    "reqd": 0,
+    "module": "Ferum Customs"
+  }
+]

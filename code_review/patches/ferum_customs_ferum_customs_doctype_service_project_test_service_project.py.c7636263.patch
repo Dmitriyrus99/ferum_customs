@@ -1,20 +1,19 @@
 --- a/ferum_customs/ferum_customs/doctype/service_project/test_service_project.py
 +++ b/ferum_customs/ferum_customs/doctype/service_project/test_service_project.py
-@@ -3,14 +3,14 @@
+@@ -3,7 +3,7 @@
  try:
      import frappe
      from frappe.tests.utils import FrappeTestCase
--except Exception:  # pragma: no cover
-+except ImportError:  # More specific exception
+-except ImportError:  # More specific exception
++except ImportError:
      pytest.skip("frappe not available", allow_module_level=True)
  
  
- class TestServiceProject(FrappeTestCase):
--    def test_date_validation(self, frappe_site):
-+    def test_date_validation(self):
+@@ -12,5 +12,5 @@
          doc = frappe.new_doc("Service Project")
          doc.start_date = frappe.utils.now_datetime()
          doc.end_date = frappe.utils.add_days(doc.start_date, -1)
-         with self.assertRaises(frappe.ValidationError):
+-        with self.assertRaises(frappe.ValidationError):
 -            doc.validate()
++        with self.assertRaises(frappe.exceptions.ValidationError):  # Use specific exception
 +            doc.validate()

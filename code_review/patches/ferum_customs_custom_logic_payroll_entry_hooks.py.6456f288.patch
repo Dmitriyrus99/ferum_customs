@@ -34,3 +34,4 @@
 -        doc.total_payable = round(doc.total_payable, 2)
 +    if isinstance(doc.total_payable, (float, int)):
 +        doc.total_payable = round(doc.total_payable, 2)
+

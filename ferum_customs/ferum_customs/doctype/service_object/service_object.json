@@ -1,52 +1,52 @@
 [
-  {
-    "doctype": "DocType",
-    "custom": 1,
-    "name": "Service Object",
-    "module": "Ferum Customs",
-    "engine": "InnoDB",
-    "track_changes": 1,
-    "title_field": "object_name",
-    "fields": [
-      {
-        "fieldname": "object_name",
-        "label": "Название объекта",
-        "fieldtype": "Data",
-        "reqd": 1,
-        "in_list_view": 1,
-        "unique": 1
-      },
-      {
-        "fieldname": "customer",
-        "label": "Клиент",
-        "fieldtype": "Link",
-        "options": "Customer",
-        "in_list_view": 1
-      },
-      {
-        "fieldname": "location",
-        "label": "Расположение",
-        "fieldtype": "Data"
-      },
-      {
-        "fieldname": "description",
-        "label": "Описание",
-        "fieldtype": "Text"
-      },
-      {
-        "fieldname": "status",
-        "label": "Статус",
-        "fieldtype": "Select",
-        "options": "Active\nInactive\nUnder Maintenance",
-        "default": "Active",
-        "in_list_view": 1
-      }
-    ],
-    "permissions": [
-      { "role": "System Manager", "read": 1, "write": 1, "create": 1, "delete": 1, "submit": 1, "cancel": 1, "amend": 1 },
-      { "role": "Administrator", "read": 1, "write": 1, "create": 1, "delete": 1, "submit": 1, "cancel": 1, "amend": 1 },
-      { "role": "Проектный менеджер", "read": 1, "write": 1, "create": 1, "delete": 1 },
-      { "role": "Инженер", "read": 1 }
-    ]
-  }
+{
+  "doctype": "DocType",
+  "custom": 1,
+  "name": "Service Object",
+  "module": "Ferum Customs",
+  "engine": "InnoDB",
+  "track_changes": 1,
+  "title_field": "object_name",
+  "fields": [
+    {
+      "fieldname": "object_name",
+      "label": "Название объекта",
+      "fieldtype": "Data",
+      "reqd": 1,
+      "in_list_view": 1,
+      "unique": 1
+    },
+    {
+      "fieldname": "customer",
+      "label": "Клиент",
+      "fieldtype": "Link",
+      "options": "Customer",
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "location",
+      "label": "Расположение",
+      "fieldtype": "Data"
+    },
+    {
+      "fieldname": "description",
+      "label": "Описание",
+      "fieldtype": "Text"
+    },
+    {
+      "fieldname": "status",
+      "label": "Статус",
+      "fieldtype": "Select",
+      "options": "Active\nInactive\nUnder Maintenance",
+      "default": "Active",
+      "in_list_view": 1
+    }
+  ],
+  "permissions": [
+    { "role": "System Manager", "read": 1, "write": 1, "create": 1, "delete": 1, "submit": 1, "cancel": 1, "amend": 1 },
+    { "role": "Administrator", "read": 1, "write": 1, "create": 1, "delete": 1, "submit": 1, "cancel": 1, "amend": 1 },
+    { "role": "Проектный менеджер", "read": 1, "write": 1, "create": 1, "delete": 1 },
+    { "role": "Инженер", "read": 1 }
+  ]
+}
 ]

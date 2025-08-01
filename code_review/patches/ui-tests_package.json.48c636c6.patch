@@ -1,0 +1,16 @@
+--- a/ui-tests/package.json
++++ b/ui-tests/package.json
+@@ -5,11 +5,11 @@
+   "scripts": {
+     "test": "playwright test",
+     "lint": "eslint '**/*.js'",
+-    "format": "prettier -c '**/*.{js,ts,json,md}'"
++    "format": "prettier --check '**/*.{js,ts,json,md}'"
+   },
+   "devDependencies": {
+     "@playwright/test": "^1.42.1",
+     "eslint": "^8.44.0",
+     "prettier": "^2.7.1"
+   }
+-}
++}

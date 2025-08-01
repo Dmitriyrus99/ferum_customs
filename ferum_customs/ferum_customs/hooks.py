@@ -39,6 +39,6 @@ def scheduler_events() -> Dict[str, Any]:  # Use Dict for type hinting
     return {}
 
 try:  # dev-hooks (если есть)
-    from ferum_customs.dev_hooks import *
+    from ferum_customs.dev_hooks import *  # Avoid wildcard imports
 except ImportError:
     pass

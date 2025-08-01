@@ -8,14 +8,14 @@ frappe.ui.form.on("Service Report", {
 					method: "ferum_customs.api.create_invoice_from_report",
 					args: { service_report: frm.doc.name },
 					freeze: true,
-					callback(r) {
+					callback: function(r) {
 						if (r.message) {
 							frappe.set_route("Form", "Sales Invoice", r.message);
 						} else {
 							frappe.msgprint(__("Failed to create invoice. Please try again."));
 						}
 					},
-					error: (error) => {
+					error: function(error) {
 						frappe.msgprint(__("An error occurred while creating the invoice."));
 						console.error(error);
 					}

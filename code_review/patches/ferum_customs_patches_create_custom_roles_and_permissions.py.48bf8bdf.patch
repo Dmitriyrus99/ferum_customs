@@ -15,3 +15,4 @@
      for perm in SERVICE_REQUEST_PERMS:
 -        create_docperm(perm)
 +        create_docperm(perm)
+

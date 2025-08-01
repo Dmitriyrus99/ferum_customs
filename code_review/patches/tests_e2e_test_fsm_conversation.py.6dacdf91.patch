@@ -1,0 +1,9 @@
+--- a/tests/e2e/test_fsm_conversation.py
++++ b/tests/e2e/test_fsm_conversation.py
+@@ -39,3 +39,6 @@
+     await start_handler(bot=bot, message=message, state=state)
+ 
+     assert await state.get_state() == IncidentStates.waiting_object.state
++
++    # Clean up resources
++    await bot.session.close()

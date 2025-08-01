@@ -1,11 +1,1 @@
-[
-  {
-    "roleName": "customRole",
-    "permissions": [
-      "read",
-      "write",
-      "delete"
-    ],
-    "description": "A custom role with read, write, and delete permissions."
-  }
-]
+[]

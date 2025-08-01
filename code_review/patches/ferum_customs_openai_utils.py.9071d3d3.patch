@@ -1,54 +1,20 @@
 --- a/ferum_customs/openai_utils.py
 +++ b/ferum_customs/openai_utils.py
-@@ -1,17 +1,40 @@
--1. **API Key Exposure**: Ensure that the API key is not logged or exposed in any way. Consider using environment variables or a secure vault for sensitive information.
--   
--2. **Error Handling**: The code does not handle potential exceptions from the `openai.ChatCompletion.create` call. Wrap it in a try-except block to catch and handle exceptions gracefully.
-+import os
-+import openai
-+from typing import Optional
+@@ -22,9 +22,10 @@
+     openai.api_key = api_key
  
--3. **Hardcoded Model Name**: The model name "gpt-4" is hardcoded. Consider passing it as a parameter to the function or using a configuration setting to allow for flexibility.
-+def get_chat_completion(prompt: str, model: Optional[str] = "gpt-4", max_tokens: Optional[int] = 150) -> Optional[str]:
-+    """
-+    Generates a chat completion response from OpenAI's API.
- 
--4. **Stop Sequences**: The stop sequences should be carefully chosen based on the expected output. Ensure that they do not inadvertently cut off valid responses.
-+    Parameters:
-+    - prompt (str): The input prompt for the model.
-+    - model (Optional[str]): The model to use for generating the response. Defaults to "gpt-4".
-+    - max_tokens (Optional[int]): The maximum number of tokens in the response. Defaults to 150.
- 
--5. **Type Hinting**: The return type of the function is specified as `str`, but it would be better to use `Optional[str]` if there's a possibility of returning `None` in case of an error.
-+    Returns:
-+    - Optional[str]: The generated response or None if an error occurs.
-+    """
-+    # Ensure the API key is retrieved securely
-+    api_key = os.getenv("OPENAI_API_KEY")
-+    if not api_key:
-+        raise ValueError("API key not found. Please set the OPENAI_API_KEY environment variable.")
- 
--6. **Magic Numbers**: The `max_tokens` value is hardcoded. Consider making it a configurable parameter.
-+    openai.api_key = api_key
- 
--7. **Docstring**: The docstring could be more descriptive, including details about the parameters and return values.
-+    try:
-+        response = openai.ChatCompletion.create(
-+            model=model,
-+            messages=[{"role": "user", "content": prompt}],
-+            max_tokens=max_tokens,
-+            stop=None  # Define stop sequences if necessary
-+        )
-+        return response.choices[0].message['content'].strip()
-+    except openai.error.OpenAIError as e:
-+        # Log the error or handle it as needed
-+        print(f"An error occurred: {e}")
-+        return None
- 
--8. **Security**: Ensure that the input `prompt` is sanitized to prevent injection attacks or unintended behavior.
--
--9. **Unused Import**: The import statement for `from __future__ import annotations` is unnecessary unless type hints are being used in a forward reference context.
-+# Ensure input prompt is sanitized
-+def sanitize_input(prompt: str) -> str:
-+    # Implement sanitization logic as needed
+     try:
++        sanitized_prompt = sanitize_input(prompt)
+         response = openai.ChatCompletion.create(
+             model=model,
+-            messages=[{"role": "user", "content": prompt}],
++            messages=[{"role": "user", "content": sanitized_prompt}],
+             max_tokens=max_tokens,
+             stop=None  # Define stop sequences if necessary
+         )
+@@ -37,4 +38,4 @@
+ # Ensure input prompt is sanitized
+ def sanitize_input(prompt: str) -> str:
+     # Implement sanitization logic as needed
+-    return prompt
 +    return prompt

@@ -3,7 +3,7 @@ import pytest
 try:
     import frappe
     from frappe.tests.utils import FrappeTestCase
-except ImportError:  # More specific exception handling
+except ImportError:
     pytest.skip("frappe not available", allow_module_level=True)
 
 
@@ -12,4 +12,4 @@ class TestServiceObject(FrappeTestCase):
         doc = frappe.new_doc("Service Object")
         doc.linked_service_project = " PROJECT001 "
         doc.validate()
-        self.assertEqual(doc.linked_service_project.strip(), "PROJECT001")  # Ensure trimming is tested
+        self.assertEqual(doc.linked_service_project, "PROJECT001")  # Ensure trimming is tested

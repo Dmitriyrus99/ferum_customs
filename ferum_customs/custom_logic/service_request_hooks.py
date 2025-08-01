@@ -15,7 +15,7 @@ from ferum_customs.constants import (
     FIELD_CUSTOM_PROJECT,
     FIELD_CUSTOM_SERVICE_OBJECT_LINK,
     ROLE_PROEKTNYJ_MENEDZHER,
-    STATUS_VYPOLNENA,
+    STATUS_VYPОЛНЕНА,
     STATUS_ZAKRYTA,
 )
 
@@ -34,10 +34,10 @@ if TYPE_CHECKING:
 
 def validate(doc: ServiceRequest, method: str | None = None) -> None:
     """Validate ``Service Request`` before saving."""
-    if doc.status == STATUS_VYPOLNENA and not doc.get(FIELD_CUSTOM_LINKED_REPORT):
+    if doc.status == STATUS_VYPОЛНЕНА and not doc.get(FIELD_CUSTOM_LINKED_REPORT):
         frappe.throw(_("Нельзя отметить заявку выполненной без связанного отчёта."))
 
-    if doc.status == STATUS_VYPOLNENA and not doc.get("completed_on"):
+    if doc.status == STATUS_VYPОЛНЕНА and not doc.get("completed_on"):
         doc.completed_on = now()
 
     _ensure_customer(doc)
@@ -45,7 +45,7 @@ def validate(doc: ServiceRequest, method: str | None = None) -> None:
 
 def on_update_after_submit(doc: ServiceRequest, method: str | None = None) -> None:
     """Вызывается после обновления отправленного документа."""
-    if doc.status == STATUS_ZAKРЫTA:
+    if doc.status == STATUS_ZAKRYTA:
         _notify_project_manager(doc)
 
 
@@ -130,7 +130,7 @@ def _notify_project_manager(doc: ServiceRequest) -> None:
     try:
         recipients = frappe.get_all(
             "User",
-            filters={"enabled": 1, "roles.role": ROLE_PROEKTNYJ_MENЕДZHER},
+            filters={"enabled": 1, "roles.role": ROLE_PROEKTNYJ_MENEDZHER},
             pluck="name",
             distinct=True,
         )
@@ -146,7 +146,7 @@ def _notify_project_manager(doc: ServiceRequest) -> None:
         if not recipients:
             frappe.logger(__name__).warning(
                 _("Получатели с ролью '{0}' не найдены для уведомления.").format(
-                    ROLE_PROEKTNYJ_MENЕДZHER
+                    ROLE_PROEKTNYJ_MENEDZHER
                 )
             )
             return

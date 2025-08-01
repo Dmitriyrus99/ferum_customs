@@ -22,9 +22,10 @@ def get_chat_completion(prompt: str, model: Optional[str] = "gpt-4", max_tokens:
     openai.api_key = api_key
 
     try:
+        sanitized_prompt = sanitize_input(prompt)
         response = openai.ChatCompletion.create(
             model=model,
-            messages=[{"role": "user", "content": prompt}],
+            messages=[{"role": "user", "content": sanitized_prompt}],
             max_tokens=max_tokens,
             stop=None  # Define stop sequences if necessary
         )

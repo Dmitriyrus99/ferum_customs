@@ -8,6 +8,7 @@
     "role": "Customer",
     "enabled": true,
     "parent": "Portal Menu",
-    "parenttype": "Portal Menu"
+    "parenttype": "Portal Menu",
+    "parentfield": "items"
   }
 ]

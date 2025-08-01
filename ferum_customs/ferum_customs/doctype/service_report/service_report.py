@@ -92,7 +92,7 @@ class ServiceReport(Document):  # type: ignore[misc]
         if self.get("service_request") and not self.get("customer"):
             try:
                 customer_from_sr = frappe.db.get_value(
-                    "service_request", self.service_request, "custom_customer"
+                    "Service Request", self.service_request, "custom_customer"
                 )
 
                 if customer_from_sr:

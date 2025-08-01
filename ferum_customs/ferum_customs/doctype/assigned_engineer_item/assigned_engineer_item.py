@@ -49,15 +49,14 @@ class AssignedEngineerItem(Document):  # type: ignore[misc]
         """
         assignment_date_val = self.get("assignment_date")
         if assignment_date_val:
-            if not isinstance(assignment_date_val, str):
-                if isinstance(assignment_date_val, (datetime.datetime, datetime.date)):
-                    try:
-                        self.assignment_date = assignment_date_val.isoformat()
-                    except Exception as e:
-                        frappe.logger(__name__).error(
-                            f"Error converting datetime field 'assignment_date' to ISO format for AssignedEngineerItem (parent: {self.parent}): {e}"
-                        )
-            else:
+            if isinstance(assignment_date_val, (datetime.datetime, datetime.date)):
+                try:
+                    self.assignment_date = assignment_date_val.isoformat()
+                except Exception as e:
+                    frappe.logger(__name__).error(
+                        f"Error converting datetime field 'assignment_date' to ISO format for AssignedEngineerItem (parent: {self.parent}): {e}"
+                    )
+            elif isinstance(assignment_date_val, str):
                 try:
                     dt_obj = frappe.utils.get_datetime(assignment_date_val)
                     self.assignment_date = dt_obj.isoformat()

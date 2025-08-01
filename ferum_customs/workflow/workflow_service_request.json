@@ -7,7 +7,7 @@
   "is_active": 1,
   "send_email_alert": 0,
   "states": [
-    { "state": "Открыта",   "doc_status": 0, "allow_edit": "Проектный менеджер" },
+    { "state": "Открыта",   "doc_status": 1, "allow_edit": "Проектный менеджер" },
     { "state": "В работе",  "doc_status": 0, "allow_edit": "Проектный менеджер" },
     { "state": "Выполнена", "doc_status": 0, "allow_edit": "Проектный менеджер" },
     { "state": "Закрыта",   "doc_status": 1, "allow_edit": "Проектный менеджер" },

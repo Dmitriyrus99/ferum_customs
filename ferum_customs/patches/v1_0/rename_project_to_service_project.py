@@ -22,7 +22,7 @@ def execute() -> None:
                 message=f"Error renaming DocType Project to Service Project: {e}", 
                 title="Patch Error"
             )
-            print(f"Error during rename: {e}")
+            frappe.throw(_("Error during rename: {0}").format(e))
     elif not frappe.db.exists("DocType", "Project"):
         print("DocType 'Project' does not exist. Skipping rename.")
     elif frappe.db.exists("DocType", "Service Project"):

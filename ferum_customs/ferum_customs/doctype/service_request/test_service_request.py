@@ -6,7 +6,7 @@ try:
     import frappe
     from frappe.tests.utils import FrappeTestCase
     from frappe.utils import add_days, now_datetime
-except ImportError:  # More specific exception handling
+except ImportError:
     pytest.skip("frappe not available", allow_module_level=True)
 
 from ferum_customs.constants import STATUS_OTKRYTA, STATUS_VYPOLNENA, STATUS_ZAKRYTA
