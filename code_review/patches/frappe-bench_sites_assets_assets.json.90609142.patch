@@ -1,9 +1,0 @@
---- a/frappe-bench/sites/assets/assets.json
-+++ b/frappe-bench/sites/assets/assets.json
-@@ -1,5 +1,4 @@
- {
--    // This file contains the mapping of asset bundles for the application.
-     "billing.bundle.js": "/assets/frappe/dist/js/billing.bundle.TQHLK7UT.js",
-     "bootstrap-4-web.bundle.js": "/assets/frappe/dist/js/bootstrap-4-web.bundle.FOZOVELL.js",
-     "controls.bundle.js": "/assets/frappe/dist/js/controls.bundle.6LQ5HWLN.js",
-
