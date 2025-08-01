@@ -1,6 +1,6 @@
 # GPT Code Review Report
 
-**Date:** 2025-08-01 06:32:58
+**Date:** 2025-08-01 06:53:09
 
 
 ## Как применить патчи
@@ -11,13 +11,17 @@ git checkout -b gpt-review-patches
 find code_review/patches -type f -name '*.patch' -exec git am {} \;
 ```
 ---
+### Новые/изменённые файлы
+
+* PATCH: `ferum_customs/bench_commands/run_tests.py` → [ferum_customs_bench_commands_run_tests.py.95f799c6.patch](code_review/patches/ferum_customs_bench_commands_run_tests.py.95f799c6.patch)
+* PATCH: `ferum_customs/config/settings.py` → [ferum_customs_config_settings.py.4a1f87b3.patch](code_review/patches/ferum_customs_config_settings.py.4a1f87b3.patch)
+* PATCH: `ferum_customs/openai_utils.py` → [ferum_customs_openai_utils.py.9071d3d3.patch](code_review/patches/ferum_customs_openai_utils.py.9071d3d3.patch)
+
 ### Без изменений (из кэша)
 
 * ISSUES: `ferum_customs/__init__.py` → [ferum_customs___init__.py.3c6240c0.md](code_review/reports/ferum_customs___init__.py.3c6240c0.md) (из кэша)
 * PATCH: `ferum_customs/api/__init__.py` → [ferum_customs_api___init__.py.0763d65f.patch](code_review/patches/ferum_customs_api___init__.py.0763d65f.patch) (из кэша)
 * ISSUES: `ferum_customs/bench_commands/__init__.py` → [ferum_customs_bench_commands___init__.py.87be9ad5.md](code_review/reports/ferum_customs_bench_commands___init__.py.87be9ad5.md) (из кэша)
-* PATCH: `ferum_customs/bench_commands/run_tests.py` → [ferum_customs_bench_commands_run_tests.py.95f799c6.patch](code_review/patches/ferum_customs_bench_commands_run_tests.py.95f799c6.patch) (из кэша)
-* PATCH: `ferum_customs/config/settings.py` → [ferum_customs_config_settings.py.4a1f87b3.patch](code_review/patches/ferum_customs_config_settings.py.4a1f87b3.patch) (из кэша)
 * PATCH: `ferum_customs/custom_logic/file_attachment_utils.py` → [ferum_customs_custom_logic_file_attachment_utils.py.e8642829.patch](code_review/patches/ferum_customs_custom_logic_file_attachment_utils.py.e8642829.patch) (из кэша)
 * PATCH: `ferum_customs/custom_logic/payroll_entry_hooks.py` → [ferum_customs_custom_logic_payroll_entry_hooks.py.6456f288.patch](code_review/patches/ferum_customs_custom_logic_payroll_entry_hooks.py.6456f288.patch) (из кэша)
 * PATCH: `ferum_customs/custom_logic/service_object_hooks.py` → [ferum_customs_custom_logic_service_object_hooks.py.68586523.patch](code_review/patches/ferum_customs_custom_logic_service_object_hooks.py.68586523.patch) (из кэша)
@@ -67,7 +71,6 @@ find code_review/patches -type f -name '*.patch' -exec git am {} \;
 * ISSUES: `ferum_customs/fixtures/role.json` → [ferum_customs_fixtures_role.json.728f9020.md](code_review/reports/ferum_customs_fixtures_role.json.728f9020.md) (из кэша)
 * PATCH: `ferum_customs/install.py` → [ferum_customs_install.py.bf196968.patch](code_review/patches/ferum_customs_install.py.bf196968.patch) (из кэша)
 * PATCH: `ferum_customs/notifications/notifications.py` → [ferum_customs_notifications_notifications.py.d7affb9b.patch](code_review/patches/ferum_customs_notifications_notifications.py.d7affb9b.patch) (из кэша)
-* PATCH: `ferum_customs/openai_utils.py` → [ferum_customs_openai_utils.py.9071d3d3.patch](code_review/patches/ferum_customs_openai_utils.py.9071d3d3.patch) (из кэша)
 * PATCH: `ferum_customs/patches/create_custom_roles_and_permissions.py` → [ferum_customs_patches_create_custom_roles_and_permissions.py.48bf8bdf.patch](code_review/patches/ferum_customs_patches_create_custom_roles_and_permissions.py.48bf8bdf.patch) (из кэша)
 * PATCH: `ferum_customs/patches/v1_0/rename_project_to_service_project.py` → [ferum_customs_patches_v1_0_rename_project_to_service_project.py.e7cf8ac7.patch](code_review/patches/ferum_customs_patches_v1_0_rename_project_to_service_project.py.e7cf8ac7.patch) (из кэша)
 * PATCH: `ferum_customs/permissions/permissions.py` → [ferum_customs_permissions_permissions.py.b4672b6e.patch](code_review/patches/ferum_customs_permissions_permissions.py.b4672b6e.patch) (из кэша)

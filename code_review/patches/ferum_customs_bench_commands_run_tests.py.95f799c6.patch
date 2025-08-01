@@ -1,33 +1,39 @@
 --- a/ferum_customs/bench_commands/run_tests.py
 +++ b/ferum_customs/bench_commands/run_tests.py
-@@ -1,13 +1,12 @@
- import os
--
- import click
- import pytest
+@@ -1,27 +1,13 @@
+-import os
+-import click
+-import pytest
++1. **Directory Traversal Vulnerability**: The code does not properly sanitize the `app` and `test_path` inputs, which could allow for directory traversal attacks. Use `os.path.abspath()` and validate against a base directory.
++   
++2. **Environment Variable Injection**: Setting `os.environ["SITE_NAME"]` directly can lead to issues if the environment variable is used elsewhere in the application. Consider using a context manager or a safer method to handle environment variables.
  
++3. **Error Handling**: Raising a `ValueError` without catching it may cause the program to exit unexpectedly. Consider using `click.ClickException` for better integration with Click's error handling.
  
--@click.command("run-tests")  # type: ignore[misc]
--@click.option("--site", required=True, help="Site name on which to run tests")  # type: ignore[misc]
--@click.option("--app", required=True, help="App name to test")  # type: ignore[misc]
--@click.option(  # type: ignore[misc]
-+@click.command("run-tests")
-+@click.option("--site", required=True, help="Site name on which to run tests")
-+@click.option("--app", required=True, help="App name to test")
-+@click.option(
-     "--test",
-     "test_path",
-     default="tests/unit",
-@@ -18,5 +17,11 @@
-     # Ensure SITE_NAME is set for any fixtures or configurations
-     os.environ["SITE_NAME"] = site
-     path = os.path.join(app, test_path)
+-@click.command("run-tests")
+-@click.option("--site", required=True, help="Site name on which to run tests")
+-@click.option("--app", required=True, help="App name to test")
+-@click.option(
+-    "--test",
+-    "test_path",
+-    default="tests/unit",
+-    help="Test path relative to app, e.g., tests/unit",
+-)
+-def run_tests(site: str, app: str, test_path: str) -> None:
+-    """Run pytest tests for the specified app."""
+-    # Ensure SITE_NAME is set for any fixtures or configurations
+-    os.environ["SITE_NAME"] = site
+-    path = os.path.join(app, test_path)
++4. **Exit Code Handling**: Using `exit()` directly can be problematic in some contexts (e.g., when this script is imported as a module). Instead, consider returning the exit code or using `sys.exit()`.
+ 
+-    # Validate the test path to prevent directory traversal attacks
+-    if not os.path.exists(path):
+-        raise ValueError(f"Test path does not exist: {path}")
++5. **Missing Type Hint for `test_path`**: The `test_path` parameter should have a type hint for consistency and clarity.
+ 
+-    # Execute pytest on the target path
+-    exit_code = pytest.main([path])
+-    exit(exit_code)
++6. **Lack of Logging**: There is no logging for the execution of tests, which can be useful for debugging and monitoring.
 +
-+    # Validate the test path to prevent directory traversal attacks
-+    if not os.path.exists(path):
-+        raise ValueError(f"Test path does not exist: {path}")
-+
-     # Execute pytest on the target path
--    exit(pytest.main([path]))
-+    exit_code = pytest.main([path])
-+    exit(exit_code)
++7. **Potential for Unhandled Exceptions**: If `pytest.main()` raises an exception, it will not be caught, leading to an unhandled exception. Consider wrapping it in a try-except block.
