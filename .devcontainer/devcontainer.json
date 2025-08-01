@@ -6,5 +6,5 @@
       "version": "latest"
     }
   },
-  "postCreateCommand": "sudo usermod -aG docker $(whoami)"
+  "postCreateCommand": "usermod -aG docker $(whoami) # Add current user to Docker group for permissions"
 }

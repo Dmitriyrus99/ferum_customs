@@ -7,6 +7,14 @@ log() { printf "\e[1;34m>>> %s\e[0m\n" "$*"; }
 export HTTP_PROXY=${HTTP_PROXY:-""}
 export HTTPS_PROXY=${HTTPS_PROXY:-""}
 
+# Check for required commands
+for cmd in apt-get docker git; do
+  if ! command -v "$cmd" &> /dev/null; then
+    echo "❌ Command '$cmd' is required but not found. Please install it."
+    exit 1
+  fi
+done
+
 # 0. Проверка root/не-root
 if [[ $EUID -eq 0 ]]; then
   echo "❌ Запускать скрипт от root не нужно. Запустите под обычным пользователем."
@@ -21,8 +29,8 @@ sudo apt-get install -y docker.io git ca-certificates curl gnupg
 sudo systemctl enable --now docker
 
 log "Добавление пользователя $USER в группу docker..."
-if ! groups $USER | grep -q '\bdocker\b'; then
-  sudo usermod -aG docker "$USER"
+if ! groups "$USER" | grep -q '\bdocker\b'; then
+  sudo usermod -aG docker "$USER" || { echo "❌ Failed to add user to docker group"; exit 1; }
   NEW_GRP_NOTE=true
 fi
 
@@ -30,13 +38,13 @@ log "Проверка: существует ли образ codex?"
 if ! docker images -q codex >/dev/null 2>&1; then
   log "Сборка Docker-образа 'codex'..."
   if [[ ! -d "$HOME/codex" ]]; then
-    git clone https://github.com/openai/codex.git "$HOME/codex"
+    git clone https://github.com/openai/codex.git "$HOME/codex" || { echo "❌ Failed to clone repository"; exit 1; }
   else
     log "Репозиторий уже существует, делаю git pull..."
-    git -C "$HOME/codex" pull --ff-only
+    git -C "$HOME/codex" pull --ff-only || { echo "❌ Failed to pull latest changes"; exit 1; }
   fi
   cd "$HOME/codex/codex-cli"
-  sudo docker build -t codex .
+  sudo docker build -t codex . || { echo "❌ Docker build failed"; exit 1; }
   cd -
 else
   log "Образ 'codex' уже есть — пропускаю сборку."

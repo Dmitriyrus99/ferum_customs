@@ -1,0 +1,21 @@
+--- a/ferum_customs/ferum_customs/doctype/assigned_engineer_item/assigned_engineer_item.json
++++ b/ferum_customs/ferum_customs/doctype/assigned_engineer_item/assigned_engineer_item.json
+@@ -1,7 +1,7 @@
+ {
+     "doctype": "DocType",
+-    "name": "Assigned Engineer Item",
+-    "module": "Ferum Customs",
++    "name": "Assigned_Engineer_Item",
++    "module": "ferum_customs",
+     "istable": 1,
+     "track_changes": 1,
+     "fields": [
+@@ -32,5 +32,6 @@
+             "read": 1,
+             "write": 1
+         }
+-    ]
+-}
++    ],
++    "description": "This DocType is used to assign engineers to specific items."
++}

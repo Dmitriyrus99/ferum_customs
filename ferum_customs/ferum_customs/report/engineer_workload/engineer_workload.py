@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Optional, Tuple, List, Dict
 
 import frappe
 from frappe import _
@@ -8,17 +8,18 @@ from frappe import _
 from ferum_customs.constants import STATUS_OTMENENA, STATUS_ZAKRYTA
 
 
+@frappe.whitelist()
 def execute(
-    filters: dict[str, Any] | None = None
-) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    filters: Optional[dict] = None
+) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
     rows = frappe.db.sql(
         """
-        select custom_assigned_engineer as engineer, count(*) as total
-        from `tabservice_request`
-        where status not in (%s, %s)
-          and custom_assigned_engineer is not null
-        group by custom_assigned_engineer
-        order by total desc
+        SELECT custom_assigned_engineer AS engineer, COUNT(*) AS total
+        FROM `tabservice_request`
+        WHERE status NOT IN (%s, %s)
+          AND custom_assigned_engineer IS NOT NULL
+        GROUP BY custom_assigned_engineer
+        ORDER BY total DESC
         """,
         (STATUS_ZAKRYTA, STATUS_OTMENENA),
         as_dict=True,

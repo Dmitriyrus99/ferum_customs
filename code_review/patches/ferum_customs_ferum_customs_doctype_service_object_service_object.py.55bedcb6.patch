@@ -1,0 +1,37 @@
+--- a/ferum_customs/ferum_customs/doctype/service_object/service_object.py
++++ b/ferum_customs/ferum_customs/doctype/service_object/service_object.py
+@@ -14,7 +14,10 @@
+     Класс документа ServiceObject.
+     """
+ 
+-    linked_service_project: str | None
++    linked_service_project: str | None = None
++    object_name: str | None = None
++    warranty_expiry_date: str | None = None
++    purchase_date: str | None = None
+ 
+     def validate(self) -> None:
+         """
+@@ -26,7 +29,7 @@
+         self._clean_fields()
+ 
+         # Пример дополнительной валидации:
+-        if self.get("warranty_expiry_date") and self.get("purchase_date"):
++        if self.warranty_expiry_date and self.purchase_date:
+             if self.warranty_expiry_date < self.purchase_date:
+                 frappe.throw(_("Дата окончания гарантии не может быть раньше даты покупки."))
+ 
+@@ -34,10 +37,8 @@
+         """
+         Очистка строковых полей.
+         """
+-        if self.get("linked_service_project") and isinstance(
+-            self.linked_service_project, str
+-        ):
++        if self.linked_service_project and isinstance(self.linked_service_project, str):
+             self.linked_service_project = self.linked_service_project.strip()
+ 
+-        if self.get("object_name") and isinstance(self.object_name, str):
+-            self.object_name = self.object_name.strip()
++        if self.object_name and isinstance(self.object_name, str):
++            self.object_name = self.object_name.strip()

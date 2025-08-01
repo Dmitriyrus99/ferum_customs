@@ -1,0 +1,21 @@
+{
+    "frappe": {
+        "resolution": {
+            "commit_hash": null,
+            "branch": null
+        },
+        "required": [],
+        "idx": 1,
+        "version": "15.74.1"
+    },
+    "ferum_customs": {
+        "is_repo": true,
+        "resolution": {
+            "commit_hash": "e5761a1d54de8961ee6b774fa2b8cb1603659ee5",
+            "branch": "main"
+        },
+        "required": [],
+        "idx": 2,
+        "version": "0.0.1"
+    }
+}

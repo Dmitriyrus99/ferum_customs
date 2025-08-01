@@ -9,6 +9,10 @@
     "event": "Value Change",
     "value_changed": "status",
     "channel": "Email",
-    "recipients": [{"receiver_by_role": "Проектный менеджер"}]
+    "recipients": [
+      {
+        "receiver_by_role": "Проектный менеджер"
+      }
+    ]
   }
 ]

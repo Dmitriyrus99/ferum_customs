@@ -11,8 +11,6 @@ steps:
       export SITE_NAME="${SITE_NAME:-erp.ferumrus.ru}"
 
       # Проверяем, существует ли site_config.json.
-      # Если нет, то полагаемся на то, что bench new-site или entrypoint.sh
-      # уже установили имя БД, которое обычно соответствует SITE_NAME (с заменой точек на подчеркивания).
       if [ -f "sites/$SITE_NAME/site_config.json" ]; then
         echo "Обнаружен site_config.json для $SITE_NAME. Извлечение имени БД и пароля..."
         export DB_NAME=$(jq -r '.db_name' sites/$SITE_NAME/site_config.json)
@@ -20,7 +18,6 @@ steps:
       else
         echo "site_config.json для $SITE_NAME не найден. Предполагаем имя БД по умолчанию."
         export DB_NAME=$(echo "$SITE_NAME" | sed 's/\./_/g')
-        # При отсутствии site_config.json используем ADMIN_PASSWORD в качестве DB_PASSWORD.
         export DB_PASSWORD="${ADMIN_PASSWORD}"
       fi
 

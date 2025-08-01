@@ -1,0 +1,9 @@
+--- a/ferum_customs/ferum_customs/report/engineer_workload/__init__.py
++++ b/ferum_customs/ferum_customs/report/engineer_workload/__init__.py
+@@ -1 +1,5 @@
+-__version__ = "0.0.1"
++"""
++This module contains the version information for the Ferum Customs Engineer Workload report.
++"""
++
++__version__ = "0.0.1"  # Initial release

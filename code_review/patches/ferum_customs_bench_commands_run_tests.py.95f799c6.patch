@@ -1,0 +1,48 @@
+--- a/ferum_customs/bench_commands/run_tests.py
++++ b/ferum_customs/bench_commands/run_tests.py
+@@ -8,9 +8,15 @@
+ logging.basicConfig(level=logging.INFO)
+ 
+ @click.command()
+-@click.argument('app')
++@click.argument('app', type=str)
+ @click.argument('test_path', type=str)
+-def run_tests(app: str, test_path: str):
++def run_tests(app: str, test_path: str) -> None:
++    """
++    Run tests for the specified app at the given test path.
++
++    :param app: The name of the app to test.
++    :param test_path: The path to the test files.
++    """
+     # Directory Traversal Protection
+     base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+     app_path = os.path.abspath(os.path.join(base_dir, app))
+@@ -28,11 +34,7 @@
+         logging.info(f"Running tests for app: {app} at path: {test_path}")
+ 
+         # Run tests and handle potential exceptions
+-        try:
+-            exit_code = pytest.main([test_path])
+-        except Exception as e:
+-            logging.error(f"An error occurred while running tests: {e}")
+-            raise click.ClickException(f"An error occurred while running tests: {e}")
++        exit_code = run_pytest(test_path)
+ 
+         # Return or exit with the appropriate exit code
+         sys.exit(exit_code)
+@@ -43,5 +45,13 @@
+         else:
+             os.environ.pop("SITE_NAME", None)
+ 
++def run_pytest(test_path: str) -> int:
++    """Run pytest on the specified test path."""
++    try:
++        return pytest.main([test_path])
++    except Exception as e:
++        logging.error(f"An error occurred while running tests: {e}")
++        raise click.ClickException(f"An error occurred while running tests: {e}")
++
+ if __name__ == '__main__':
+-    run_tests()
++    run_tests()

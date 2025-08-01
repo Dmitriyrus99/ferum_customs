@@ -1,0 +1,39 @@
+--- a/scripts/quick_setup.sh
++++ b/scripts/quick_setup.sh
+@@ -3,7 +3,7 @@
+ # Shell settings & verify Docker proxy settings
+ set -euo pipefail
+ 
+- # If Docker CLI is not available (e.g., in bare Python-only env), skip Docker setup
++# If Docker CLI is not available (e.g., in bare Python-only env), skip Docker setup
+ if ! command -v docker >/dev/null 2>&1; then
+     echo "⚠️ Docker CLI not found, skipping Docker environment setup."
+     exit 0
+@@ -11,8 +11,8 @@
+ 
+ # Check for Docker systemd proxy settings
+ if [ -d "/etc/systemd/system/docker.service.d" ] && ls /etc/systemd/system/docker.service.d/*proxy*.conf &>/dev/null; then
+-    echo "Ошибка: в настройках Docker systemd обнаружен прокси (http-proxy.conf)."
+-    echo "Пожалуйста, удалите или переименуйте этот файл и перезапустите службу Docker:" \
++    echo "Error: Proxy settings found in Docker systemd configuration (http-proxy.conf)."
++    echo "Please remove or rename this file and restart the Docker service:" \
+          "sudo systemctl daemon-reload && sudo systemctl restart docker"
+     exit 1
+ fi
+@@ -34,8 +34,13 @@
+ 
+ if [ ! -f .env ]; then
+     echo ".env not found, creating from .env.example"
+-    cp .env.example .env
++    if [ -f .env.example ]; then
++        cp .env.example .env || { echo "Failed to copy .env.example to .env"; exit 1; }
++    else
++        echo ".env.example not found, please create it."
++        exit 1
++    fi
+ fi
+ 
+-echo "⚠️ Проверьте, что в настройках Docker Desktop прокси отключен (Settings → Resources → Proxies), иначе могут быть ошибки при загрузке образов."
+-${DC} up -d --build
++echo "⚠️ Please ensure that the proxy is disabled in Docker Desktop settings (Settings → Resources → Proxies), otherwise there may be errors when pulling images."
++${DC} up -d --build

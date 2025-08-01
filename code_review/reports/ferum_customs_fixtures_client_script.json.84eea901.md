@@ -1,0 +1,2 @@
+- **Documentation/Maintainability**
+  - The `client_script.json` file is empty. It should contain at least one client script or a comment explaining its purpose to improve maintainability and provide context for future developers.

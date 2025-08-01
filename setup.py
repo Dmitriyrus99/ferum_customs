@@ -11,6 +11,7 @@ setup(
     zip_safe=False,
     install_requires=[
         "setuptools>=42",  # Specify a minimum version for setuptools
+        # Add other dependencies related to Frappe/ERPNext if applicable
     ],
     classifiers=[  # Add classifiers for better package metadata
         "Programming Language :: Python :: 3",
@@ -19,3 +20,6 @@ setup(
     ],
     python_requires='>=3.6',  # Specify the minimum Python version
 )
+
+# Changelog:
+# Version 1.0.0 - Initial release

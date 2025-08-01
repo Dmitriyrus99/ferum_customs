@@ -1,18 +1,18 @@
 {
- "background_workers": 1,
- "file_watcher_port": 6787,
- "frappe_user": "ferum",
- "gunicorn_workers": 9,
- "live_reload": true,
- "rebase_on_pull": false,
- "redis_cache": "redis://127.0.0.1:13000",
- "redis_queue": "redis://127.0.0.1:11000",
- "redis_socketio": "redis://127.0.0.1:13000",
- "restart_supervisor_on_update": true,
- "restart_systemd_on_update": false,
- "serve_default_site": true,
- "shallow_clone": true,
- "socketio_port": 9000,
- "use_redis_auth": false,
- "webserver_port": 8000
+  "background_workers": 1, // Number of background workers
+  "file_watcher_port": 6787, // Port for file watcher
+  "frappe_user": "ferum", // User for Frappe
+  "gunicorn_workers": 9, // Number of Gunicorn workers
+  "live_reload": true, // Enable live reload
+  "rebase_on_pull": false, // Rebase on pull
+  "redis_cache": "${REDIS_CACHE_URL}", // Redis cache URL (use environment variable)
+  "redis_queue": "${REDIS_QUEUE_URL}", // Redis queue URL (use environment variable)
+  "redis_socketio": "${REDIS_SOCKETIO_URL}", // Redis SocketIO URL (use environment variable)
+  "restart_supervisor_on_update": true, // Restart supervisor on update
+  "restart_systemd_on_update": false, // Restart systemd on update
+  "serve_default_site": true, // Serve default site
+  "shallow_clone": true, // Use shallow clone
+  "socketio_port": 9000, // Port for SocketIO
+  "use_redis_auth": false, // Use Redis authentication
+  "webserver_port": 8000 // Port for web server
 }

@@ -1,19 +1,32 @@
 # ferum_customs/permissions/permissions.py
 """
 Динамические условия для запросов разрешений (Permission Query Conditions).
+
+This module provides dynamic conditions for permission queries based on user roles and linked customers.
 """
 
 from __future__ import annotations
 
+from typing import Union, Dict, List, Tuple
 import frappe
 
 from ferum_customs.constants import ROLE_CUSTOMER, ROLE_ZAKAZCHIK
 
-PQCConditionValue = str | list[str | list[str]] | dict[str, str] | tuple[str, str]
-PQCConditions = dict[str, PQCConditionValue]
+PQCConditionValue = Union[str, List[Union[str, List[str]]], Dict[str, str], Tuple[str, str]]
+PQCConditions = Dict[str, PQCConditionValue]
 
 
+@frappe.whitelist()
 def get_service_request_pqc(user: str | None = None) -> PQCConditions | None:
+    """
+    Get permission query conditions for service requests based on the user's roles and linked customer.
+
+    Args:
+        user (str | None): The username of the user. If None, the current session user is used.
+
+    Returns:
+        PQCConditions | None: A dictionary of conditions for permission queries or None if no conditions apply.
+    """
     if user is None:
         user = frappe.session.user
 

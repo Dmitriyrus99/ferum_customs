@@ -67,7 +67,6 @@ SERVICE_REQUEST_PERMS: list[dict[str, int | str]] = [
 
 def create_role(role_name: str) -> None:
     """Ensure that a Role with the given name exists."""
-
     if frappe.db.exists("Role", role_name):
         return
 
@@ -77,7 +76,6 @@ def create_role(role_name: str) -> None:
 
 def create_docperm(perm: dict[str, int | str]) -> None:
     """Insert DocPerm if it is missing."""
-
     filters = {
         "parent": perm["parent"],
         "role": perm["role"],
@@ -100,7 +98,6 @@ def create_docperm(perm: dict[str, int | str]) -> None:
 
 def execute() -> None:
     """Create default roles and permissions for the app."""
-
     for role in ROLES:
         create_role(role)
 

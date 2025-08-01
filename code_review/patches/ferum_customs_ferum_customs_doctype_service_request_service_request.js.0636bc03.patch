@@ -1,0 +1,125 @@
+--- a/ferum_customs/ferum_customs/doctype/service_request/service_request.js
++++ b/ferum_customs/ferum_customs/doctype/service_request/service_request.js
+@@ -1,15 +1,15 @@
+ // ferum_customs/ferum_customs/doctype/service_request/service_request.js
+ /**
+- * Клиентский скрипт для DocType "Service Request".
+- * Содержит общую логику фильтрации инженеров и специфичные действия формы.
++ * Client script for DocType "Service Request".
++ * Contains common logic for filtering engineers and specific form actions.
+  */
+ 
+ /// <reference path="../../../typings/frappe.d.ts" />
+ 
+ frappe.ui.form.on("Service Request", {
+ 	/**
+-	 * Обработчик изменения поля 'service_object_link'.
+-	 * Запрашивает инженеров и устанавливает фильтр для 'assigned_engineer'.
++	 * Handler for the change event of 'service_object_link'.
++	 * Requests engineers and sets filter for 'assigned_engineer'.
+ 	 */
+ 	service_object_link(frm) {
+ 		const engineer_field = "assigned_engineer";
+@@ -21,7 +21,7 @@
+ 			return;
+ 		}
+ 
+-		frm.dashboard.set_indicator(__("Загрузка инженеров..."), "blue");
++		frm.dashboard.set_indicator(__("Loading engineers..."), "blue");
+ 
+ 		frappe.call({
+ 			method: "ferum_customs.custom_logic.service_request_hooks.get_engineers_for_object",
+@@ -53,9 +53,7 @@
+ 						frm.set_value(engineer_field, null);
+ 						frappe.show_alert(
+ 							{
+-								message: __(
+-									"Инженеры для данного объекта обслуживания не найдены."
+-								),
++								message: __("No engineers found for this service object."),
+ 								indicator: "info",
+ 							},
+ 							5
+@@ -68,9 +66,7 @@
+ 					frm.set_value(engineer_field, null);
+ 					frappe.show_alert(
+ 						{
+-							message: __(
+-								"Не удалось получить корректный список инженеров от сервера."
+-							),
++							message: __("Failed to retrieve a valid list of engineers from the server."),
+ 							indicator: "warning",
+ 						},
+ 						7
+@@ -80,13 +76,13 @@
+ 			},
+ 			error(r) {
+ 				frm.dashboard.clear_indicator();
+-				console.error("Ошибка при получении списка инженеров:", r);
++				console.error("Error retrieving engineer list:", r);
+ 				frm.set_query(engineer_field, null);
+ 				frm.set_value(engineer_field, null);
+ 				frm.refresh_field(engineer_field);
+ 				frappe.show_alert(
+ 					{
+-						message: __("Произошла ошибка при получении списка инженеров с сервера."),
++						message: __("An error occurred while retrieving the engineer list from the server."),
+ 						indicator: "error",
+ 					},
+ 					7
+@@ -96,7 +92,7 @@
+ 	},
+ 
+ 	refresh(frm) {
+-		// Общая логика: установка add_fetch и фильтра инженеров
++		// Common logic: setting add_fetch and engineer filters
+ 		frm.add_fetch("service_object_link", "linked_service_project", "project");
+ 
+ 		if (frm.doc.service_object_link && !frm.is_new()) {
+@@ -106,36 +102,36 @@
+ 			}
+ 		}
+ 
+-		// Специфичные действия формы service_request
+-		if (frm.doc.docstatus === 0 && frm.doc.status === "Открыта") {
++		// Specific actions for service_request form
++		if (frm.doc.docstatus === 0 && frm.doc.status === "Open") {
+ 			frm.add_custom_button(
+-				__("Назначить инженера (SR Specific)"),
++				__("Assign Engineer (SR Specific)"),
+ 				() => {
+ 					frappe.msgprint(
+-						__("Логика назначения инженера, специфичная для формы service_request...")
++						__("Logic for assigning an engineer specific to the service_request form...")
+ 					);
+ 				},
+-				__("Действия")
++				__("Actions")
+ 			);
+ 		}
+ 
+-		if (frm.doc.docstatus === 1 && frm.doc.status === "Выполнена") {
++		if (frm.doc.docstatus === 1 && frm.doc.status === "Completed") {
+ 			frappe.db &&
+ 				frm.add_custom_button(
+-					__("Создать Акт выполненных работ"),
++					__("Create Service Report"),
+ 					() => {
+ 						frappe.new_doc("Service Report", {
+ 							service_request: frm.doc.name,
+ 							customer: frm.doc.custom_customer,
+ 						});
+ 					},
+-					__("Создать")
++					__("Create")
+ 				);
+ 		}
+ 	},
+ 
+ 	validate(frm) {
+-		// console.log("service_request DocType-specific JS: Client-side validation...");
++		// Implement validation logic or remove if not needed
+ 		return true;
+ 	},
+-});
++});

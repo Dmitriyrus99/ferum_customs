@@ -1,0 +1,17 @@
+--- a/ferum_customs/fixtures/portal_menu_item.json
++++ b/ferum_customs/fixtures/portal_menu_item.json
+@@ -1,7 +1,7 @@
+ [
+   {
+     "name": "Service-Requests",
+-    "doctype": "Portal Menu Item",
++    "doctype": "portal menu item",
+     "title": "Service Requests",
+     "route": "service-requests",
+     "reference_doctype": "Service Request",
+@@ -11,4 +11,4 @@
+     "parenttype": "Portal Menu",
+     "parentfield": "items"
+   }
+-]
++]

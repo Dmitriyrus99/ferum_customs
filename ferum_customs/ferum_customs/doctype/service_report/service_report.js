@@ -1,7 +1,7 @@
 /// <reference path="../../../typings/frappe.d.ts" />
 
 frappe.ui.form.on("Service Report", {
-	refresh(frm) {
+	refresh(frm: frappe.ui.form.Form) {
 		if (frm.doc.docstatus === 1) {
 			frm.add_custom_button(__("Создать счёт"), () => {
 				frappe.call({

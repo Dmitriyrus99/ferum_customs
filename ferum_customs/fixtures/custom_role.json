@@ -1,1 +1,7 @@
-[]
+[
+    {
+        "doctype": "Role",
+        "role_name": "Custom Role Name",
+        "description": "Description of the custom role."
+    }
+]
