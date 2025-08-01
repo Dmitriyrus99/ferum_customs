@@ -1,23 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-GPT-powered asynchronous code-review helper.
-
-This script automates code reviews using the OpenAI API. It scans a source code
-repository, identifies new or modified files, sends them for review, and
-generates reports and patch files based on the AI's feedback.
-
-Key Features:
-- Asynchronous processing for high performance.
-- Caching of results to avoid re-reviewing unchanged files.
-- Automatic chunking of large files to fit model context limits.
-- Robust error handling with exponential backoff for API calls.
-- Generation of .patch files for direct application of suggestions.
-- Generation of .md reports for issue lists.
-- Respects .gitignore rules.
-- Scans for hardcoded secrets to prevent leaks.
-
-Version: 2.2 (Refactored for clarity and robustness, 2025-07-31)
+Исправленный GPT-powered asynchronous code-review helper.
+Версия: 2.1 (исправления и улучшения от 2025-07-31)
 """
 
 # Часть 1: Импорты и константы
@@ -57,7 +42,7 @@ from rich.progress import (
 )
 
 # ──────────────────────────────────────────────────────────────────────────────
-# Константы и настройки (Constants and Configuration)
+# Константы и настройки
 # ──────────────────────────────────────────────────────────────────────────────
 DEFAULT_REPO_PATH: Final[pathlib.Path] = pathlib.Path.cwd()
 DEFAULT_SCAN_PATH: Final[pathlib.Path] = pathlib.Path.cwd()
@@ -113,8 +98,8 @@ IGNORE_PATTERNS: Final[Set[str]] = {
 CACHE_FILE_NAME: Final[str] = ".review_cache.json"
 
 SYSTEM_MSG: Final[str] = (
-    "You are a senior full-stack engineer. Review the provided code snippet "
-    "for bugs, anti-patterns, and security vulnerabilities. "
+    "You are a senior full‑stack engineer. Review the provided code snippet "
+    "for bugs, anti‑patterns, and security vulnerabilities. "
     "Return a code block with the corrected code or a markdown list of issues."
     "No extra commentary allowed."
 )
@@ -129,30 +114,15 @@ _CODE_BLOCK_RE: Final[re.Pattern[str]] = re.compile(
     r"```(?:\w+)?\s*\n([\s\S]*?)```", re.MULTILINE
 )
 
-# Глобальные объекты (Global objects)
 console: Final[Console] = Console()
 enc: tiktoken.Encoding | None = None
 
 # ──────────────────────────────────────────────────────────────────────────────
-# Классы и типы данных (Data Classes and Types)
-# ──────────────────────────────────────────────────────────────────────────────
-
-@dataclass(slots=True)
-class ReviewResult:
-    """Stores the result of a single file review."""
-    src: pathlib.Path
-    content_hash: str
-    diff_file: str | None = None
-    md_file: str | None = None
-    status: str = "reviewed"
-
-# ──────────────────────────────────────────────────────────────────────────────
-# Утилиты (Utility Functions)
+# Утилиты
 # ──────────────────────────────────────────────────────────────────────────────
 
 
 def get_tokenizer_for_model(model: str) -> None:
-    """Initializes the global tokenizer based on the model name."""
     global enc
     try:
         enc = tiktoken.encoding_for_model(model)
@@ -162,14 +132,8 @@ def get_tokenizer_for_model(model: str) -> None:
         )
         enc = tiktoken.get_encoding("cl100k_base")
 
-def _token_len(text: str) -> int:
-    """Calculates the number of tokens in a string."""
-    if enc is None:
-        raise RuntimeError("Tokenizer not initialised; call get_tokenizer_for_model() first.")
-    return len(enc.encode(text))
 
 def get_gitignore_spec(repo_path: pathlib.Path) -> pathspec.PathSpec:
-    """Loads and parses the .gitignore file from the repository root."""
     gitignore_file = repo_path / ".gitignore"
     lines = (
         gitignore_file.read_text("utf-8").splitlines()
@@ -183,14 +147,13 @@ def iter_source_files(
     scan_path: pathlib.Path, repo_path: pathlib.Path
 ) -> Iterable[pathlib.Path]:
     gitignore_spec = get_gitignore_spec(repo_path)
+    out_dir_name = DEFAULT_OUT_DIR.name
     for p in scan_path.rglob("*"):
         if not p.is_file():
             continue
-
         relative_path = p.relative_to(repo_path)
         if gitignore_spec.match_file(str(relative_path)):
             continue
-
         p_low_suffix = p.suffix.lower()
         path_str = p.as_posix()
         if (
@@ -201,8 +164,8 @@ def iter_source_files(
         ):
             yield p
 
+
 def parse_llm_reply(reply: str) -> tuple[str, str]:
-    """Parses the LLM reply to extract code blocks or return markdown."""
     match = _CODE_BLOCK_RE.search(reply)
     if match:
         return "code", match.group(1).strip()
@@ -243,14 +206,10 @@ def chunkify(text: str, max_tokens: int, framing_tokens: int = 64) -> list[str]:
         else:
             current.append(line)
             current_tokens += line_tokens
-
     if current:
         chunks.append("\n".join(current))
     return chunks
 
-# ──────────────────────────────────────────────────────────────────────────────
-# Взаимодействие с API (API Interaction)
-# ──────────────────────────────────────────────────────────────────────────────
 
 async def _call_llm(
     client: AsyncOpenAI, messages: list[dict[str, str]], model: str
@@ -259,7 +218,9 @@ async def _call_llm(
         stream = await client.chat.completions.create(
             model=model, messages=messages, temperature=0, stream=True
         )
-        parts = [chunk.choices[0].delta.content or "" async for chunk in stream]
+        parts = []
+        async for chunk in stream:
+            parts.append(chunk.choices[0].delta.content or "")
         return "".join(parts).strip()
 
     for attempt in range(1, OPENAI_RETRY_ATTEMPTS + 1):
@@ -274,12 +235,12 @@ async def _call_llm(
                 f"[yellow]LLM transient error ({exc}); retry {attempt}/{OPENAI_RETRY_ATTEMPTS} in {delay:.1f}s…[/yellow]"
             )
             await asyncio.sleep(delay)
-    raise RuntimeError("Unreachable retry logic") # Should not be reached
+    raise RuntimeError("Unreachable retry logic")
+
 
 async def review_chunk(
     client: AsyncOpenAI, code: str, rel_path: str, model: str, sem: asyncio.Semaphore
 ) -> str:
-    """Sends a single code chunk to the LLM for review."""
     async with sem:
         messages = [
             {"role": "system", "content": SYSTEM_MSG},
@@ -288,11 +249,11 @@ async def review_chunk(
         try:
             return await _call_llm(client, messages, model)
         except Exception as exc:
-            console.print(f"[red]Не удалось обработать чанк для {rel_path}: {exc}[/red]")
             return f"/* REVIEW FAILED: {exc} */"
 
+
 # ──────────────────────────────────────────────────────────────────────────────
-# Обработка файлов и артефактов (File and Artifact Handling)
+# Запись файлов и проверка секретов
 # ──────────────────────────────────────────────────────────────────────────────
 
 
@@ -300,15 +261,14 @@ def _write_artifact(
     out_dir: pathlib.Path, rel_repo_path: pathlib.Path, ext: str, content: str
 ) -> str:
     sanitized = str(rel_repo_path).replace("/", "_").replace("\\", "_")
-    # Add a short hash of the full path to prevent filename collisions
     name = f"{sanitized}.{md5(str(rel_repo_path).encode()).hexdigest()[:8]}{ext}"
     path = out_dir / name
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(content, "utf-8", newline="\n")
     return name
 
+
 def _contains_secret(text: str) -> bool:
-    """Checks if the given text contains any patterns that look like secrets."""
     return any(p.search(text) for p in SECRET_PATTERNS)
 
 
@@ -322,10 +282,6 @@ async def review_file(
     max_tokens: int,
     sem: asyncio.Semaphore,
 ) -> ReviewResult:
-    """
-    Manages the full review process for a single file.
-    This includes reading, checking for secrets, chunking, and saving results.
-    """
     rel_repo_path = p.relative_to(repo_path)
     content_bytes = p.read_bytes()
     content_hash = md5(content_bytes).hexdigest()
@@ -349,10 +305,13 @@ async def review_file(
             src=rel_repo_path, content_hash=content_hash, status="skipped_secrets"
         )
 
-    framing_tokens = _token_len(SYSTEM_MSG) + 128  # Reserve tokens for system prompt and formatting
-    chunks = chunkify(original_text, max_tokens, framing_tokens)
+    framing_tokens = 64
+    chunks = (
+        chunkify(original_text, max_tokens, framing_tokens)
+        if _token_len(original_text) > max_tokens - framing_tokens
+        else [original_text]
+    )
 
-    # Handle multi-chunk files by creating a single report.
     if len(chunks) > 1:
         notes = []
         for chunk in chunks:
@@ -381,12 +340,14 @@ async def review_file(
     md_file: str | None = None
 
     if kind == "code" and content and content != original_text.strip():
-        diff_text = "".join(difflib.unified_diff(
-            original_text.splitlines(keepends=True),
-            content.splitlines(keepends=True),
-            fromfile=f"a/{rel_repo_path}",
-            tofile=f"b/{rel_repo_path}",
-        ))
+        diff_text = "".join(
+            difflib.unified_diff(
+                original_text.splitlines(keepends=True),
+                content.splitlines(keepends=True),
+                fromfile=f"a/{rel_repo_path}",
+                tofile=f"b/{rel_repo_path}",
+            )
+        )
         if diff_text.strip():
             diff_file = _write_artifact(
                 out_dir / "patches", rel_repo_path, ".patch", diff_text
@@ -420,16 +381,16 @@ async def main(cfg: argparse.Namespace) -> None:
     all_files = list(iter_source_files(scan_path, repo_path))
 
     cache = {}
-    if not no_cache and cache_path.is_file():
+    if not cfg.no_cache and cache_path.is_file():
         try:
             cache = json.loads(cache_path.read_text("utf-8"))
         except (json.JSONDecodeError, FileNotFoundError):
             cache = {}
 
-    files_to_review, cached_results = [], []
-    console.print("[cyan]Планирование ревью: проверка кэша...[/cyan]")
+    files_to_review, cached_results, file_hashes = [], [], {}
     for p in all_files:
         content_hash = md5(p.read_bytes()).hexdigest()
+        file_hashes[p] = content_hash
         rel_path_str = str(p.relative_to(repo_path))
         if (
             rel_path_str in cache
@@ -447,19 +408,19 @@ async def main(cfg: argparse.Namespace) -> None:
             )
         else:
             files_to_review.append(p)
-    return files_to_review, cached_results
 
-async def _run_reviews(
-    files_to_review: List[pathlib.Path], client: AsyncOpenAI, repo_path: pathlib.Path,
-    scan_path: pathlib.Path, out_dir: pathlib.Path, cfg: argparse.Namespace
-) -> List[ReviewResult]:
-    """Executes the review process for the given files concurrently."""
-    if not files_to_review:
-        return []
+    if cfg.list_files:
+        (repo_path / "file_list_for_review.txt").write_text(
+            "\n".join(str(p.relative_to(repo_path)) for p in all_files), "utf-8"
+        )
+        console.print("[green]Список всех найденных файлов сохранён.[/green]")
+        return
 
-    console.print(f"[cyan]Начинаю GPT-ревью {len(files_to_review)} новых/изменённых файлов...[/cyan]")
+    if not files_to_review and not cached_results:
+        console.print("[yellow]Файлы не найдены – проверьте фильтры.[/yellow]")
+        return
+
     sem = asyncio.Semaphore(cfg.max_concurrency)
-    results = []
 
     async with AsyncOpenAI() as client:
         if files_to_review:
@@ -506,20 +467,19 @@ async def _run_reviews(
     cache_path.write_text(json.dumps(new_cache, indent=2, ensure_ascii=False), "utf-8")
 
     summary_lines, cached_lines, patches_present = [], [], False
-    for res in sorted(all_results, key=lambda r: str(r.src)):
+    for res in sorted(cached_results, key=lambda r: str(r.src)):
         src_str = str(res.src)
-        line = None
         if res.diff_file:
             patches_present = True
-            line = f"* PATCH: `{src_str}` → [{res.diff_file}]({out_dir_str}/patches/{res.diff_file})"
+            line = f"* PATCH: `{src_str}` → [{res.diff_file}]({cfg.out_dir}/patches/{res.diff_file})"
         elif res.md_file:
-            line = f"* ISSUES: `{src_str}` → [{res.md_file}]({out_dir_str}/reports/{res.md_file})"
-
-        if line:
-            if res.status == "cached":
-                cached_lines.append(f"{line} (из кэша)")
-            else:
-                summary_lines.append(line)
+            line = f"* ISSUES: `{src_str}` → [{res.md_file}]({cfg.out_dir}/reports/{res.md_file})"
+        else:
+            continue
+        if res.status == "cached":
+            cached_lines.append(f"{line} (из кэша)")
+        else:
+            summary_lines.append(line)
 
     if not summary_lines and not cached_lines:
         console.print("\n[bold green]✔ Замечаний не найдено![/]")
@@ -533,21 +493,14 @@ async def _run_reviews(
             rf"""
             ## Как применить патчи
 
-        Чтобы применить предложенные исправления, выполните следующие команды в корне репозитория:
-        ```bash
-        # Создайте новую ветку для ревью
-        git checkout -b gpt-review-patches
-
-        # Примените все патчи
-        find {out_dir_str}/patches -type f -name '*.patch' -exec git apply {{}} \\;
-
-        # Проверьте изменения и сделайте коммит
-        git status
-        git add .
-        git commit -m "Apply GPT-review patches"
-        ```
-        ---
-        """)
+            ```bash
+            cd {repo_path}
+            git checkout -b gpt-review-patches
+            find {cfg.out_dir}/patches -type f -name '*.patch' -exec git am {{}} \;
+            ```
+            ---
+            """
+        )
 
     summary_content = header + apply_instr
     if summary_lines:
