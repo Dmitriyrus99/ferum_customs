@@ -21,18 +21,24 @@ import re
 import textwrap
 from dataclasses import asdict, dataclass
 from hashlib import md5
-from typing import Iterable, List, Dict, Set, Final
+from typing import Dict, Final, Iterable, List, Set
 
 import pathspec
-from openai import AsyncOpenAI, APIError, APITimeoutError, RateLimitError, APIConnectionError
 import tiktoken
+from openai import (
+    APIConnectionError,
+    APIError,
+    APITimeoutError,
+    AsyncOpenAI,
+    RateLimitError,
+)
 from rich.console import Console
 from rich.progress import (
     BarColumn,
     Progress,
     SpinnerColumn,
-    TimeElapsedColumn,
     TextColumn,
+    TimeElapsedColumn,
 )
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -48,9 +54,47 @@ OPENAI_RETRY_ATTEMPTS: Final[int] = 6
 OPENAI_BASE_DELAY: Final[float] = 2.0
 OPENAI_MAX_DELAY: Final[float] = 30.0
 
-EXTS: Final[Set[str]] = {".py", ".js", ".ts", ".jsx", ".tsx", ".html", ".css", ".scss", ".json", ".yaml", ".yml", ".sh", ".sql"}
-IGNORE_EXTS: Final[Set[str]] = {".zip", ".tar", ".gz", ".rar", ".7z", ".db", ".sqlite", ".pyc", ".pdf", ".doc", ".docx", ".xls", ".xlsx", ".jpg", ".png", ".pem", ".log"}
-IGNORE_PATTERNS: Final[Set[str]] = {"/node_modules/", "/__pycache__", "/.git/", "/env/", "secrets/"}
+EXTS: Final[Set[str]] = {
+    ".py",
+    ".js",
+    ".ts",
+    ".jsx",
+    ".tsx",
+    ".html",
+    ".css",
+    ".scss",
+    ".json",
+    ".yaml",
+    ".yml",
+    ".sh",
+    ".sql",
+}
+IGNORE_EXTS: Final[Set[str]] = {
+    ".zip",
+    ".tar",
+    ".gz",
+    ".rar",
+    ".7z",
+    ".db",
+    ".sqlite",
+    ".pyc",
+    ".pdf",
+    ".doc",
+    ".docx",
+    ".xls",
+    ".xlsx",
+    ".jpg",
+    ".png",
+    ".pem",
+    ".log",
+}
+IGNORE_PATTERNS: Final[Set[str]] = {
+    "/node_modules/",
+    "/__pycache__",
+    "/.git/",
+    "/env/",
+    "secrets/",
+}
 CACHE_FILE_NAME: Final[str] = ".review_cache.json"
 
 SYSTEM_MSG: Final[str] = (
@@ -66,7 +110,9 @@ SECRET_PATTERNS: Final[List[re.Pattern[str]]] = [
     re.compile(r"-----BEGIN (?:RSA|EC) PRIVATE KEY-----"),
 ]
 
-_CODE_BLOCK_RE: Final[re.Pattern[str]] = re.compile(r"```(?:\w+)?\s*\n([\s\S]*?)```", re.MULTILINE)
+_CODE_BLOCK_RE: Final[re.Pattern[str]] = re.compile(
+    r"```(?:\w+)?\s*\n([\s\S]*?)```", re.MULTILINE
+)
 
 console: Final[Console] = Console()
 enc: tiktoken.Encoding | None = None
@@ -75,22 +121,31 @@ enc: tiktoken.Encoding | None = None
 # Утилиты
 # ──────────────────────────────────────────────────────────────────────────────
 
+
 def get_tokenizer_for_model(model: str) -> None:
     global enc
     try:
         enc = tiktoken.encoding_for_model(model)
     except KeyError:
-        console.print(f"[yellow]⚠️  Нет токенизатора для {model}. Использую cl100k_base.[/yellow]")
+        console.print(
+            f"[yellow]⚠️  Нет токенизатора для {model}. Использую cl100k_base.[/yellow]"
+        )
         enc = tiktoken.get_encoding("cl100k_base")
 
 
 def get_gitignore_spec(repo_path: pathlib.Path) -> pathspec.PathSpec:
     gitignore_file = repo_path / ".gitignore"
-    lines = gitignore_file.read_text("utf-8").splitlines() if gitignore_file.is_file() else []
+    lines = (
+        gitignore_file.read_text("utf-8").splitlines()
+        if gitignore_file.is_file()
+        else []
+    )
     return pathspec.PathSpec.from_lines("gitwildmatch", lines)
 
 
-def iter_source_files(scan_path: pathlib.Path, repo_path: pathlib.Path) -> Iterable[pathlib.Path]:
+def iter_source_files(
+    scan_path: pathlib.Path, repo_path: pathlib.Path
+) -> Iterable[pathlib.Path]:
     gitignore_spec = get_gitignore_spec(repo_path)
     out_dir_name = DEFAULT_OUT_DIR.name
     for p in scan_path.rglob("*"):
@@ -116,6 +171,7 @@ def parse_llm_reply(reply: str) -> tuple[str, str]:
         return "code", match.group(1).strip()
     return "markdown", reply.strip()
 
+
 @dataclass(slots=True)
 class ReviewResult:
     src: pathlib.Path
@@ -127,17 +183,21 @@ class ReviewResult:
 
 def _token_len(text: str) -> int:
     if enc is None:
-        raise RuntimeError("Tokenizer not initialised; call get_tokenizer_for_model() first.")
+        raise RuntimeError(
+            "Tokenizer not initialised; call get_tokenizer_for_model() first."
+        )
     return len(enc.encode(text))
 
 
-def chunkify(text: str, max_tokens: int, framing_tokens: int = 64) -> List[str]:
+def chunkify(text: str, max_tokens: int, framing_tokens: int = 64) -> list[str]:
     budget = max_tokens - framing_tokens
     if budget <= 0:
         return [text]
 
     lines = text.splitlines()
-    chunks, current, current_tokens = [], [], 0
+    chunks: list[str] = []
+    current: list[str] = []
+    current_tokens = 0
     for line in lines:
         line_tokens = _token_len(line) + 1
         if current_tokens + line_tokens > budget and current:
@@ -151,7 +211,9 @@ def chunkify(text: str, max_tokens: int, framing_tokens: int = 64) -> List[str]:
     return chunks
 
 
-async def _call_llm(client: AsyncOpenAI, messages: list[dict[str, str]], model: str) -> str:
+async def _call_llm(
+    client: AsyncOpenAI, messages: list[dict[str, str]], model: str
+) -> str:
     async def _one_call() -> str:
         stream = await client.chat.completions.create(
             model=model, messages=messages, temperature=0, stream=True
@@ -169,7 +231,9 @@ async def _call_llm(client: AsyncOpenAI, messages: list[dict[str, str]], model: 
                 raise
             delay = min(OPENAI_BASE_DELAY * 2 ** (attempt - 1), OPENAI_MAX_DELAY)
             delay *= random.uniform(0.75, 1.25)
-            console.log(f"[yellow]LLM transient error ({exc}); retry {attempt}/{OPENAI_RETRY_ATTEMPTS} in {delay:.1f}s…[/yellow]")
+            console.log(
+                f"[yellow]LLM transient error ({exc}); retry {attempt}/{OPENAI_RETRY_ATTEMPTS} in {delay:.1f}s…[/yellow]"
+            )
             await asyncio.sleep(delay)
     raise RuntimeError("Unreachable retry logic")
 
@@ -192,7 +256,10 @@ async def review_chunk(
 # Запись файлов и проверка секретов
 # ──────────────────────────────────────────────────────────────────────────────
 
-def _write_artifact(out_dir: pathlib.Path, rel_repo_path: pathlib.Path, ext: str, content: str) -> str:
+
+def _write_artifact(
+    out_dir: pathlib.Path, rel_repo_path: pathlib.Path, ext: str, content: str
+) -> str:
     sanitized = str(rel_repo_path).replace("/", "_").replace("\\", "_")
     name = f"{sanitized}.{md5(str(rel_repo_path).encode()).hexdigest()[:8]}{ext}"
     path = out_dir / name
@@ -203,7 +270,6 @@ def _write_artifact(out_dir: pathlib.Path, rel_repo_path: pathlib.Path, ext: str
 
 def _contains_secret(text: str) -> bool:
     return any(p.search(text) for p in SECRET_PATTERNS)
-
 
 
 async def review_file(
@@ -224,14 +290,20 @@ async def review_file(
         original_text = content_bytes.decode("utf-8", errors="ignore")
     except UnicodeDecodeError as exc:
         console.print(f"[red]Не читаю {p}: {exc}[/red]")
-        return ReviewResult(src=rel_repo_path, content_hash=content_hash, status="read_error")
+        return ReviewResult(
+            src=rel_repo_path, content_hash=content_hash, status="read_error"
+        )
 
     if not original_text.strip():
-        return ReviewResult(src=rel_repo_path, content_hash=content_hash, status="skipped_empty")
+        return ReviewResult(
+            src=rel_repo_path, content_hash=content_hash, status="skipped_empty"
+        )
 
     if _contains_secret(original_text):
         console.print(f"[red]⚠️  Пропущено {p}: подозрение на секреты.[/red]")
-        return ReviewResult(src=rel_repo_path, content_hash=content_hash, status="skipped_secrets")
+        return ReviewResult(
+            src=rel_repo_path, content_hash=content_hash, status="skipped_secrets"
+        )
 
     framing_tokens = 64
     chunks = (
@@ -243,18 +315,29 @@ async def review_file(
     if len(chunks) > 1:
         notes = []
         for chunk in chunks:
-            reply = await review_chunk(client, chunk, str(p.relative_to(scan_path)), model, sem)
+            reply = await review_chunk(
+                client, chunk, str(p.relative_to(scan_path)), model, sem
+            )
             kind, content = parse_llm_reply(reply)
             if content.strip():
-                preview = chunk[:200].replace("\n", " ") + ("…" if len(chunk) > 200 else "")
+                preview = chunk[:200].replace("\n", " ") + (
+                    "…" if len(chunk) > 200 else ""
+                )
                 notes.append(f"### Review for chunk ({preview})\n\n{content}")
-        md_file = _write_artifact(out_dir / "reports", rel_repo_path, ".md", "\n\n---\n\n".join(notes))
-        return ReviewResult(src=rel_repo_path, content_hash=content_hash, md_file=md_file)
+        notes_file = _write_artifact(
+            out_dir / "reports", rel_repo_path, ".md", "\n\n---\n\n".join(notes)
+        )
+        return ReviewResult(
+            src=rel_repo_path, content_hash=content_hash, md_file=notes_file
+        )
 
-    reply = await review_chunk(client, original_text, str(p.relative_to(scan_path)), model, sem)
+    reply = await review_chunk(
+        client, original_text, str(p.relative_to(scan_path)), model, sem
+    )
     kind, content = parse_llm_reply(reply)
 
-    diff_file, md_file = None, None
+    diff_file: str | None = None
+    md_file: str | None = None
 
     if kind == "code" and content and content != original_text.strip():
         diff_text = "".join(
@@ -266,15 +349,21 @@ async def review_file(
             )
         )
         if diff_text.strip():
-            diff_file = _write_artifact(out_dir / "patches", rel_repo_path, ".patch", diff_text)
+            diff_file = _write_artifact(
+                out_dir / "patches", rel_repo_path, ".patch", diff_text
+            )
     elif kind == "markdown" and content.strip():
         md_file = _write_artifact(out_dir / "reports", rel_repo_path, ".md", content)
 
-    return ReviewResult(src=rel_repo_path, content_hash=content_hash, diff_file=diff_file, md_file=md_file)
+    return ReviewResult(
+        src=rel_repo_path,
+        content_hash=content_hash,
+        diff_file=diff_file,
+        md_file=md_file,
+    )
 
 
-
-async def main(cfg) -> None:
+async def main(cfg: argparse.Namespace) -> None:
     repo_path = pathlib.Path(cfg.repo_path).resolve()
     scan_path = pathlib.Path(cfg.scan_path).resolve()
     out_dir = repo_path / pathlib.Path(cfg.out_dir)
@@ -284,7 +373,9 @@ async def main(cfg) -> None:
     get_tokenizer_for_model(cfg.model)
 
     if repo_path not in scan_path.parents and repo_path != scan_path:
-        console.print(f"[red]scan-path '{scan_path}' не лежит внутри repo-path '{repo_path}'.[/red]")
+        console.print(
+            f"[red]scan-path '{scan_path}' не лежит внутри repo-path '{repo_path}'.[/red]"
+        )
         return
 
     all_files = list(iter_source_files(scan_path, repo_path))
@@ -301,7 +392,10 @@ async def main(cfg) -> None:
         content_hash = md5(p.read_bytes()).hexdigest()
         file_hashes[p] = content_hash
         rel_path_str = str(p.relative_to(repo_path))
-        if rel_path_str in cache and cache[rel_path_str].get("content_hash") == content_hash:
+        if (
+            rel_path_str in cache
+            and cache[rel_path_str].get("content_hash") == content_hash
+        ):
             cached_item = cache[rel_path_str]
             cached_results.append(
                 ReviewResult(
@@ -330,24 +424,44 @@ async def main(cfg) -> None:
 
     async with AsyncOpenAI() as client:
         if files_to_review:
-            console.print(f"[cyan]▶ {len(cached_results)} файлов из кэша. Начинаю GPT‑ревью {len(files_to_review)} новых/изменённых файлов…[/cyan]")
+            console.print(
+                f"[cyan]▶ {len(cached_results)} файлов из кэша. Начинаю GPT‑ревью {len(files_to_review)} новых/изменённых файлов…[/cyan]"
+            )
             progress = Progress(
-                SpinnerColumn(), TextColumn("{task.description}"), BarColumn(),
-                "[progress.percentage]{task.percentage:>3.0f}%", TimeElapsedColumn(), console=console
+                SpinnerColumn(),
+                TextColumn("{task.description}"),
+                BarColumn(),
+                "[progress.percentage]{task.percentage:>3.0f}%",
+                TimeElapsedColumn(),
+                console=console,
             )
             with progress:
-                task_id = progress.add_task("[green]Анализ…", total=len(files_to_review))
-                async with asyncio.TaskGroup() as tg:
+                task_id = progress.add_task(
+                    "[green]Анализ…", total=len(files_to_review)
+                )
+                async with asyncio.TaskGroup() as tg:  # type: ignore[attr-defined]
                     results_fut = [
                         tg.create_task(
-                            review_file(client, p, repo_path, scan_path, out_dir, cfg.model, cfg.maxtok, sem)
-                        ) for p in files_to_review
+                            review_file(
+                                client,
+                                p,
+                                repo_path,
+                                scan_path,
+                                out_dir,
+                                cfg.model,
+                                cfg.maxtok,
+                                sem,
+                            )
+                        )
+                        for p in files_to_review
                     ]
                     for fut in results_fut:
                         cached_results.append(await fut)
                         progress.advance(task_id)
         else:
-            console.print("[green]✔ Все файлы актуальны в кэше. Новых изменений для ревью нет.[/green]")
+            console.print(
+                "[green]✔ Все файлы актуальны в кэше. Новых изменений для ревью нет.[/green]"
+            )
 
     new_cache = {str(res.src): asdict(res) for res in cached_results}
     cache_path.write_text(json.dumps(new_cache, indent=2, ensure_ascii=False), "utf-8")
@@ -376,7 +490,7 @@ async def main(cfg) -> None:
     apply_instr = ""
     if patches_present:
         apply_instr = textwrap.dedent(
-            f"""
+            rf"""
             ## Как применить патчи
 
             ```bash
@@ -390,9 +504,78 @@ async def main(cfg) -> None:
 
     summary_content = header + apply_instr
     if summary_lines:
-        summary_content += "### Новые/изменённые файлы\n\n" + "\n".join(summary_lines) + "\n\n"
+        summary_content += (
+            "### Новые/изменённые файлы\n\n" + "\n".join(summary_lines) + "\n\n"
+        )
     if cached_lines:
-        summary_content += "### Без изменений (из кэша)\n\n" + "\n".join(cached_lines) + "\n\n"
+        summary_content += (
+            "### Без изменений (из кэша)\n\n" + "\n".join(cached_lines) + "\n\n"
+        )
 
     summary_path.write_text(summary_content, "utf-8")
     console.print(f"\n[green]✔ Отчёт сохранён:[/] {summary_path}")
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+#                                      CLI
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+def _parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="Асинхронный GPT код‑ревью с кэшированием.",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+    parser.add_argument(
+        "--repo-path",
+        default=str(DEFAULT_REPO_PATH),
+        help="Путь к корню Git репозитория.",
+    )
+    parser.add_argument(
+        "--scan-path",
+        default=str(DEFAULT_SCAN_PATH),
+        help="Путь к директории для сканирования.",
+    )
+    parser.add_argument(
+        "--out-dir",
+        default=str(DEFAULT_OUT_DIR),
+        help="Папка для сохранения отчётов (относительно repo-path).",
+    )
+    parser.add_argument("--model", default=DEFAULT_MODEL, help="Модель OpenAI.")
+    parser.add_argument(
+        "--maxtok",
+        type=int,
+        default=DEFAULT_MAXTOK,
+        help="Макс. токенов в запросе (ceiling).",
+    )
+    parser.add_argument(
+        "--list-files", action="store_true", help="Показать список файлов и выйти."
+    )
+    parser.add_argument(
+        "--no-cache",
+        action="store_true",
+        help="Отключить кэширование и проверить все файлы заново.",
+    )
+    parser.add_argument(
+        "--max-concurrency",
+        type=int,
+        default=MAX_CONCURRENCY,
+        help="Параллельность запросов к LLM.",
+    )
+    return parser.parse_args()
+
+
+def _check_env() -> None:
+    if not os.environ.get("OPENAI_API_KEY"):
+        console.print("[red]OPENAI_API_KEY не установлен![/red]")
+        raise SystemExit(1)
+
+
+if __name__ == "__main__":
+    args = _parse_args()
+    if not args.list_files:
+        _check_env()
+    try:
+        asyncio.run(main(args))
+    except (KeyboardInterrupt, asyncio.CancelledError):
+        console.print("\n[yellow]Прервано пользователем.[/yellow]")
