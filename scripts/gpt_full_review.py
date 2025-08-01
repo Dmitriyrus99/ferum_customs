@@ -88,20 +88,23 @@ IGNORE_EXTS: Final[Set[str]] = {
     ".pem",
     ".log",
 }
-IGNORE_PATTERNS: Final[Set[str]] = {
-    "/node_modules/",
-    "/__pycache__",
-    "/.git/",
-    "/env/",
-    "secrets/",
+IGNORED_DIRS: Final[Set[str]] = {
+    "node_modules", "__pycache__", ".git", "env", "secrets",
+    ".pre-commit-home", ".devcontainer", "sites",
+    ".venv", ".venv_dev", "testvenv", ".mypy_cache", "site-packages",
 }
 CACHE_FILE_NAME: Final[str] = ".review_cache.json"
 
 SYSTEM_MSG: Final[str] = (
-    "You are a senior full‑stack engineer. Review the provided code snippet "
-    "for bugs, anti‑patterns, and security vulnerabilities. "
-    "Return a code block with the corrected code or a markdown list of issues."
-    "No extra commentary allowed."
+    "You are a senior full‑stack engineer and Frappe/ERPNext expert. Review the provided code snippet for any issues or improvements. "
+    "Focus on architecture (compliance with Frappe/ERPNext conventions for DocTypes, Hooks, workflows, permissions), "
+    "code quality (formatting, linting, type annotations, using environment config for secrets), "
+    "testing (adequate unit/E2E test coverage), "
+    "security (vulnerabilities or unsafe patterns, proper use of whitelisted API functions), "
+    "and documentation/maintainability (Changelog updates, code comments, fixtures). "
+    "If any issues are found, return a markdown bullet list of them (grouped by category if applicable). "
+    "If the code can be fully corrected, return the revised code in a code block instead. "
+    "Provide no commentary outside the list or code block."
 )
 
 SECRET_PATTERNS: Final[List[re.Pattern[str]]] = [
@@ -121,7 +124,6 @@ enc: tiktoken.Encoding | None = None
 # Утилиты
 # ──────────────────────────────────────────────────────────────────────────────
 
-
 def get_tokenizer_for_model(model: str) -> None:
     global enc
     try:
@@ -132,7 +134,6 @@ def get_tokenizer_for_model(model: str) -> None:
         )
         enc = tiktoken.get_encoding("cl100k_base")
 
-
 def get_gitignore_spec(repo_path: pathlib.Path) -> pathspec.PathSpec:
     gitignore_file = repo_path / ".gitignore"
     lines = (
@@ -141,7 +142,6 @@ def get_gitignore_spec(repo_path: pathlib.Path) -> pathspec.PathSpec:
         else []
     )
     return pathspec.PathSpec.from_lines("gitwildmatch", lines)
-
 
 def iter_source_files(
     scan_path: pathlib.Path, repo_path: pathlib.Path
@@ -155,22 +155,21 @@ def iter_source_files(
         if gitignore_spec.match_file(str(relative_path)):
             continue
         p_low_suffix = p.suffix.lower()
-        path_str = p.as_posix()
+        if any(part.lower() in IGNORED_DIRS for part in p.parts):
+            continue
+
         if (
             p_low_suffix in EXTS
             and p_low_suffix not in IGNORE_EXTS
-            and not any(pattern in path_str for pattern in IGNORE_PATTERNS)
-            and f"/{out_dir_name}/" not in path_str
+            and f"/{out_dir_name}/" not in p.as_posix()
         ):
             yield p
-
 
 def parse_llm_reply(reply: str) -> tuple[str, str]:
     match = _CODE_BLOCK_RE.search(reply)
     if match:
         return "code", match.group(1).strip()
     return "markdown", reply.strip()
-
 
 @dataclass(slots=True)
 class ReviewResult:
@@ -180,14 +179,12 @@ class ReviewResult:
     md_file: str | None = None
     status: str = "reviewed"
 
-
 def _token_len(text: str) -> int:
     if enc is None:
         raise RuntimeError(
             "Tokenizer not initialised; call get_tokenizer_for_model() first."
         )
     return len(enc.encode(text))
-
 
 def chunkify(text: str, max_tokens: int, framing_tokens: int = 64) -> list[str]:
     budget = max_tokens - framing_tokens
@@ -209,7 +206,6 @@ def chunkify(text: str, max_tokens: int, framing_tokens: int = 64) -> list[str]:
     if current:
         chunks.append("\n".join(current))
     return chunks
-
 
 async def _call_llm(
     client: AsyncOpenAI, messages: list[dict[str, str]], model: str
@@ -237,7 +233,6 @@ async def _call_llm(
             await asyncio.sleep(delay)
     raise RuntimeError("Unreachable retry logic")
 
-
 async def review_chunk(
     client: AsyncOpenAI, code: str, rel_path: str, model: str, sem: asyncio.Semaphore
 ) -> str:
@@ -251,11 +246,9 @@ async def review_chunk(
         except Exception as exc:
             return f"/* REVIEW FAILED: {exc} */"
 
-
 # ──────────────────────────────────────────────────────────────────────────────
 # Запись файлов и проверка секретов
 # ──────────────────────────────────────────────────────────────────────────────
-
 
 def _write_artifact(
     out_dir: pathlib.Path, rel_repo_path: pathlib.Path, ext: str, content: str
@@ -267,10 +260,8 @@ def _write_artifact(
     path.write_text(content, "utf-8", newline="\n")
     return name
 
-
 def _contains_secret(text: str) -> bool:
     return any(p.search(text) for p in SECRET_PATTERNS)
-
 
 async def review_file(
     client: AsyncOpenAI,
@@ -361,7 +352,6 @@ async def review_file(
         diff_file=diff_file,
         md_file=md_file,
     )
-
 
 async def main(cfg: argparse.Namespace) -> None:
     repo_path = pathlib.Path(cfg.repo_path).resolve()
@@ -519,68 +509,3 @@ async def main(cfg: argparse.Namespace) -> None:
 
     summary_path.write_text(summary_content, "utf-8")
     console.print(f"\n[green]✔ Отчёт сохранён:[/] {summary_path}")
-
-
-# ─────────────────────────────────────────────────────────────────────────────
-#                                      CLI
-# ─────────────────────────────────────────────────────────────────────────────
-
-
-def _parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(
-        description="Асинхронный GPT код‑ревью с кэшированием.",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-    )
-    parser.add_argument(
-        "--repo-path",
-        default=str(DEFAULT_REPO_PATH),
-        help="Путь к корню Git репозитория.",
-    )
-    parser.add_argument(
-        "--scan-path",
-        default=str(DEFAULT_SCAN_PATH),
-        help="Путь к директории для сканирования.",
-    )
-    parser.add_argument(
-        "--out-dir",
-        default=str(DEFAULT_OUT_DIR),
-        help="Папка для сохранения отчётов (относительно repo-path).",
-    )
-    parser.add_argument("--model", default=DEFAULT_MODEL, help="Модель OpenAI.")
-    parser.add_argument(
-        "--maxtok",
-        type=int,
-        default=DEFAULT_MAXTOK,
-        help="Макс. токенов в запросе (ceiling).",
-    )
-    parser.add_argument(
-        "--list-files", action="store_true", help="Показать список файлов и выйти."
-    )
-    parser.add_argument(
-        "--no-cache",
-        action="store_true",
-        help="Отключить кэширование и проверить все файлы заново.",
-    )
-    parser.add_argument(
-        "--max-concurrency",
-        type=int,
-        default=MAX_CONCURRENCY,
-        help="Параллельность запросов к LLM.",
-    )
-    return parser.parse_args()
-
-
-def _check_env() -> None:
-    if not os.environ.get("OPENAI_API_KEY"):
-        console.print("[red]OPENAI_API_KEY не установлен![/red]")
-        raise SystemExit(1)
-
-
-if __name__ == "__main__":
-    args = _parse_args()
-    if not args.list_files:
-        _check_env()
-    try:
-        asyncio.run(main(args))
-    except (KeyboardInterrupt, asyncio.CancelledError):
-        console.print("\n[yellow]Прервано пользователем.[/yellow]")
