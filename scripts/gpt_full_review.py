@@ -19,7 +19,7 @@ import re
 import textwrap
 from dataclasses import asdict, dataclass
 from hashlib import md5
-from typing import Dict, Final, Iterable, List, Set, Optional
+from typing import Dict, Final, Iterable, List, Optional, Set
 
 import pathspec
 import tiktoken
@@ -53,13 +53,53 @@ OPENAI_BASE_DELAY: Final[float] = 2.0
 OPENAI_MAX_DELAY: Final[float] = 30.0
 
 EXTS: Final[Set[str]] = {
-    ".py", ".js", ".ts", ".jsx", ".tsx", ".html", ".css", ".scss", ".json", ".yaml", ".yml", ".sh", ".sql",
+    ".py",
+    ".js",
+    ".ts",
+    ".jsx",
+    ".tsx",
+    ".html",
+    ".css",
+    ".scss",
+    ".json",
+    ".yaml",
+    ".yml",
+    ".sh",
+    ".sql",
 }
 IGNORE_EXTS: Final[Set[str]] = {
-    ".zip", ".tar", ".gz", ".rar", ".7z", ".db", ".sqlite", ".pyc", ".pdf", ".doc", ".docx", ".xls", ".xlsx", ".jpg", ".png", ".pem", ".log",
+    ".zip",
+    ".tar",
+    ".gz",
+    ".rar",
+    ".7z",
+    ".db",
+    ".sqlite",
+    ".pyc",
+    ".pdf",
+    ".doc",
+    ".docx",
+    ".xls",
+    ".xlsx",
+    ".jpg",
+    ".png",
+    ".pem",
+    ".log",
 }
 IGNORE_PATTERNS: Final[Set[str]] = {
-    "node_modules", "__pycache__", ".git", "env", "secrets", ".pre-commit-home", ".devcontainer", "sites", ".venv", ".venv_dev", "testvenv", ".mypy_cache", "site-packages",
+    "node_modules",
+    "__pycache__",
+    ".git",
+    "env",
+    "secrets",
+    ".pre-commit-home",
+    ".devcontainer",
+    "sites",
+    ".venv",
+    ".venv_dev",
+    "testvenv",
+    ".mypy_cache",
+    "site-packages",
 }
 CACHE_FILE_NAME: Final[str] = ".review_cache.json"
 
@@ -82,4 +122,6 @@ SECRET_PATTERNS: Final[List[re.Pattern[str]]] = [
 ]
 
 _CODE_BLOCK_RE: Final[re.Pattern[str]] = re.compile(
-    r"
+    r"```(?:[\w.+-]+)?\n(?P<code>[\s\S]+?)\n```",
+    re.MULTILINE,
+)
