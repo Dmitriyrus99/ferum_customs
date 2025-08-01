@@ -1,36 +1,34 @@
 --- a/ferum_customs/config/settings.py
 +++ b/ferum_customs/config/settings.py
-@@ -1,5 +1,5 @@
--from pydantic_settings import BaseSettings, SettingsConfigDict
--
-+from pydantic import BaseSettings  # Correct import for BaseSettings
-+from pydantic_settings import SettingsConfigDict  # Ensure this is necessary
+@@ -1,4 +1,4 @@
+-from pydantic import BaseSettings
++from pydantic import BaseSettings, SecretStr
  
  class Settings(BaseSettings):
      """
-@@ -7,7 +7,7 @@
+@@ -6,21 +6,21 @@
      """
  
      # Telegram Bot API token
--    telegram_bot_token: str = ""
-+    telegram_bot_token: str
+-    telegram_bot_token: str
++    telegram_bot_token: SecretStr
  
      # Frappe/ERPNext settings
      site_name: str | None = None
-@@ -19,11 +19,9 @@
+-    admin_password: str | None = None
++    admin_password: SecretStr | None = None
+ 
+     # URL for Frappe API (optional override)
+     frappe_url: str | None = None
+ 
      # OpenAI API key for optional integrations
-     openai_api_key: str | None = None
+-    openai_api_key: str | None = None
++    openai_api_key: SecretStr | None = None
  
--    model_config = SettingsConfigDict(
--        env_file=[".env", ".env.example"],
--        env_file_encoding="utf-8",
--        extra="ignore",
--    )
-+    class Config:  # Use Config class instead of model_config
-+        env_file = [".env", ".env.example"]
-+        env_file_encoding = "utf-8"
-+        extra = "ignore"
+     class Config:
+         env_file = ".env"
+         env_file_encoding = "utf-8"
+         extra = "ignore"
  
--
 -settings = Settings()
 +settings = Settings()

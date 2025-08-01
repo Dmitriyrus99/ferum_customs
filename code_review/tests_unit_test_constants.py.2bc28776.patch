@@ -1,7 +1,0 @@
---- a/tests/unit/test_constants.py
-+++ b/tests/unit/test_constants.py
-@@ -3,3 +3,4 @@
- 
- def test_constants_values():
-     assert isinstance(constants.STATUS_OTKRYTA, str)
-+    assert constants.STATUS_OTKRYTA != ""  # Ensure the constant is not an empty string

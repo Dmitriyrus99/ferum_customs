@@ -72,8 +72,8 @@
             "fieldname": "status",
             "label": "Status",
             "fieldtype": "Select",
-            "options": "draft\nsubmitted\ncancelled",
-            "default": "draft",
+            "options": "Draft\nSubmitted\nCancelled",
+            "default": "Draft",
             "read_only": 1,
             "hidden": 1,
             "print_hide": 1
@@ -101,7 +101,7 @@
             "amend": 1
         },
         {
-            "role": "Проектный менеджер",
+            "role": "Project Manager",
             "read": 1,
             "write": 1,
             "create": 1,
@@ -111,7 +111,7 @@
             "amend": 1
         },
         {
-            "role": "Инженер",
+            "role": "Engineer",
             "read": 1,
             "write": 1,
             "create": 1

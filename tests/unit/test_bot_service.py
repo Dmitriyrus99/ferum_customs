@@ -21,7 +21,7 @@ from telegram_bot.bot_service import IncidentStates, get_dispatcher, start_handl
 @pytest.mark.asyncio
 async def test_start_handler_sets_incident_state():
     """Проверяем, что start_handler переводит FSM в нужное состояние."""
-    bot = Bot(token="test-token")
+    bot = Bot(token="test-token", parse_mode=None)  # Ensure parse_mode is explicitly set
     storage = MemoryStorage()
     key = StorageKey(bot_id=bot.id or 0, chat_id=123, user_id=123)
     state = FSMContext(storage=storage, key=key)
@@ -41,7 +41,7 @@ async def test_start_handler_sets_incident_state():
 
 def test_get_dispatcher_custom_bot_and_storage():
     """Проверяем, что get_dispatcher возвращает переданные объекты bot и storage."""
-    bot = Bot(token="test-token")
+    bot = Bot(token="test-token", parse_mode=None)  # Ensure parse_mode is explicitly set
     storage = MemoryStorage()
     dp = get_dispatcher(bot=bot, storage=storage)
     assert dp.bot is bot

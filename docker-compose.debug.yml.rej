@@ -1,0 +1,24 @@
+--- docker-compose.debug.yml
++++ docker-compose.debug.yml
+@@ -1,9 +1,12 @@
+-services:
+-  ferumcustoms:
+-    image: ferumcustoms
+-    build:
+-      context: .
+-      dockerfile: ./Dockerfile
+-    command: ["python", "-m", "debugpy", "--wait-for-client", "--listen", "0.0.0.0:5678"]
+-    ports:
+-      - 5678:5678
++services:
++  ferumcustoms:
++    image: ferumcustoms
++    build:
++      context: .
++      dockerfile: ./Dockerfile
++    command: ["python", "-m", "debugpy", "--wait-for-client", "--listen", "0.0.0.0:5678"]
++    ports:
++      - "5678:5678"
++    security_opt:
++      - no-new-privileges:true
++    restart: unless-stopped

@@ -1,8 +1,0 @@
---- a/tests/integration/test_api.py
-+++ b/tests/integration/test_api.py
-@@ -11,4 +11,4 @@
-         name = api.bot_create_service_request("From bot", description="demo")
-         self.assertTrue(frappe.db.exists("Service Request", name))
-         results = api.bot_get_service_requests()
--        self.assertIn(name, [r["name"] for r in results])
-+        self.assertIn(name, [r.get("name") for r in results])

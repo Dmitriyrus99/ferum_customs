@@ -39,3 +39,6 @@ async def test_fsm_start_handler():
     await start_handler(bot=bot, message=message, state=state)
 
     assert await state.get_state() == IncidentStates.waiting_object.state
+
+    # Clean up resources
+    await bot.session.close()

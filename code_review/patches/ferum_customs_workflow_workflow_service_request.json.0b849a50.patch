@@ -1,0 +1,18 @@
+--- a/ferum_customs/workflow/workflow_service_request.json
++++ b/ferum_customs/workflow/workflow_service_request.json
+@@ -7,7 +7,7 @@
+   "is_active": 1,
+   "send_email_alert": 0,
+   "states": [
+-    { "state": "Открыта",   "doc_status": 1, "allow_edit": "Проектный менеджер" },
++    { "state": "Открыта",   "doc_status": 0, "allow_edit": "Проектный менеджер" },
+     { "state": "В работе",  "doc_status": 0, "allow_edit": "Проектный менеджер" },
+     { "state": "Выполнена", "doc_status": 0, "allow_edit": "Проектный менеджер" },
+     { "state": "Закрыта",   "doc_status": 1, "allow_edit": "Проектный менеджер" },
+@@ -51,4 +51,4 @@
+       "allowed": "Проектный менеджер"
+     }
+   ]
+-}
++}
+

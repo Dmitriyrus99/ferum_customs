@@ -1,0 +1,23 @@
+--- a/ferum_customs/ferum_customs/doctype/service_request/service_request.json
++++ b/ferum_customs/ferum_customs/doctype/service_request/service_request.json
+@@ -41,7 +41,7 @@
+         "label": "Статус",
+         "fieldtype": "Select",
+         "options": "\nOpen\nClosed\nPending",
+-        "read_only": 1,
++        "read_only": 0,  // Changed from 1 to 0 to allow status updates
+         "in_list_view": 1,
+         "no_copy": 1
+       },
+@@ -50,9 +50,9 @@
+         "label": "Длительность (часы)",
+         "fieldtype": "Float",
+         "precision": 2,
+-        "read_only": 1,
++        "read_only": 0,  // Changed from 1 to 0 to allow updates
+         "no_copy": 1
+       }
+     ]
+   }
+-]
++]

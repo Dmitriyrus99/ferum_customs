@@ -47,7 +47,7 @@ class ServiceReport(Document):  # type: ignore[misc]
         posting_date_val = self.get("posting_date")
         if posting_date_val:
             if not isinstance(posting_date_val, str):
-                if isinstance(posting_date_val, datetime.datetime | datetime.date):
+                if isinstance(posting_date_val, (datetime.datetime, datetime.date)):
                     self.posting_date = posting_date_val.isoformat()
         else:
             if self.is_new() and self.meta.get_field("posting_date").reqd:
@@ -92,7 +92,7 @@ class ServiceReport(Document):  # type: ignore[misc]
         if self.get("service_request") and not self.get("customer"):
             try:
                 customer_from_sr = frappe.db.get_value(
-                    "service_request", self.service_request, "custom_customer"
+                    "Service Request", self.service_request, "custom_customer"
                 )
 
                 if customer_from_sr:

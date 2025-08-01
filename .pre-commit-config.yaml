@@ -1,11 +1,8 @@
 # .pre-commit-config.yaml
 
-# Этот exclude: 'node_modules|.git' является глобальным для pre-commit
-# и не влияет на exclude конкретных хуков.
 exclude: 'node_modules|.git'
 default_stages: [pre-commit]
 fail_fast: false
-
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -14,42 +11,35 @@ repos:
       - id: trailing-whitespace
         files: "erpnext.*"
         exclude: ".*json$|.*txt$|.*csv|.*md|^\\.venv_dev/"
-        # Для этого хука exclude уже есть, но он специфичен для типов файлов
-        # Если нужно игнорировать .venv_dev/ для него, добавьте:
-        # exclude: ".*json$|.*txt$|.*csv|.*md|^\\.venv_dev/"
       - id: check-yaml
-        # Исключить виртуальное окружение и задачи Codex (не standalone YAML)
         exclude: '^(?:\.venv_dev/|\.codex/tasks/)'
       - id: no-commit-to-branch
         args: ['--branch', 'develop']
         exclude: '^\\.venv_dev/'
       - id: check-merge-conflict
-        exclude: ^\.venv_dev/ # Добавлено
+        exclude: '^\\.venv_dev/'
       - id: check-ast
-        exclude: ^\.venv_dev/ # Добавлено
+        exclude: '^\\.venv_dev/'
       - id: check-json
-        exclude: ^\.venv_dev/ # Добавлено
+        exclude: '^\\.venv_dev/'
       - id: check-toml
-        exclude: ^\.venv_dev/ # Добавлено
-      - id: check-yaml # Второй check-yaml, тоже добавляем exclude
-        # Исключить виртуальное окружение и Codex задачи
+        exclude: '^\\.venv_dev/'
+      - id: check-yaml
         exclude: '^(?:\.venv_dev/|\.codex/tasks/)'
       - id: debug-statements
-        exclude: ^\.venv_dev/ # ОБЯЗАТЕЛЬНО ДОБАВИТЬ ЭТО!
+        exclude: '^\\.venv_dev/'
 
   - repo: https://github.com/pre-commit/mirrors-prettier
     rev: f12edd9c7be1c20cfa42420fd0e6df71e42b51ea  # frozen: v4.0.0-alpha.8
     hooks:
       - id: prettier
         types_or: [javascript, vue, scss]
-        # Обратите внимание, что здесь уже есть .*node_modules.*
-        # Возможно, вам также нужно добавить сюда .*venv_dev.*
         exclude: |
           (?x)^(
             erpnext/public/dist/.*|
             cypress/.*|
             .*node_modules.*|
-            .*venv_dev.*| # <-- Добавлено!
+            .*venv_dev.*|
             .*boilerplate.*|
             erpnext/public/js/controllers/.*|
             erpnext/templates/pages/order.js|
@@ -62,13 +52,12 @@ repos:
       - id: eslint
         types_or: [javascript]
         args: ['--quiet']
-        # И здесь тоже, если eslint затрагивает venv
         exclude: |
           (?x)^(
             erpnext/public/dist/.*|
             cypress/.*|
             .*node_modules.*|
-            .*venv_dev.*| # <-- Добавлено!
+            .*venv_dev.*|
             .*boilerplate.*|
             erpnext/public/js/controllers/.*|
             erpnext/templates/pages/order.js|
@@ -81,17 +70,11 @@ repos:
       - id: ruff
         name: "Run ruff import sorter"
         args: ["--select=I", "--fix"]
-        # Исключить виртуальное окружение и скрипты из проверки импортов
         exclude: '^(?:\.venv_dev/|scripts/)' 
 
       - id: ruff
         name: "Run ruff linter"
-        # Исключить виртуальное окружение и скрипты из линтинга
         exclude: '^(?:\.venv_dev/|scripts/)'
-
-      # - id: ruff-format # Если вы раскомментируете это, добавьте exclude и сюда
-      #   name: "Run ruff formatter"
-      #   exclude: ^\.venv_dev/
 
   - repo: https://github.com/PyCQA/isort
     rev: c8ab4a5b21bac924d106e3103dd7c979fdd0f9bc  # frozen: 6.0.1
@@ -99,14 +82,14 @@ repos:
       - id: isort
         name: isort (python import sorter)
         args: ["--profile", "black"]
-        exclude: ^\.venv_dev/ # Уже есть, отлично
+        exclude: '^\.venv_dev/'
 
   - repo: https://github.com/psf/black
     rev: 8a737e727ac5ab2f1d4cf5876720ed276dc8dc4b  # frozen: 25.1.0
     hooks:
       - id: black
         language_version: python3
-        exclude: ^\.venv_dev/ # Уже есть, отлично
+        exclude: '^\.venv_dev/'
 
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: 850d8bf806620ef89a99381c5cf5ea2c1ea826dd  # frozen: v1.17.0
@@ -119,7 +102,7 @@ repos:
         additional_dependencies:
           - fastapi==0.115.14
           - pydantic-settings
-        exclude: ^\.venv_dev/
+        exclude: '^\.venv_dev/'
 
   - repo: local
     hooks:

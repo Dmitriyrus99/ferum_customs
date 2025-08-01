@@ -1,0 +1,28 @@
+--- a/docker-compose.test.yml
++++ b/docker-compose.test.yml
+@@ -12,8 +12,8 @@
+       REDIS_CACHE: redis-cache:6379
+       REDIS_QUEUE: redis-queue:6379
+       REDIS_SOCKETIO: redis-queue:6379
+-      DB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root}
+-      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin}
++      DB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?DB_ROOT_PASSWORD is required}
++      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?ADMIN_PASSWORD is required}
+     volumes:
+       - sites:/home/frappe/frappe-bench/sites
+       - ./ferum_customs:/home/frappe/frappe-bench/apps/ferum_customs
+@@ -30,7 +30,7 @@
+   db:
+     image: mariadb:${MARIADB_TAG:-10.6}
+     environment:
+-      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root}
++      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?DB_ROOT_PASSWORD is required}
+       MYSQL_ROOT_HOST: ${DB_ROOT_HOST:-%}
+     volumes:
+       - db-data:/var/lib/mysql
+@@ -43,4 +43,4 @@
+ 
+ volumes:
+   sites:
+-  db-data:
++  db-data:

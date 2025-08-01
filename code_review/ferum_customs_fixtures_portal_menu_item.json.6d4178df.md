@@ -1,5 +1,0 @@
-- The JSON structure appears to be correct for defining a portal menu item in Frappe.
-- Ensure that the `parent` field ("Portal Menu") exists in the system; otherwise, the menu item will not be displayed.
-- The `role` field should be verified to ensure that it corresponds to an existing role in the system.
-- Consider adding a `description` field for better clarity on the purpose of the menu item.
-- Ensure that the `enabled` field is set correctly based on the intended visibility of the menu item.

@@ -1,5 +1,0 @@
-- The `doctype` definition is generally correct, but consider adding `permissions` to define who can read, write, and create records for this DocType.
-- The `options` for the `engineer` field should ideally include a `fetch_from` property to automatically pull relevant data (like the engineer's name) when selected.
-- Consider adding `default` values for fields where applicable, such as `assignment_date`, to improve user experience.
-- Ensure that the `track_changes` property is necessary for this DocType, as it can lead to increased database size and complexity if not needed.
-- It may be beneficial to include a `description` field to provide context for the DocType's purpose.

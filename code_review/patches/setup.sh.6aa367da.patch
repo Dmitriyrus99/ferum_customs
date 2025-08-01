@@ -1,0 +1,22 @@
+--- a/setup.sh
++++ b/setup.sh
+@@ -15,11 +15,17 @@
+ 
+ # Upgrade pip, install runtime requirements, and install project with development and test dependencies
+ pip install --upgrade pip
+-pip install -e .[dev,test]
++pip install -e ".[dev,test]"
+ 
+ # Bootstrap Docker-based ERPNext environment
+ # Configure Git to use version-controlled hooks and enable the post-commit hook
+ git config core.hooksPath .githooks
+ chmod +x .githooks/post-commit
+ 
+-scripts/quick_setup.sh
++# Ensure the script exists and is executable before running
++if [ -x scripts/quick_setup.sh ]; then
++    scripts/quick_setup.sh
++else
++    echo "Error: scripts/quick_setup.sh not found or not executable."
++    exit 1
++fi

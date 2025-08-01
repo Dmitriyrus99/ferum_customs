@@ -1,1 +1,0 @@
-- The provided code snippet is a JSON array and does not contain any bugs, anti-patterns, or security vulnerabilities. It is a valid JSON structure.

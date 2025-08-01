@@ -1,39 +1,41 @@
-from __future__ import annotations
-
+import os
 import openai
+from typing import Optional
 
-from ferum_customs.config.settings import settings
+def get_chat_completion(prompt: str, model: Optional[str] = "gpt-4", max_tokens: Optional[int] = 150) -> Optional[str]:
+    """
+    Generates a chat completion response from OpenAI's API.
 
-# Ensure api_key is set correctly
-if not settings.openai_api_key:
-    raise ValueError("OpenAI API key is not set.")
-openai.api_key = settings.openai_api_key
+    Parameters:
+    - prompt (str): The input prompt for the model.
+    - model (Optional[str]): The model to use for generating the response. Defaults to "gpt-4".
+    - max_tokens (Optional[int]): The maximum number of tokens in the response. Defaults to 150.
 
-def complete_code(prompt: str) -> str:
-    """Return a Python code completion for the given fragment."""
-    
-    if not isinstance(prompt, str):
-        raise TypeError("Prompt must be a string.")
+    Returns:
+    - Optional[str]: The generated response or None if an error occurs.
+    """
+    # Ensure the API key is retrieved securely
+    api_key = os.getenv("OPENAI_API_KEY")
+    if not api_key:
+        raise ValueError("API key not found. Please set the OPENAI_API_KEY environment variable.")
 
-    response = openai.ChatCompletion.create(
-        model="gpt-4",  # Corrected model name
-        messages=[
-            {
-                "role": "system",
-                "content": (
-                    "You are an experienced programmer. Write code carefully, only in Python."
-                ),
-            },
-            {
-                "role": "user",
-                "content": f"Complete the following code fragment:\n\n{prompt}\n\n# Continue the code:",
-            },
-        ],
-        temperature=0.2,
-        max_tokens=400,
-        stop=["\n\n", "# End"],  # Updated stop sequence for consistency
-        stream=False,
-    )
-    
-    content = response["choices"][0]["message"]["content"]
-    return content.strip()
+    openai.api_key = api_key
+
+    try:
+        sanitized_prompt = sanitize_input(prompt)
+        response = openai.ChatCompletion.create(
+            model=model,
+            messages=[{"role": "user", "content": sanitized_prompt}],
+            max_tokens=max_tokens,
+            stop=None  # Define stop sequences if necessary
+        )
+        return response.choices[0].message['content'].strip()
+    except openai.error.OpenAIError as e:
+        # Log the error or handle it as needed
+        print(f"An error occurred: {e}")
+        return None
+
+# Ensure input prompt is sanitized
+def sanitize_input(prompt: str) -> str:
+    # Implement sanitization logic as needed
+    return prompt

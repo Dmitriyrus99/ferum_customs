@@ -1,1 +1,0 @@
-- No issues found. The code is clear and adheres to best practices.

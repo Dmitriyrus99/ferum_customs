@@ -1,5 +1,4 @@
-from pydantic import BaseSettings  # Correct import for BaseSettings
-from pydantic_settings import SettingsConfigDict  # Ensure this is necessary
+from pydantic import BaseSettings, SecretStr
 
 class Settings(BaseSettings):
     """
@@ -7,20 +6,20 @@ class Settings(BaseSettings):
     """
 
     # Telegram Bot API token
-    telegram_bot_token: str
+    telegram_bot_token: SecretStr
 
     # Frappe/ERPNext settings
     site_name: str | None = None
-    admin_password: str | None = None
+    admin_password: SecretStr | None = None
 
     # URL for Frappe API (optional override)
     frappe_url: str | None = None
 
     # OpenAI API key for optional integrations
-    openai_api_key: str | None = None
+    openai_api_key: SecretStr | None = None
 
-    class Config:  # Use Config class instead of model_config
-        env_file = [".env", ".env.example"]
+    class Config:
+        env_file = ".env"
         env_file_encoding = "utf-8"
         extra = "ignore"
 

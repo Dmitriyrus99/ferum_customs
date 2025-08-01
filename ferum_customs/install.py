@@ -13,7 +13,7 @@ from frappe import _  # Для возможных сообщений
 # Импорт констант ролей, если они используются
 # from .constants import (
 #     ROLE_PROEKTNYJ_MENEDZHER,
-#     ROLE_OFIS_MENEDZHER,
+#     ROLE_OFIS_MENЕДZHER,
 #     ROLE_INZHENER,
 #     ROLE_ZAKAZCHIK
 # )
@@ -23,7 +23,10 @@ def after_install() -> None:
     """
     Вызывается один раз после успешной установки приложения.
     """
-    frappe.db.commit()  # Коммит предыдущих транзакций перед началом операций в after_install, если необходимо
+    # Убедитесь, что транзакции завершены перед началом операций в after_install
+    if frappe.db.transaction_writes:
+        frappe.db.commit()  # Коммит предыдущих транзакций, если необходимо
+
     # Создание ролей выполняется через фикстуры (fixtures/role.json).
     # Дополнительная логика установки может быть добавлена при необходимости.
 

@@ -7,5 +7,5 @@ def test_basic_imports() -> None:
     for module in ("aiogram", "fastapi", "requests_oauthlib"):
         try:
             _ = importlib.import_module(module)
-        except Exception as exc:  # pragma: no cover - fails only if missing
-            raise AssertionError(f"Не найден модуль {module}: {exc}") from exc
+        except ImportError as exc:  # More specific exception
+            raise AssertionError(f"Module {module} not found: {exc}") from exc

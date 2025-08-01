@@ -1,3 +1,0 @@
-- The file is empty, which indicates that there are no custom roles defined. 
-- If this is intentional, it may be worth adding a comment to clarify its purpose or to indicate that roles will be added later.
-- If roles are expected to be defined, consider adding at least one example role to demonstrate the structure and usage.

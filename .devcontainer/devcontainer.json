@@ -6,5 +6,5 @@
       "version": "latest"
     }
   },
-  "postCreateCommand": "sudo usermod -aG docker ${USER}"
+  "postCreateCommand": "sudo usermod -aG docker $(whoami)"
 }

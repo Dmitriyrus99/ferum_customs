@@ -1,4 +1,0 @@
-- The `track_changes` field is set to `1`, which is good for auditing but ensure that it is necessary for this DocType as it may increase database size.
-- Consider adding `mandatory` or `default` attributes to fields where applicable to enforce data integrity.
-- Ensure that the `options` for currency fields are consistent with the application's currency settings and that "RUB" is the intended currency for all transactions.
-- Review if `read_only` fields should be calculated or set by the system to avoid user errors in data entry.

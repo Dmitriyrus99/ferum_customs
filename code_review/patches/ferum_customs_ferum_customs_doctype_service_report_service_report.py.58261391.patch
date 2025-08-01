@@ -1,0 +1,17 @@
+--- a/ferum_customs/ferum_customs/doctype/service_report/service_report.py
++++ b/ferum_customs/ferum_customs/doctype/service_report/service_report.py
+@@ -92,7 +92,7 @@
+         if self.get("service_request") and not self.get("customer"):
+             try:
+                 customer_from_sr = frappe.db.get_value(
+-                    "service_request", self.service_request, "custom_customer"
++                    "Service Request", self.service_request, "custom_customer"
+                 )
+ 
+                 if customer_from_sr:
+@@ -146,4 +146,4 @@
+         from ferum_customs import api
+ 
+         self.calculate_totals()
+-        return cast(str, api.create_invoice_from_report(self.name))
++        return cast(str, api.create_invoice_from_report(self.name))

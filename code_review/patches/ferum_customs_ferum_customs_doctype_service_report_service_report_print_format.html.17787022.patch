@@ -1,0 +1,17 @@
+--- a/ferum_customs/ferum_customs/doctype/service_report/service_report_print_format.html
++++ b/ferum_customs/ferum_customs/doctype/service_report/service_report_print_format.html
+@@ -5,7 +5,7 @@
+ {% set sr = frappe.get_doc('Service Request', doc.service_request) %}
+ <p>Проект: {{ doc.service_request | e }}</p>
+ {% if sr.custom_assigned_engineer %}
+-<p>Ответственный инженер: {{ frappe.get_cached_value('User', sr.custom_assigned_engineer, 'full_name') or sr.custom_assigned_engineer | e }}</p>
++<p>Ответственный инженер: {{ frappe.get_cached_value('User', sr.custom_assigned_engineer, 'full_name') | e }}</p>
+ {% endif %}
+ {% if sr.custom_service_object_link %}
+ {% set so = frappe.get_doc('Service Object', sr.custom_service_object_link) %}
+@@ -27,4 +27,4 @@
+     {% endfor %}
+ </table>
+ 
+-<p>Итого к оплате: {{ doc.total_payable | e }} ({{ frappe.utils.money_in_words(doc.total_payable) | e }})</p>
++<p>Итого к оплате: {{ doc.total_payable | e }} ({{ frappe.utils.money_in_words(doc.total_payable) | e }})</p>

@@ -1,7 +1,0 @@
---- a/ferum_customs/ferum_customs/report/service_request_overview/__init__.py
-+++ b/ferum_customs/ferum_customs/report/service_request_overview/__init__.py
-@@ -1 +1,3 @@
--__version__ = "0.0.1"
-+- The file is minimal and does not contain any functionality or logic that requires review.
-+- Consider adding a docstring at the top of the file to describe the purpose of the module.
-+- Ensure that the versioning follows semantic versioning guidelines if applicable in the future.

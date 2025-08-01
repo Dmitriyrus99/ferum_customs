@@ -1,7 +1,7 @@
-from typing import Any, cast
+from typing import Any, cast, List, Dict, Optional
 
 import frappe
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from frappe import _, whitelist
 from frappe.exceptions import PermissionError
 
@@ -11,27 +11,29 @@ app = FastAPI()
 
 
 @app.get("/")
-def root() -> dict[str, bool]:
+def root() -> Dict[str, bool]:
     return {"ok": True}
 
 
 @app.get("/health")
-def health() -> dict[str, str]:
+def health() -> Dict[str, str]:
     return {"status": "ok"}
 
 
 @whitelist()  # type: ignore[misc]
-def validate_service_request(docname: str) -> dict[str, Any] | None:
+def validate_service_request(docname: str) -> Optional[Dict[str, Any]]:
     """Return the service request document as a dict after permission check."""
     if not frappe.has_permission("Service Request", "read"):
         frappe.throw(_("Not permitted"), PermissionError)
 
     try:
         doc = frappe.get_doc("Service Request", docname)
-        return cast(dict[str, Any], doc.as_dict())
-    except Exception:
+        return cast(Dict[str, Any], doc.as_dict())
+    except frappe.DoesNotExistError:
+        frappe.throw(_("Service Request not found"), frappe.DoesNotExistError)
+    except Exception as e:
         frappe.log_error(frappe.get_traceback(), "Error validating Service Request")
-        raise
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @whitelist()  # type: ignore[misc]
@@ -47,17 +49,19 @@ def cancel_service_request(docname: str) -> None:
 
 
 @whitelist()  # type: ignore[misc]
-def validate_service_report(docname: str) -> dict[str, Any] | None:
+def validate_service_report(docname: str) -> Optional[Dict[str, Any]]:
     """Return the service report document as a dict after permission check."""
     if not frappe.has_permission("Service Report", "read"):
         frappe.throw(_("Not permitted"), PermissionError)
 
     try:
         doc = frappe.get_doc("Service Report", docname)
-        return cast(dict[str, Any], doc.as_dict())
-    except Exception:
+        return cast(Dict[str, Any], doc.as_dict())
+    except frappe.DoesNotExistError:
+        frappe.throw(_("Service Report not found"), frappe.DoesNotExistError)
+    except Exception as e:
         frappe.log_error(frappe.get_traceback(), "Error validating Service Report")
-        raise
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @whitelist()  # type: ignore[misc]
@@ -120,8 +124,8 @@ def create_invoice_from_report(service_report: str) -> str:
 @whitelist()  # type: ignore[misc]
 def bot_create_service_request(
     subject: str,
-    customer: str | None = None,
-    description: str | None = None,
+    customer: Optional[str] = None,
+    description: Optional[str] = None,
 ) -> str:
     """Create a Service Request document on behalf of the Telegram bot."""
 
@@ -167,12 +171,12 @@ def bot_upload_attachment(docname: str, file_url: str, attachment_type: str) -> 
 
 
 @whitelist()  # type: ignore[misc]
-def bot_get_service_requests(status: str | None = None) -> list[dict[str, Any]]:
+def bot_get_service_requests(status: Optional[str] = None) -> List[Dict[str, Any]]:
     """Return a list of Service Requests filtered by status."""
 
     filters = {"status": status} if status else {}
     return cast(
-        list[dict[str, Any]],
+        List[Dict[str, Any]],
         frappe.get_all(
             "Service Request",
             filters=filters,
