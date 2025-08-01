@@ -1,9 +1,0 @@
---- a/sites/assets/assets-rtl.json
-+++ b/sites/assets/assets-rtl.json
-@@ -1,4 +1,5 @@
- {
-+    // This file contains the RTL (Right-to-Left) CSS asset mappings for ERPNext and Frappe.
-     "rtl_erpnext-web.bundle.css": "/assets/erpnext/dist/css-rtl/erpnext-web.bundle.HUFCAB7H.css",
-     "rtl_erpnext.bundle.css": "/assets/erpnext/dist/css-rtl/erpnext.bundle.WUK4HGUG.css",
-     "rtl_erpnext_email.bundle.css": "/assets/erpnext/dist/css-rtl/erpnext_email.bundle.T33XDYZX.css",
-
