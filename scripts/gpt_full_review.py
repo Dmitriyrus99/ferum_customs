@@ -427,15 +427,14 @@ async def main(cfg: argparse.Namespace) -> None:
             console.print(
                 f"[cyan]▶ {len(cached_results)} файлов из кэша. Начинаю GPT‑ревью {len(files_to_review)} новых/изменённых файлов…[/cyan]"
             )
-            progress = Progress(
+            with Progress(
                 SpinnerColumn(),
                 TextColumn("{task.description}"),
                 BarColumn(),
                 "[progress.percentage]{task.percentage:>3.0f}%",
                 TimeElapsedColumn(),
                 console=console,
-            )
-            with progress:
+            ) as progress:
                 task_id = progress.add_task(
                     "[green]Анализ…", total=len(files_to_review)
                 )
