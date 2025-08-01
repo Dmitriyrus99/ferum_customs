@@ -462,7 +462,13 @@ async def main(cfg: argparse.Namespace) -> None:
                 "[green]✔ Все файлы актуальны в кэше. Новых изменений для ревью нет.[/green]"
             )
 
-    new_cache = {str(res.src): asdict(res) for res in cached_results}
+    new_cache = {}
+    for res in cached_results:
+        res_dict = asdict(res)
+        # Убедитесь, что 'src' сохраняется как строка
+        res_dict['src'] = str(res_dict['src'])
+        new_cache[str(res.src)] = res_dict
+
     cache_path.write_text(json.dumps(new_cache, indent=2, ensure_ascii=False), "utf-8")
 
     summary_lines, cached_lines, patches_present = [], [], False

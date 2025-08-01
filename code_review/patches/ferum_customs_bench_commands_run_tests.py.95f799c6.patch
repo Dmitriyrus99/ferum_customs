@@ -1,0 +1,33 @@
+--- a/ferum_customs/bench_commands/run_tests.py
++++ b/ferum_customs/bench_commands/run_tests.py
+@@ -1,13 +1,12 @@
+ import os
+-
+ import click
+ import pytest
+ 
+ 
+-@click.command("run-tests")  # type: ignore[misc]
+-@click.option("--site", required=True, help="Site name on which to run tests")  # type: ignore[misc]
+-@click.option("--app", required=True, help="App name to test")  # type: ignore[misc]
+-@click.option(  # type: ignore[misc]
++@click.command("run-tests")
++@click.option("--site", required=True, help="Site name on which to run tests")
++@click.option("--app", required=True, help="App name to test")
++@click.option(
+     "--test",
+     "test_path",
+     default="tests/unit",
+@@ -18,5 +17,11 @@
+     # Ensure SITE_NAME is set for any fixtures or configurations
+     os.environ["SITE_NAME"] = site
+     path = os.path.join(app, test_path)
++
++    # Validate the test path to prevent directory traversal attacks
++    if not os.path.exists(path):
++        raise ValueError(f"Test path does not exist: {path}")
++
+     # Execute pytest on the target path
+-    exit(pytest.main([path]))
++    exit_code = pytest.main([path])
++    exit(exit_code)
