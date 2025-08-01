@@ -1,3 +1,0 @@
-- The code snippet does not contain any bugs, anti-patterns, or security vulnerabilities.
-- Ensure that the `license.txt` file is present and correctly specifies the license information.
-- If future logic is added, consider implementing input validation and error handling to maintain security and data integrity.

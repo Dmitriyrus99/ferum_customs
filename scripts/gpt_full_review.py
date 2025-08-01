@@ -88,10 +88,20 @@ IGNORE_EXTS: Final[Set[str]] = {
     ".pem",
     ".log",
 }
-IGNORED_DIRS: Final[Set[str]] = {
-    "node_modules", "__pycache__", ".git", "env", "secrets",
-    ".pre-commit-home", ".devcontainer", "sites",
-    ".venv", ".venv_dev", "testvenv", ".mypy_cache", "site-packages",
+IGNORE_PATTERNS: Final[Set[str]] = {
+    "node_modules",
+    "__pycache__",
+    ".git",
+    "env",
+    "secrets",
+    ".pre-commit-home",
+    ".devcontainer",
+    "sites",
+    ".venv",
+    ".venv_dev",
+    "testvenv",
+    ".mypy_cache",
+    "site-packages",
 }
 CACHE_FILE_NAME: Final[str] = ".review_cache.json"
 
@@ -146,24 +156,24 @@ def get_gitignore_spec(repo_path: pathlib.Path) -> pathspec.PathSpec:
 def iter_source_files(
     scan_path: pathlib.Path, repo_path: pathlib.Path
 ) -> Iterable[pathlib.Path]:
-    gitignore_spec = get_gitignore_spec(repo_path)
-    out_dir_name = DEFAULT_OUT_DIR.name
-    for p in scan_path.rglob("*"):
-        if not p.is_file():
-            continue
-        relative_path = p.relative_to(repo_path)
-        if gitignore_spec.match_file(str(relative_path)):
-            continue
-        p_low_suffix = p.suffix.lower()
-        if any(part.lower() in IGNORED_DIRS for part in p.parts):
-            continue
+    """
+    Итерируется по файлам, указанным в 'review_include_list.txt'.
+    """
+    include_list_path = repo_path / "review_include_list.txt"
+    if not include_list_path.is_file():
+        console.print(f"[red]Файл со списком для обработки не найден: {include_list_path}[/red]")
+        return
 
-        if (
-            p_low_suffix in EXTS
-            and p_low_suffix not in IGNORE_EXTS
-            and f"/{out_dir_name}/" not in p.as_posix()
-        ):
-            yield p
+    # Считываем пути из файла и убираем пустые строки
+    target_files_str = include_list_path.read_text("utf-8").splitlines()
+    target_files = {pathlib.Path(line.strip()) for line in target_files_str if line.strip()}
+
+    for p in target_files:
+        full_path = repo_path / p
+        if full_path.is_file():
+            yield full_path
+        else:
+            console.print(f"[yellow]⚠️  Файл из списка не найден, пропускаю: {p}[/yellow]")
 
 def parse_llm_reply(reply: str) -> tuple[str, str]:
     match = _CODE_BLOCK_RE.search(reply)
