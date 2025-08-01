@@ -1,8 +1,0 @@
---- a/tests/integration/test_service_api.py
-+++ b/tests/integration/test_service_api.py
-@@ -11,4 +11,4 @@
- 
- def test_health_check():
-     response = client.get("/health")
--    assert response.status_code in (200, 404)
-+    assert response.status_code == 200  # Changed to assert only 200 for a health check

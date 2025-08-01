@@ -1,3 +1,0 @@
-- The `db_password` is stored in plaintext, which poses a security risk. It is recommended to use environment variables or a secrets management tool to store sensitive information securely.
-- The `db_name` and `db_password` should not be exposed in version control systems. Consider adding this file to `.gitignore` if it is not already included.
-- There is no indication of encryption for sensitive data, which is a best practice for configuration files containing credentials.

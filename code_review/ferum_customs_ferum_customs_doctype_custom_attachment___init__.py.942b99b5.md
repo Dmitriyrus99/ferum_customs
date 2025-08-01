@@ -1,2 +1,0 @@
-- The file is minimal and does not contain any functionality or code that requires review or improvement.
-- No changes are needed as it adheres to the basic structure of a Python module in a Frappe app.

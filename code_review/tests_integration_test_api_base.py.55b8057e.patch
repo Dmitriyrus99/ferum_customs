@@ -1,7 +1,0 @@
---- a/tests/integration/test_api_base.py
-+++ b/tests/integration/test_api_base.py
-@@ -12,3 +12,4 @@
- def test_root_endpoint():
-     response = client.get("/")
-     assert response.status_code in (200, 404)
-+    assert response.json() is not None  # Added check to ensure response body is not None

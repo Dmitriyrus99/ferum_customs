@@ -1,9 +1,0 @@
---- a/docker-compose.override.yml
-+++ b/docker-compose.override.yml
-@@ -3,3 +3,6 @@
-     volumes:
-       - ./ferum_customs:/home/frappe/frappe-bench/apps/ferum_customs
-       - ./sites:/home/frappe/frappe-bench/sites
-+    user: "frappe"  # Specify user to avoid permission issues
-+    environment:
-+      - FRAPPE_ENV=production  # Set environment to production for security
