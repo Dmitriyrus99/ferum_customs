@@ -1,3 +1,4 @@
+
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
@@ -378,7 +379,14 @@ async def main(cfg: argparse.Namespace) -> None:
         )
         return
 
-    all_files = list(iter_source_files(scan_path, repo_path))
+        all_files = list(iter_source_files(scan_path, repo_path))
+
+        # ───────── DEBUG: сколько файлов найдено ─────────
+        console.log(f"[bold blue]DEBUG:[/] найдено {len(all_files)} файлов для анализа")
+        for _p in all_files[:10]:
+            console.log(f"[blue]DEBUG sample →[/] {_p}")
+        # ─────────────────────────────────────────────────
+
 
     cache = {}
     if not cfg.no_cache and cache_path.is_file():
