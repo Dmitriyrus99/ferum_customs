@@ -1,5 +1,18 @@
-"""Local development hooks.
-Add overrides or additional hook definitions here.
+"""Local development hooks for customizing Frappe/ERPNext behavior.
+
+This file allows you to add overrides or additional hook definitions
+specific to your local development environment. 
+
+Example: To extend fixtures, uncomment and modify the line below:
+fixtures = ["demo_fixture"]
+
+You can also define custom hooks for events, such as:
+doc_events = {
+    "Your DocType": {
+        "on_update": "path.to.your.method",
+        "on_delete": "path.to.your.method"
+    }
+}
 """
 
 # Example: extend fixtures

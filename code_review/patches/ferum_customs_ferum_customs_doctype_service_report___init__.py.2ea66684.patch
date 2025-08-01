@@ -1,0 +1,9 @@
+--- a/ferum_customs/ferum_customs/doctype/service_report/__init__.py
++++ b/ferum_customs/ferum_customs/doctype/service_report/__init__.py
+@@ -1 +1,5 @@
+-__version__ = "0.0.1"
++"""
++This module contains the initialization for the Service Report DocType.
++"""
++
++__version__ = "0.0.1"

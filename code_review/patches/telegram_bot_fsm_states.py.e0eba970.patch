@@ -1,0 +1,15 @@
+--- a/telegram_bot/fsm/states.py
++++ b/telegram_bot/fsm/states.py
+@@ -2,6 +2,10 @@
+ 
+ 
+ class SomeState(StatesGroup):
+-    """Example FSM state used in tests."""
++    """Example FSM state used in tests.
+ 
+-    waiting = State()
++    This state represents a waiting state in the finite state machine (FSM).
++    It can be used to manage user interactions in a bot.
++    """
++
++    waiting: State = State()

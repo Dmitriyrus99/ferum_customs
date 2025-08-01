@@ -1,0 +1,11 @@
+--- a/ferum_customs/fixtures/custom_role.json
++++ b/ferum_customs/fixtures/custom_role.json
+@@ -1 +1,7 @@
+-[]
++[
++    {
++        "doctype": "Role",
++        "role_name": "Custom Role Name",
++        "description": "Description of the custom role."
++    }
++]

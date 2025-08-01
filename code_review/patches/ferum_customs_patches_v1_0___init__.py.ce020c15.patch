@@ -1,0 +1,9 @@
+--- a/ferum_customs/patches/v1_0/__init__.py
++++ b/ferum_customs/patches/v1_0/__init__.py
+@@ -1 +1,5 @@
+-__version__ = "0.0.1"
++"""
++This module contains version information for the ferum_customs package.
++"""
++
++__version__ = "0.0.1"

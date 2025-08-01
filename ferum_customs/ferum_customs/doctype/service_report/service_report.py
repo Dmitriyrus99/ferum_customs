@@ -6,19 +6,16 @@ Python-контроллер для DocType "Service Report".
 from __future__ import annotations
 
 import datetime
-from typing import TYPE_CHECKING, cast
+from typing import Optional, List, Dict
 
 import frappe
 from frappe import _
 from frappe.model.document import Document
 
-if TYPE_CHECKING:
-    pass
 
-
-class ServiceReport(Document):  # type: ignore[misc]
-    service_request: str | None
-    customer: str | None
+class ServiceReport(Document):
+    service_request: Optional[str]
+    customer: Optional[str]
     total_quantity: float
     total_payable: float
 
@@ -38,10 +35,10 @@ class ServiceReport(Document):  # type: ignore[misc]
         pass
 
     def _clean_fields(self) -> None:
-        if self.get("service_request") and isinstance(self.service_request, str):
+        if self.service_request and isinstance(self.service_request, str):
             self.service_request = self.service_request.strip()
 
-        if self.get("customer") and isinstance(self.customer, str):
+        if self.customer and isinstance(self.customer, str):
             self.customer = self.customer.strip()
 
         posting_date_val = self.get("posting_date")
@@ -54,15 +51,15 @@ class ServiceReport(Document):  # type: ignore[misc]
                 self.posting_date = frappe.utils.nowdate()
 
     def _validate_work_items(self) -> None:
-        work_items_table = self.get("work_items")
+        work_items_table: List[Dict] = self.get("work_items") or []
         if not work_items_table:
             return
 
         for idx, item in enumerate(work_items_table):
             row_num = idx + 1
             if item.get("description"):
-                item.description = item.description.strip()
-                if not item.description:
+                item["description"] = item["description"].strip()
+                if not item["description"]:
                     frappe.throw(
                         _(
                             "Описание обязательно для всех выполненных работ (строка {0})."
@@ -75,13 +72,13 @@ class ServiceReport(Document):  # type: ignore[misc]
                     ).format(row_num)
                 )
 
-            if item.get("quantity") is not None and item.quantity < 0:
+            if item.get("quantity") is not None and item["quantity"] < 0:
                 frappe.throw(
                     _("Количество не может быть отрицательным (строка {0}).").format(
                         row_num
                     )
                 )
-            if item.get("unit_price") is not None and item.unit_price < 0:
+            if item.get("unit_price") is not None and item["unit_price"] < 0:
                 frappe.throw(
                     _(
                         "Цена за единицу не может быть отрицательной (строка {0})."
@@ -89,7 +86,7 @@ class ServiceReport(Document):  # type: ignore[misc]
                 )
 
     def _set_customer_from_service_request(self) -> None:
-        if self.get("service_request") and not self.get("customer"):
+        if self.service_request and not self.customer:
             try:
                 customer_from_sr = frappe.db.get_value(
                     "Service Request", self.service_request, "custom_customer"
@@ -106,17 +103,12 @@ class ServiceReport(Document):  # type: ignore[misc]
                     f"Error setting customer from service_request '{self.service_request}' for ServiceReport '{self.name}': {e}",
                     exc_info=True,
                 )
-        elif (
-            not self.get("service_request")
-            and self.meta.get_field("customer").read_only == 0
-        ):
-            pass
 
     def calculate_totals(self) -> None:
         total_qty: float = 0.0
         total_pay: float = 0.0
 
-        work_items_table: list[Document] = self.get("work_items", [])
+        work_items_table: List[Dict] = self.get("work_items", [])
 
         for item in work_items_table:
             try:
@@ -126,17 +118,17 @@ class ServiceReport(Document):  # type: ignore[misc]
                 qty = 0.0
                 price = 0.0
                 frappe.logger(__name__).warning(
-                    f"Invalid numeric value for quantity or unit_price in work_items for SR {self.name}, item idx {item.idx}"
+                    f"Invalid numeric value for quantity or unit_price in work_items for SR {self.name}, item idx {item.get('idx')}"
                 )
 
-            item.quantity = round(qty, 2)
-            item.unit_price = round(price, 2)
+            item["quantity"] = round(qty, 2)
+            item["unit_price"] = round(price, 2)
 
-            amount = round(item.quantity * item.unit_price, 2)
-            item.amount = amount
+            amount = round(item["quantity"] * item["unit_price"], 2)
+            item["amount"] = amount
 
-            total_qty += item.quantity
-            total_pay += item.amount
+            total_qty += item["quantity"]
+            total_pay += item["amount"]
 
         self.total_quantity = round(total_qty, 2)
         self.total_payable = round(total_pay, 2)
@@ -146,4 +138,4 @@ class ServiceReport(Document):  # type: ignore[misc]
         from ferum_customs import api
 
         self.calculate_totals()
-        return cast(str, api.create_invoice_from_report(self.name))
+        return str(api.create_invoice_from_report(self.name))

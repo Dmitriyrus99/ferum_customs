@@ -6,23 +6,23 @@ Python-контроллер для дочернего DocType "Assigned Engineer
 
 from __future__ import annotations
 
-import datetime  # Для работы с датами и временем
-from typing import TYPE_CHECKING
+import datetime
+from typing import TYPE_CHECKING, Optional
 
 import frappe
 from frappe.model.document import Document
 
 if TYPE_CHECKING:
-    # from frappe.types import DF # Для типов полей DocField
-    # from ...user.user import User # Если ссылка на User
     pass
 
 
-class AssignedEngineerItem(Document):  # type: ignore[misc]
-    engineer: str | None
+class AssignedEngineerItem(Document):
     """
     Класс документа (дочерней таблицы) AssignedEngineerItem.
     """
+
+    engineer: Optional[str]
+    assignment_date: Optional[str]
 
     def validate(self) -> None:
         """
@@ -35,7 +35,7 @@ class AssignedEngineerItem(Document):  # type: ignore[misc]
         """
         Очищает поле инженера.
         """
-        if self.get("engineer") and isinstance(self.engineer, str):
+        if self.engineer and isinstance(self.engineer, str):
             original_value = self.engineer
             self.engineer = self.engineer.strip()
             if self.engineer != original_value:
@@ -50,12 +50,7 @@ class AssignedEngineerItem(Document):  # type: ignore[misc]
         assignment_date_val = self.get("assignment_date")
         if assignment_date_val:
             if isinstance(assignment_date_val, (datetime.datetime, datetime.date)):
-                try:
-                    self.assignment_date = assignment_date_val.isoformat()
-                except Exception as e:
-                    frappe.logger(__name__).error(
-                        f"Error converting datetime field 'assignment_date' to ISO format for AssignedEngineerItem (parent: {self.parent}): {e}"
-                    )
+                self.assignment_date = assignment_date_val.isoformat()
             elif isinstance(assignment_date_val, str):
                 try:
                     dt_obj = frappe.utils.get_datetime(assignment_date_val)

@@ -1,10 +1,8 @@
 import importlib
 from types import SimpleNamespace
-
 from ferum_customs.constants import STATUS_OTKRYTA
 
-
-def test_bot_create_and_update(frappe_stub):
+def test_bot_create_and_update(frappe_stub) -> None:
     api = importlib.reload(importlib.import_module("ferum_customs.api"))
 
     calls = {}
@@ -13,7 +11,7 @@ def test_bot_create_and_update(frappe_stub):
         if isinstance(arg1, dict):
             doc = SimpleNamespace(name="SR001")
 
-            def insert(ignore_permissions=True):
+            def insert(ignore_permissions: bool = True) -> None:
                 calls["insert"] = arg1
 
             doc.insert = insert
@@ -21,7 +19,7 @@ def test_bot_create_and_update(frappe_stub):
         if arg1 == "Service Request":
             doc = SimpleNamespace(status=None)
 
-            def save(ignore_permissions=True):
+            def save(ignore_permissions: bool = True) -> None:
                 calls["status"] = doc.status
 
             doc.save = save
@@ -37,7 +35,7 @@ def test_bot_create_and_update(frappe_stub):
     assert calls["status"] == STATUS_OTKRYTA
 
 
-def test_bot_upload_attachment(frappe_stub):
+def test_bot_upload_attachment(frappe_stub) -> None:
     api = importlib.reload(importlib.import_module("ferum_customs.api"))
 
     recorded = {}
@@ -46,7 +44,7 @@ def test_bot_upload_attachment(frappe_stub):
         if isinstance(arg1, dict):
             doc = SimpleNamespace(name="CA001")
 
-            def insert(ignore_permissions=True):
+            def insert(ignore_permissions: bool = True) -> None:
                 recorded["doc"] = arg1
 
             doc.insert = insert

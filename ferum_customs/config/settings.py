@@ -1,4 +1,5 @@
 from pydantic import BaseSettings, SecretStr
+from typing import Optional
 
 class Settings(BaseSettings):
     """
@@ -9,14 +10,14 @@ class Settings(BaseSettings):
     telegram_bot_token: SecretStr
 
     # Frappe/ERPNext settings
-    site_name: str | None = None
-    admin_password: SecretStr | None = None
+    site_name: Optional[str] = None
+    admin_password: Optional[SecretStr] = None
 
     # URL for Frappe API (optional override)
-    frappe_url: str | None = None
+    frappe_url: Optional[str] = None
 
     # OpenAI API key for optional integrations
-    openai_api_key: SecretStr | None = None
+    openai_api_key: Optional[SecretStr] = None
 
     class Config:
         env_file = ".env"

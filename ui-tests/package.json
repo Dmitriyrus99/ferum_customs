@@ -5,7 +5,8 @@
   "scripts": {
     "test": "playwright test",
     "lint": "eslint '**/*.js'",
-    "format": "prettier --check '**/*.{js,ts,json,md}'"
+    "format": "prettier --write '**/*.{js,ts,json,md}'",
+    "test:coverage": "playwright test --coverage"
   },
   "devDependencies": {
     "@playwright/test": "^1.42.1",

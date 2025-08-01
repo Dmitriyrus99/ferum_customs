@@ -1,0 +1,37 @@
+--- a/ferum_customs/patches/v1_0/rename_project_to_service_project.py
++++ b/ferum_customs/patches/v1_0/rename_project_to_service_project.py
+@@ -1,13 +1,12 @@
+ # ferum_customs/patches/v1_0/rename_project_to_service_project.py
+ import frappe
+ from frappe.model.rename_doc import rename_doc
++from frappe import _
+ 
+ def execute() -> None:
+     """Renames DocType 'Project' to 'Service Project' if needed."""
+-    if frappe.db.exists("DocType", "Project") and not frappe.db.exists(
+-        "DocType", "Service Project"
+-    ):
+-        print("Renaming DocType 'Project' to 'Service Project'...")
++    if frappe.db.exists("DocType", "Project") and not frappe.db.exists("DocType", "Service Project"):
++        frappe.logger().info("Renaming DocType 'Project' to 'Service Project'...")
+         try:
+             rename_doc(
+                 "DocType",
+@@ -16,7 +15,7 @@
+                 force=True,
+                 ignore_permissions=True,
+             )
+-            print("Successfully renamed 'Project' to 'Service Project'.")
++            frappe.logger().info("Successfully renamed 'Project' to 'Service Project'.")
+         except Exception as e:
+             frappe.log_error(
+                 message=f"Error renaming DocType Project to Service Project: {e}", 
+@@ -24,6 +23,6 @@
+             )
+             frappe.throw(_("Error during rename: {0}").format(e))
+     elif not frappe.db.exists("DocType", "Project"):
+-        print("DocType 'Project' does not exist. Skipping rename.")
++        frappe.logger().info("DocType 'Project' does not exist. Skipping rename.")
+     elif frappe.db.exists("DocType", "Service Project"):
+-        print("DocType 'Service Project' already exists. Skipping rename.")
++        frappe.logger().info("DocType 'Service Project' already exists. Skipping rename.")

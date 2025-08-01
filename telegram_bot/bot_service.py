@@ -1,7 +1,7 @@
 """Minimal Telegram bot service using FastAPI and Aiogram.
 
 This module provides a skeleton implementation of a webhook compatible
-service.  The bot uses Finite State Machines (FSM) for different flows:
+service. The bot uses Finite State Machines (FSM) for different flows:
 
 * ``IncidentStates`` – reporting incidents.
 * ``TaskStates`` – creating new tasks.
@@ -19,7 +19,7 @@ from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.storage.base import BaseStorage
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.types import Message
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 
 from ferum_customs.config.settings import settings
 
@@ -54,8 +54,10 @@ def _create_dispatcher(
     storage: BaseStorage | None = None,
 ) -> Dispatcher:
     """Instantiate dispatcher with in‑memory storage."""
-
+    
     if bot is None:
+        if not settings.telegram_bot_token:
+            raise HTTPException(status_code=500, detail="Telegram bot token is not set.")
         bot = Bot(settings.telegram_bot_token)
     if storage is None:
         storage = MemoryStorage()
@@ -86,15 +88,15 @@ async def start_handler(bot: Bot, message: Message, state: FSMContext) -> None:
 @app.on_event("startup")
 async def startup_event() -> None:  # pragma: no cover - example implementation
     """Hook that runs on service startup."""
-
-    # Dispatcher can include routers with handlers here.
+    
+    # Initialize any necessary resources or configurations here.
     pass
 
 
 @app.on_event("shutdown")
 async def shutdown_event() -> None:  # pragma: no cover - example implementation
     """Hook that runs on service shutdown."""
-
+    
     await dispatcher.storage.close()
 
 

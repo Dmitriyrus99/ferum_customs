@@ -1,0 +1,10 @@
+--- ferum_customs/ferum_customs/doctype/payroll_entry_custom/__init__.py
++++ ferum_customs/ferum_customs/doctype/payroll_entry_custom/__init__.py
+@@ -1 +1,6 @@
+-__version__ = "0.0.1"
++"""
++This module contains the initialization for the Payroll Entry Custom DocType.
++Versioning follows semantic versioning conventions.
++"""
++
++__version__ = "0.0.1"

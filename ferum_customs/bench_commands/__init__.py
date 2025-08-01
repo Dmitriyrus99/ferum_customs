@@ -1,1 +1,2 @@
-# The provided snippet is empty, so there are no issues to address.
+# This file is intended for custom bench commands related to the Ferum Customs application.
+# Add your custom commands here.

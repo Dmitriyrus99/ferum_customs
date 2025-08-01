@@ -3,6 +3,23 @@
     "name": "Payroll Entry Custom",
     "module": "Ferum Customs",
     "track_changes": 1,
+    "permissions": [
+        {
+            "role": "System Manager",
+            "read": 1,
+            "write": 1,
+            "create": 1,
+            "delete": 1,
+            "submit": 1,
+            "cancel": 1,
+            "print": 1,
+            "email": 1
+        },
+        {
+            "role": "Employee",
+            "read": 1
+        }
+    ],
     "fields": [
         {
             "fieldname": "total_payable",
@@ -10,14 +27,16 @@
             "fieldtype": "Currency",
             "read_only": 1,
             "precision": 2,
-            "options": "currency"
+            "options": "currency",
+            "default": 0.00
         },
         {
             "fieldname": "total_deductions",
             "label": "Total Deductions",
             "fieldtype": "Currency",
             "precision": 2,
-            "options": "currency"
+            "options": "currency",
+            "default": 0.00
         },
         {
             "fieldname": "net_payable",
@@ -25,7 +44,8 @@
             "fieldtype": "Currency",
             "read_only": 1,
             "precision": 2,
-            "options": "currency"
+            "options": "currency",
+            "default": 0.00
         }
     ]
 }

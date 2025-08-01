@@ -1,0 +1,11 @@
+--- ferum_customs/ferum_customs/doctype/service_request/__init__.py
++++ ferum_customs/ferum_customs/doctype/service_request/__init__.py
+@@ -1 +1,7 @@
+-__version__ = "0.0.1"
++"""
++Service Request Module
++
++This module handles the service request functionalities for the Ferum Customs application.
++"""
++
++__version__ = "0.0.1"

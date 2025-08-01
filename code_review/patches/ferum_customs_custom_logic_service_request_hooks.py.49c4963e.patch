@@ -1,0 +1,53 @@
+--- a/ferum_customs/custom_logic/service_request_hooks.py
++++ b/ferum_customs/custom_logic/service_request_hooks.py
+@@ -3,7 +3,7 @@
+ 
+ from __future__ import annotations
+ 
+-from typing import TYPE_CHECKING
++from typing import TYPE_CHECKING, Optional, List
+ 
+ import frappe
+ from frappe import _
+@@ -32,7 +32,7 @@
+ # --------------------------------------------------------------------------- #
+ 
+ 
+-def validate(doc: ServiceRequest, method: str | None = None) -> None:
++def validate(doc: ServiceRequest, method: Optional[str] = None) -> None:
+     """Validate ``Service Request`` before saving."""
+     if doc.status == STATUS_VYPОЛНЕНА and not doc.get(FIELD_CUSTOM_LINKED_REPORT):
+         frappe.throw(_("Нельзя отметить заявку выполненной без связанного отчёта."))
+@@ -43,13 +43,13 @@
+     _ensure_customer(doc)
+ 
+ 
+-def on_update_after_submit(doc: ServiceRequest, method: str | None = None) -> None:
++def on_update_after_submit(doc: ServiceRequest, method: Optional[str] = None) -> None:
+     """Вызывается после обновления отправленного документа."""
+     if doc.status == STATUS_ZAKRYTA:
+         _notify_project_manager(doc)
+ 
+ 
+-def prevent_deletion_with_links(doc: ServiceRequest, method: str | None = None) -> None:
++def prevent_deletion_with_links(doc: ServiceRequest, method: Optional[str] = None) -> None:
+     """Запрещает удаление заявки, если на нее есть ссылки."""
+     if linked_report := frappe.db.exists(
+         "Service Report", {"service_request": doc.name}
+@@ -91,8 +91,8 @@
+ # --------------------------------------------------------------------------- #
+ 
+ 
+-@frappe.whitelist(allow_guest=False)  # type: ignore[misc]
+-def get_engineers_for_object(service_object_name: str) -> list[str]:
++@frappe.whitelist(allow_guest=False)
++def get_engineers_for_object(service_object_name: str) -> List[str]:
+     """Возвращает список инженеров, назначенных на объект обслуживания."""
+     if not service_object_name:
+         return []
+@@ -185,4 +185,4 @@
+         frappe.logger(__name__).error(
+             f"Не удалось отправить уведомление о закрытии заявки '{doc.name}': {e}",
+             exc_info=True,
+-        )
++        )

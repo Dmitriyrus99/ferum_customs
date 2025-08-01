@@ -6,6 +6,7 @@ Python-контроллер для DocType "Service Project".
 from __future__ import annotations
 
 import datetime
+from typing import Optional
 
 import frappe
 from frappe import _
@@ -30,8 +31,8 @@ class ServiceProject(Document):
         Проверяет корректность дат начала и окончания проекта.
         Даты должны быть объектами date/datetime для сравнения.
         """
-        start_date_val = self.get("start_date")
-        end_date_val = self.get("end_date")
+        start_date_val: Optional[str] = self.get("start_date")
+        end_date_val: Optional[str] = self.get("end_date")
 
         if start_date_val and end_date_val:
             try:
@@ -88,7 +89,7 @@ class ServiceProject(Document):
         """Проверяет, что бюджет неотрицательный."""
         if self.get("budget") is not None:
             try:
-                budget_val = float(self.budget)
+                budget_val: float = float(self.budget)
                 if budget_val < 0:
                     frappe.throw(_("Бюджет проекта не может быть отрицательным."))
             except (ValueError, TypeError):

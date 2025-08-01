@@ -1,46 +1,38 @@
 # ferum_customs/install.py
 """
-Код, выполняемый после установки приложения `ferum_customs`.
+Code executed after the installation of the `ferum_customs` application.
 
-Может использоваться для создания начальных данных, ролей,
-пользовательских полей (хотя фикстуры предпочтительнее для этого),
-или других настроек, необходимых для работы приложения.
+Can be used to create initial data, roles,
+custom fields (though fixtures are preferred for this),
+or other settings necessary for the application to function.
 """
 
 import frappe
-from frappe import _  # Для возможных сообщений
-
-# Импорт констант ролей, если они используются
-# from .constants import (
-#     ROLE_PROEKTNYJ_MENEDZHER,
-#     ROLE_OFIS_MENЕДZHER,
-#     ROLE_INZHENER,
-#     ROLE_ZAKAZCHIK
-# )
+from frappe import _  # For possible messages
 
 
 def after_install() -> None:
     """
-    Вызывается один раз после успешной установки приложения.
+    Called once after successful installation of the application.
     """
-    # Убедитесь, что транзакции завершены перед началом операций в after_install
+    # Ensure transactions are completed before starting operations in after_install
     if frappe.db.transaction_writes:
-        frappe.db.commit()  # Коммит предыдущих транзакций, если необходимо
+        frappe.db.commit()  # Commit previous transactions if necessary
 
-    # Создание ролей выполняется через фикстуры (fixtures/role.json).
-    # Дополнительная логика установки может быть добавлена при необходимости.
+    # Role creation should be done through fixtures (fixtures/role.json).
+    # Additional installation logic can be added as needed.
 
-    # Пример: Добавление пользовательских полей программно (обычно делается через fixtures/custom_field.json)
+    # Example: Adding custom fields programmatically (usually done through fixtures/custom_field.json)
     # add_custom_fields()
 
-    # Пример: Установка прав доступа по умолчанию (обычно делается через fixtures/custom_docperm.json)
+    # Example: Setting up default permissions (usually done through fixtures/custom_docperm.json)
     # setup_default_permissions()
 
-    # Пример: Создание начальных данных
+    # Example: Creating initial data
     # create_initial_data()
 
-    frappe.db.commit()  # Финальный коммит
-    frappe.clear_cache()  # Очистка кэша после установки
+    frappe.db.commit()  # Final commit
+    frappe.clear_cache()  # Clear cache after installation
     frappe.msgprint(
         _(
             "Ferum Customs application installed successfully. Please check system settings and user roles."
@@ -50,8 +42,8 @@ def after_install() -> None:
     )
 
 
-# Пример функции для добавления Custom Fields (не рекомендуется, лучше фикстуры)
-# def add_custom_fields():
+# Example function for adding Custom Fields (not recommended, better through fixtures)
+# def add_custom_fields() -> None:
 #     if not frappe.db.exists("Custom Field", {"dt": "User", "fieldname": "custom_user_department"}):
 #         frappe.get_doc({
 #             "doctype": "Custom Field",
@@ -60,12 +52,12 @@ def after_install() -> None:
 #             "label": "Department (Custom)",
 #             "fieldtype": "Link",
 #             "options": "Department",
-#             "insert_after": "role_profile_name" # Пример
+#             "insert_after": "role_profile_name"  # Example
 #         }).insert()
 
-# Пример функции для создания начальных данных
-# def create_initial_data():
-#     if not frappe.db.exists("ServiceType", {"service_type_name": "Standard Maintenance"}): # Пример DocType
+# Example function for creating initial data
+# def create_initial_data() -> None:
+#     if not frappe.db.exists("ServiceType", {"service_type_name": "Standard Maintenance"}):  # Example DocType
 #         frappe.get_doc({
 #             "doctype": "ServiceType",
 #             "service_type_name": "Standard Maintenance",

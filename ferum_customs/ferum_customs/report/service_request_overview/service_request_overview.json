@@ -4,11 +4,12 @@
   "report_name": "Service Request Overview",
   "ref_doctype": "service_request",
   "report_type": "Script Report",
-  "is_standard": "Yes",
+  "is_standard": true,
   "add_total_row": 0,
   "roles": [
     {
-      "role": "Проектный менеджер"
+      "role": "Проектный менеджер",
+      "doctype": "Report"
     }
   ]
 }

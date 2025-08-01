@@ -1,0 +1,47 @@
+--- ferum_customs/fixtures/custom_fields.json
++++ ferum_customs/fixtures/custom_fields.json
+@@ -10,7 +10,7 @@
+     "insert_after": "status",
+     "in_list_view": 1,
+     "reqd": 0,
+-    "module": "Ferum Customs"
++    "module": "Ferum Customs"  // Ensure this matches the actual module name
+   },
+   {
+     "doctype": "Custom Field",
+@@ -21,7 +21,7 @@
+     "fieldtype": "Link",
+     "options": "Service Object",
+     "insert_after": "custom_customer",
+-    "module": "Ferum Customs"
++    "module": "Ferum Customs"  // Ensure this matches the actual module name
+   },
+   {
+     "doctype": "Custom Field",
+@@ -32,7 +32,7 @@
+     "fieldtype": "Link",
+     "options": "User",
+     "insert_after": "custom_service_object_link",
+-    "module": "Ferum Customs"
++    "module": "Ferum Customs"  // Ensure this matches the actual module name
+   },
+   {
+     "doctype": "Custom Field",
+@@ -44,7 +44,7 @@
+     "options": "Service Project",
+     "read_only": 1,
+     "insert_after": "custom_assigned_engineer",
+-    "module": "Ferum Customs"
++    "module": "Ferum Customs"  // Ensure this matches the actual module name
+   },
+   {
+     "doctype": "Custom Field",
+@@ -57,6 +57,6 @@
+     "read_only": 1,
+     "no_copy": 1,
+     "insert_after": "custom_project",
+-    "module": "Ferum Customs"
++    "module": "Ferum Customs"  // Ensure this matches the actual module name
+   }
+-]
++]

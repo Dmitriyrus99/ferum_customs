@@ -1,4 +1,5 @@
 import re
+from typing import Any
 
 import pytest
 
@@ -10,7 +11,8 @@ except ImportError:
 
 
 class TestServiceReport(FrappeTestCase):
-    def test_basic(self, frappe_site):
+    def test_basic(self, frappe_site: str) -> None:
+        """Test the basic functionality of the Service Report DocType."""
         doc = frappe.new_doc("Service Report")
         doc.service_request = "TEST123".strip()
         doc.customer = "CUSTOMER1".strip()

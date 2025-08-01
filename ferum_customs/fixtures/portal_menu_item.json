@@ -1,7 +1,7 @@
 [
   {
     "name": "Service-Requests",
-    "doctype": "Portal Menu Item",
+    "doctype": "portal menu item",
     "title": "Service Requests",
     "route": "service-requests",
     "reference_doctype": "Service Request",

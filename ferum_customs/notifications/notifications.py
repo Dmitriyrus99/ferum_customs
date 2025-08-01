@@ -8,7 +8,7 @@
 Возвращает словарь, описывающий условия для отправки стандартных уведомлений Frappe.
 """
 
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 from frappe import _  # Для перевода возможных строк в будущем
 
@@ -19,12 +19,15 @@ from ferum_customs.constants import ROLE_PROEKTNYJ_MENEDZHER
 def get_notification_config() -> Dict[str, Any]:
     """
     Возвращает конфигурацию для стандартных уведомлений Frappe.
+
+    Возвращаемый словарь содержит ключи, соответствующие DocType, и значения,
+    описывающие условия и параметры уведомлений.
     """
     return {
         "Service Request": {
             # Отправлять уведомление, только если статус изменился.
             "condition": (
-                "doc.get_doc_before_save() and doc.status != doc.get_doc_before_save().status"
+                "doc and doc.get_doc_before_save() and doc.status != doc.get_doc_before_save().status"
             ),
             # Получатели уведомлений
             "send_to_roles": [ROLE_PROEKTNYJ_MENEDZHER],
@@ -47,7 +50,7 @@ def get_notification_config() -> Dict[str, Any]:
             ),
         },
         # "ServiceReport": { # Пример для другого DocType
-        #     "condition": "doc.docstatus == 1", # Отправлять при отправке (submit) ServiceReport
+        #     "condition": "doc and doc.docstatus == 1", # Отправлять при отправке (submit) ServiceReport
         #     "send_to_roles": [ROLE_PROEKTNYJ_MENEDZHER],
         #     "subject": _("Отчет о выполненных работах {{ doc.name }} был отправлен"),
         #     "message": _("Отчет {{ doc.name }} для заявки {{ doc.service_request }} был отправлен.") # service_request - стандартное поле в ServiceReport

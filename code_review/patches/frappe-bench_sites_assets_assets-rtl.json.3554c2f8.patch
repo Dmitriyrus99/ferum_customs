@@ -1,0 +1,9 @@
+--- a/frappe-bench/sites/assets/assets-rtl.json
++++ b/frappe-bench/sites/assets/assets-rtl.json
+@@ -1,4 +1,5 @@
+ {
++    // This file contains the mapping of RTL (Right-to-Left) CSS bundles for various components in the Frappe framework.
+     "rtl_desk.bundle.css": "/assets/frappe/dist/css-rtl/desk.bundle.HHLZUWRP.css",
+     "rtl_email.bundle.css": "/assets/frappe/dist/css-rtl/email.bundle.243OFD4X.css",
+     "rtl_login.bundle.css": "/assets/frappe/dist/css-rtl/login.bundle.R7JVP67R.css",
+

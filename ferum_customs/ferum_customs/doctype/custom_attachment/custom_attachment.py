@@ -9,18 +9,11 @@ import frappe
 from frappe import _  # Для возможных пользовательских сообщений
 from frappe.model.document import Document
 
-# from typing import TYPE_CHECKING
-
-
-# if TYPE_CHECKING:
-# pass
-
-
-class CustomAttachment(Document):  # type: ignore[misc]
-    attachment_type: str | None
+class CustomAttachment(Document):
     """
     Класс документа CustomAttachment.
     """
+    attachment_type: str | None = None
 
     def validate(self) -> None:
         """
@@ -31,29 +24,12 @@ class CustomAttachment(Document):  # type: ignore[misc]
         self._clean_fields()
         self._validate_parent_references()
 
-        # Логика из оригинального файла (custom_attachment.py):
-        # if self.attachment_type:
-        #     self.attachment_type = self.attachment_type.strip().lower()
-        # if self.attachment_file: # Поле Attach обычно хранит URL и не требует strip() здесь
-        #     self.attachment_file = self.attachment_file.strip()
-        # Эта логика теперь в _clean_fields()
-
     def _clean_fields(self) -> None:
         """
         Очистка строковых полей.
         """
-        if self.get("attachment_type") and isinstance(self.attachment_type, str):
+        if self.attachment_type and isinstance(self.attachment_type, str):
             self.attachment_type = self.attachment_type.strip().lower()
-
-        # Поле 'attachment_file' имеет тип Attach. Значение в нем - это URL файла.
-        # URL-ы обычно не содержат начальных/конечных пробелов, которые нужно удалять.
-        # Frappe сам обрабатывает загрузку и сохранение пути к файлу.
-        # Оригинальный код делал self.attachment_file.strip(), что для URL нетипично.
-        # Если есть конкретная причина для этого, ее нужно указать.
-        # if self.get("attachment_file") and isinstance(self.attachment_file, str):
-        #     self.attachment_file = self.attachment_file.strip()
-        #     # Дополнительно можно проверить валидность URL или имени файла.
-        pass
 
     def _validate_parent_references(self) -> None:
         """
@@ -81,13 +57,12 @@ class CustomAttachment(Document):  # type: ignore[misc]
                     )
 
         # Пример бизнес-правила: должен быть указан хотя бы один родитель
-        # if linked_parents_count == 0 and not self.is_new(): # Пропускаем для новых, если они могут быть без родителя временно
-        # if linked_parents_count == 0 and self.docstatus == 0: # Если при сохранении черновика
-        #     frappe.throw(_("Необходимо указать ссылку хотя бы на один родительский документ (Заявка, Отчет или Объект)."))
+        if linked_parents_count == 0 and not self.is_new():
+            frappe.throw(_("Необходимо указать ссылку хотя бы на один родительский документ (Заявка, Отчет или Объект)."))
 
         # Пример бизнес-правила: должен быть указан ТОЛЬКО один родитель
-        # if linked_parents_count > 1:
-        #     frappe.throw(_("Можно указать ссылку только на один родительский документ."))
+        if linked_parents_count > 1:
+            frappe.throw(_("Можно указать ссылку только на один родительский документ."))
 
     # Хук on_trash для CustomAttachment теперь обрабатывается в
     # ferum_customs.custom_logic.file_attachment_utils.on_custom_attachment_trash

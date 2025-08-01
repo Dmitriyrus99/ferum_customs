@@ -1,7 +1,7 @@
-# ferum_customs/ferum_customs/custom_logic/file_attachment_utils.py
-"""Утилиты для работы с файлами вложений.
+# ferum_customs/custom_logic/file_attachment_utils.py
+"""Utilities for working with file attachments.
 
-Содержит функцию для безопасного удаления файлов вложений.
+Contains a function for safely deleting attachment files.
 """
 
 from __future__ import annotations
@@ -10,7 +10,7 @@ import os
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-import frappe  # Frappe логгер интегрирован с системой
+import frappe  # Frappe logger integrated with the system
 from frappe import _
 
 if TYPE_CHECKING:
@@ -20,7 +20,7 @@ else:  # pragma: no cover - provide fallback when Frappe is absent
 
     FrappeDocument = Any  # type: ignore
 
-# Получаем экземпляр логгера Frappe для текущего модуля
+# Get the Frappe logger instance for the current module
 logger = frappe.logger(__name__)
 
 
@@ -31,13 +31,13 @@ def _resolve_attachment_path(file_url: str, is_private: bool) -> tuple[Path, Pat
 
     if not file_url.startswith(prefix):
         msg = (
-            _("Некорректный URL приватного файла: {0}")
+            _("Invalid private file URL: {0}")
             if is_private
-            else _("Некорректный URL публичного файла: {0}")
+            else _("Invalid public file URL: {0}")
         )
         raise frappe.ValidationError(msg.format(file_url))
 
-    relative = file_url[len(prefix) :]
+    relative = file_url[len(prefix):]
     safe_name = os.path.basename(relative)
     if safe_name != relative or not safe_name or safe_name in (".", ".."):
         logger.error(
@@ -47,7 +47,7 @@ def _resolve_attachment_path(file_url: str, is_private: bool) -> tuple[Path, Pat
             safe_name,
         )
         raise frappe.PermissionError(
-            _("Недопустимое имя файла или попытка обхода пути.")
+            _("Invalid file name or path traversal attempt.")
         )
 
     base_dir = Path(frappe.get_site_path(base_folder, "files")).resolve(strict=True)
@@ -60,36 +60,36 @@ def _resolve_attachment_path(file_url: str, is_private: bool) -> tuple[Path, Pat
             file_path,
             base_dir,
         )
-        raise frappe.PermissionError(_("Неверный путь вложения. Доступ запрещен."))
+        raise frappe.PermissionError(_("Invalid attachment path. Access denied."))
 
     return file_path, base_dir, safe_name
 
 
-@frappe.whitelist()  # type: ignore[misc]
+@frappe.whitelist()
 def delete_attachment_file_from_filesystem(
     file_url: str, is_private: bool = False
 ) -> None:
     """
-    Безопасно удаляет физический файл из файловой системы.
-    Предполагается, что этот метод вызывается, когда соответствующая запись "File" удаляется
-    или когда "CustomAttachment" (или подобный DocType) удаляется.
+    Safely deletes a physical file from the filesystem.
+    This method is expected to be called when the corresponding "File" record is deleted
+    or when "CustomAttachment" (or similar DocType) is deleted.
 
     Args:
-        file_url: URL файла (например, /files/myfile.jpg или /private/files/myfile.jpg).
-        is_private: Флаг, указывающий, является ли файл приватным.
+        file_url: File URL (e.g., /files/myfile.jpg or /private/files/myfile.jpg).
+        is_private: Flag indicating whether the file is private.
 
     Raises:
-        frappe.ValidationError: Если `file_url` некорректный.
-        frappe.DoesNotExistError: Если файл не найден.
-        frappe.PermissionError: Если путь выходит за пределы разрешенной директории
-                                 или происходит иная ошибка доступа.
+        frappe.ValidationError: If `file_url` is invalid.
+        frappe.DoesNotExistError: If the file is not found.
+        frappe.PermissionError: If the path goes beyond the allowed directory
+                                 or if another access error occurs.
     """
     if not file_url or not isinstance(file_url, str):
         logger.warning(
             "delete_attachment_file_from_filesystem: Invalid file_url provided: %s",
             file_url,
         )
-        raise frappe.ValidationError(_("Некорректный URL файла вложения."))
+        raise frappe.ValidationError(_("Invalid attachment file URL."))
 
     try:
         file_path, base_dir, safe_name = _resolve_attachment_path(file_url, is_private)
@@ -110,7 +110,7 @@ def delete_attachment_file_from_filesystem(
             exc_info=True,
         )
         raise frappe.PermissionError(
-            _("Ошибка при определении пути к файлу. Обратитесь к администратору.")
+            _("Error determining file path. Please contact the administrator.")
         )
 
     if not file_path.exists():
@@ -137,9 +137,9 @@ def delete_attachment_file_from_filesystem(
         )
         frappe.throw(
             _(
-                "Не удалось удалить файл {0} из файловой системы из-за системной ошибки. Обратитесь к администратору."
+                "Failed to delete file {0} from the filesystem due to a system error. Please contact the administrator."
             ).format(safe_name),
-            title=_("Ошибка удаления файла"),
+            title=_("File Deletion Error"),
         )
     except Exception as e:
         logger.error(
@@ -148,20 +148,20 @@ def delete_attachment_file_from_filesystem(
         )
         frappe.throw(
             _(
-                "Произошла непредвиденная ошибка при удалении файла {0} из файловой системы."
+                "An unexpected error occurred while deleting file {0} from the filesystem."
             ).format(safe_name),
-            title=_("Ошибка удаления файла"),
+            title=_("File Deletion Error"),
         )
 
 
 def on_custom_attachment_trash(doc: FrappeDocument, method: str | None = None) -> None:
     """
-    Вызывается при удалении записи CustomAttachment (on_trash).
-    Удаляет связанный физический файл и, если есть, запись File.
+    Called when a CustomAttachment record is deleted (on_trash).
+    Deletes the associated physical file and, if present, the File record.
 
     Args:
-        doc: Экземпляр документа CustomAttachment.
-        method: Имя вызвавшего метода.
+        doc: Instance of the CustomAttachment document.
+        method: Name of the calling method.
     """
     file_url = doc.get("attachment_file")
     is_private_file = doc.get("is_private", False)
@@ -193,8 +193,8 @@ def on_custom_attachment_trash(doc: FrappeDocument, method: str | None = None) -
             )
             frappe.msgprint(
                 _(
-                    "Ошибка при удалении связанного файла для {0}. Файл мог остаться в системе. Сообщите администратору."
+                    "Error deleting associated file for {0}. The file may remain in the system. Please inform the administrator."
                 ).format(doc.name),
-                title=_("Ошибка удаления файла"),
+                title=_("File Deletion Error"),
                 indicator="orange",
             )

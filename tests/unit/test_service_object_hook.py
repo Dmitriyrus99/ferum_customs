@@ -1,16 +1,21 @@
 import importlib
 from types import SimpleNamespace
-from typing import Any, Dict
+from typing import Dict
 
 import pytest
 
 
 def test_validate_duplicate_serial(frappe_stub) -> None:
-    # Use a more realistic mock for the database check
-    frappe_stub.db.exists = lambda doctype, filters: filters.get("serial_no") == "SN123"
+    """Test validation of duplicate serial numbers in service object."""
+    
+    # Mock the database check for existing serial numbers
+    def mock_exists(doctype: str, filters: Dict[str, str]) -> bool:
+        return filters.get("serial_no") == "SN123"
+    
+    frappe_stub.db.exists = mock_exists
     captured: Dict[str, str] = {}
 
-    def throw(msg: str, exc: Exception | None = None, *a: Any, **k: Any) -> None:
+    def throw(msg: str, exc: Exception | None = None) -> None:
         captured["msg"] = msg
         raise frappe_stub.ValidationError(msg)
 
@@ -18,7 +23,7 @@ def test_validate_duplicate_serial(frappe_stub) -> None:
 
     hooks = importlib.import_module("ferum_customs.custom_logic.service_object_hooks")
 
-    # Strip whitespace from serial_no to match realistic scenarios
+    # Create a mock document with a serial number
     doc: SimpleNamespace = SimpleNamespace(serial_no="SN123", name="SO-0001")
     doc.get = lambda k, d=None: getattr(doc, k, d)
     
