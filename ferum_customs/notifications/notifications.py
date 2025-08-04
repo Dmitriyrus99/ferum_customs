@@ -8,7 +8,7 @@
 Возвращает словарь, описывающий условия для отправки стандартных уведомлений Frappe.
 """
 
-from typing import Any, Dict
+from typing import Any
 
 from frappe import _  # Для перевода возможных строк в будущем
 
@@ -16,7 +16,7 @@ from frappe import _  # Для перевода возможных строк в
 from ferum_customs.constants import ROLE_PROEKTNYJ_MENEDZHER
 
 
-def get_notification_config() -> Dict[str, Any]:
+def get_notification_config() -> dict[str, Any]:
     """
     Возвращает конфигурацию для стандартных уведомлений Frappe.
 

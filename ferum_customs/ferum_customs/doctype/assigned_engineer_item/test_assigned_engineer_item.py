@@ -19,7 +19,7 @@ class TestAssignedEngineerItem(FrappeTestCase):
 
         # Assert that the engineer name is stripped of whitespace
         self.assertEqual(doc.engineer.strip(), "Engineer User")
-        
+
         # Assert that the assignment date is in ISO format
         self.assertIn("T", doc.assignment_date)  # Check for 'T' in ISO format
 

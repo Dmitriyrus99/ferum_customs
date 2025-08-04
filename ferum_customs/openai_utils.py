@@ -1,13 +1,17 @@
-import os
-import openai
 import logging
+import os
 from typing import Optional
+
+import openai
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def get_chat_completion(prompt: str, model: Optional[str] = "gpt-4", max_tokens: Optional[int] = 150) -> Optional[str]:
+
+def get_chat_completion(
+    prompt: str, model: str | None = "gpt-4", max_tokens: int | None = 150
+) -> str | None:
     """
     Generates a chat completion response from OpenAI's API.
 
@@ -22,26 +26,31 @@ def get_chat_completion(prompt: str, model: Optional[str] = "gpt-4", max_tokens:
     # Ensure the API key is retrieved securely
     api_key = os.getenv("OPENAI_API_KEY")
     if not api_key:
-        raise ValueError("API key not found. Please set the OPENAI_API_KEY environment variable.")
+        raise ValueError(
+            "API key not found. Please set the OPENAI_API_KEY environment variable."
+        )
 
     openai.api_key = api_key
 
     # Validate model
     allowed_models = ["gpt-3.5-turbo", "gpt-4"]
     if model not in allowed_models:
-        raise ValueError(f"Model '{model}' is not allowed. Choose from {allowed_models}.")
+        raise ValueError(
+            f"Model '{model}' is not allowed. Choose from {allowed_models}."
+        )
 
     try:
         sanitized_prompt = sanitize_input(prompt)
         response = openai.ChatCompletion.create(
             model=model,
             messages=[{"role": "user", "content": sanitized_prompt}],
-            max_tokens=max_tokens
+            max_tokens=max_tokens,
         )
-        return response.choices[0].message['content'].strip()
+        return response.choices[0].message["content"].strip()
     except openai.error.OpenAIError as e:
         logger.error(f"An error occurred: {e}")
         return None
+
 
 def sanitize_input(prompt: str) -> str:
     """

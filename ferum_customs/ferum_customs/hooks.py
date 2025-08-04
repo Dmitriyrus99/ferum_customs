@@ -1,7 +1,8 @@
 # Ferum Customs - hooks
-from typing import Any, Dict  # Import Dict for type hinting
-from ferum_customs.custom_hooks import DOC_EVENTS
+from typing import Any
+
 from ferum_customs.bench_commands.run_tests import run_tests
+from ferum_customs.custom_hooks import DOC_EVENTS
 
 app_name = "ferum_customs"
 app_title = "Ferum Customs"
@@ -23,7 +24,9 @@ permission_query_conditions = {
     "Service Request": "ferum_customs.permissions.permissions.get_service_request_pqc",
 }
 
-get_notification_config = "ferum_customs.notifications.notifications.get_notification_config"
+get_notification_config = (
+    "ferum_customs.notifications.notifications.get_notification_config"
+)
 
 # Fixtures for the app
 fixtures = [
@@ -36,24 +39,18 @@ fixtures = [
     "DocPerm",
 ]
 
+
 # Bench commands: custom CLI tools for this app
-def get_bench_commands() -> Dict[str, Any]:
+def get_bench_commands() -> dict[str, Any]:
     return [
-        {
-            "command": run_tests,
-            "description": "Run custom tests for Ferum Customs"
-        },
+        {"command": run_tests, "description": "Run custom tests for Ferum Customs"},
     ]
 
-def scheduler_events() -> Dict[str, Any]:  # Use Dict for type hinting
+
+def scheduler_events() -> dict[str, Any]:  # Use Dict for type hinting
     """Return scheduler events configuration for Frappe."""
-    return {
-        "cron": {
-            "0 * * * *": [
-                "ferum_customs.tasks.run_scheduled_task"
-            ]
-        }
-    }
+    return {"cron": {"0 * * * *": ["ferum_customs.tasks.run_scheduled_task"]}}
+
 
 try:  # dev-hooks (если есть)
     from ferum_customs.dev_hooks import *  # Avoid wildcard imports

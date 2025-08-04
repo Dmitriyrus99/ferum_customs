@@ -1,8 +1,10 @@
 import sys
 import types
-import pytest
-from typing import Any, Callable, Dict
+from collections.abc import Callable
+from typing import Any
 from unittest.mock import MagicMock
+
+import pytest
 
 # Provide minimal aiogram stubs so tests can run without the real library
 if "aiogram" not in sys.modules:

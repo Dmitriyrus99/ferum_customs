@@ -5,15 +5,16 @@ Python-контроллер для DocType "Payroll Entry Custom".
 
 from __future__ import annotations
 
+from typing import Optional
+
 import frappe
 from frappe.model.document import Document
-from typing import Optional
 
 
 class PayrollEntryCustom(Document):
-    total_payable: Optional[float] = None
-    total_deductions: Optional[float] = None
-    net_payable: Optional[float] = None
+    total_payable: float | None = None
+    total_deductions: float | None = None
+    net_payable: float | None = None
     """
     Класс документа PayrollEntryCustom.
     """
@@ -67,7 +68,10 @@ class PayrollEntryCustom(Document):
                     "ServiceReport",
                     filters={
                         "custom_assigned_engineer": self.get("employee"),
-                        "posting_date": ["between", [self.get("start_date"), self.get("end_date")]],
+                        "posting_date": [
+                            "between",
+                            [self.get("start_date"), self.get("end_date")],
+                        ],
                         "docstatus": 1,
                     },
                     fields=["custom_bonus_amount"],
@@ -96,5 +100,5 @@ class PayrollEntryCustom(Document):
         if self.total_payable is None:
             self.total_payable = 0.0
 
-        if isinstance(self.total_payable, (float, int)):
+        if isinstance(self.total_payable, float | int):
             self.total_payable = round(self.total_payable, 2)

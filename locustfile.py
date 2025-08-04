@@ -1,5 +1,7 @@
-from locust import HttpUser, between, task
 import logging
+
+from locust import HttpUser, between, task
+
 
 class WebsiteUser(HttpUser):
     """User class for load testing the website."""
@@ -11,4 +13,6 @@ class WebsiteUser(HttpUser):
         """Task to check the health of the application."""
         response = self.client.get("/health")
         if response.status_code != 200:
-            logging.error(f"Health check failed with status code {response.status_code}")
+            logging.error(
+                f"Health check failed with status code {response.status_code}"
+            )

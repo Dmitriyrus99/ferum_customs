@@ -26,16 +26,18 @@ class TestServiceReport(FrappeTestCase):
             },
         )
         doc.validate()
-        
+
         # Validate posting date format
         self.assertTrue(
             doc.posting_date.endswith("Z")
             or re.match(r".*\+\d{2}:\d{2}", doc.posting_date.isoformat())
         )
-        
+
         # Validate work items
         for item in doc.work_items:
             self.assertEqual(item.description, "Test work item")
             self.assertAlmostEqual(item.quantity, 2.56, places=2)
             self.assertAlmostEqual(item.unit_price, 100.56, places=2)
-            self.assertAlmostEqual(item.amount, item.quantity * item.unit_price, places=2)
+            self.assertAlmostEqual(
+                item.amount, item.quantity * item.unit_price, places=2
+            )

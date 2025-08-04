@@ -13,7 +13,8 @@ if TYPE_CHECKING:
         PayrollEntryCustom,
     )
 
-def validate(doc: PayrollEntryCustom, method: Optional[str] = None) -> None:
+
+def validate(doc: PayrollEntryCustom, method: str | None = None) -> None:
     """
     Проверяет корректность дат периода. Дата окончания не может быть раньше даты начала.
 
@@ -35,7 +36,8 @@ def validate(doc: PayrollEntryCustom, method: Optional[str] = None) -> None:
                 )
             )
 
-def before_save(doc: PayrollEntryCustom, method: Optional[str] = None) -> None:
+
+def before_save(doc: PayrollEntryCustom, method: str | None = None) -> None:
     """Calculate ``total_payable`` before saving."""
 
     total_bonus = 0.0
@@ -66,5 +68,5 @@ def before_save(doc: PayrollEntryCustom, method: Optional[str] = None) -> None:
     if doc.total_payable is None:
         doc.total_payable = 0.0
 
-    if isinstance(doc.total_payable, (float, int)):
+    if isinstance(doc.total_payable, float | int):
         doc.total_payable = round(doc.total_payable, 2)

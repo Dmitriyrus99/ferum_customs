@@ -12,8 +12,15 @@ class TestAPIIntegration(FrappeTestCase):
         # Ensure the test is isolated by using a transaction or a test site
         with self.frappe_site:
             name = api.bot_create_service_request("From bot", description="demo")
-            self.assertTrue(frappe.db.exists("Service Request", name), "Service Request was not created.")
-            
+            self.assertTrue(
+                frappe.db.exists("Service Request", name),
+                "Service Request was not created.",
+            )
+
             results = api.bot_get_service_requests()
             service_request_names = [r["name"] for r in results]
-            self.assertIn(name, service_request_names, "Service Request name not found in the results.")
+            self.assertIn(
+                name,
+                service_request_names,
+                "Service Request name not found in the results.",
+            )

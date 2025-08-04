@@ -3,7 +3,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional, List
+from typing import TYPE_CHECKING, Optional
 
 import frappe
 from frappe import _
@@ -21,6 +21,7 @@ from ferum_customs.constants import (
 
 if TYPE_CHECKING:
     from frappe.model.document import Document as FrappeDocument
+
     from ferum_customs.ferum_customs.doctype.service_request.service_request import (
         ServiceRequest,
     )
@@ -31,7 +32,7 @@ if TYPE_CHECKING:
 # --------------------------------------------------------------------------- #
 
 
-def validate(doc: ServiceRequest, method: Optional[str] = None) -> None:
+def validate(doc: ServiceRequest, method: str | None = None) -> None:
     """Validate ``Service Request`` before saving."""
     if doc.status == STATUS_VYPОЛНЕНА and not doc.get(FIELD_CUSTOM_LINKED_REPORT):
         frappe.throw(_("Cannot mark the request as completed without a linked report."))
@@ -42,13 +43,13 @@ def validate(doc: ServiceRequest, method: Optional[str] = None) -> None:
     _ensure_customer(doc)
 
 
-def on_update_after_submit(doc: ServiceRequest, method: Optional[str] = None) -> None:
+def on_update_after_submit(doc: ServiceRequest, method: str | None = None) -> None:
     """Triggered after updating a submitted document."""
     if doc.status == STATUS_ZAKRYTA:
         _notify_project_manager(doc)
 
 
-def prevent_deletion_with_links(doc: ServiceRequest, method: Optional[str] = None) -> None:
+def prevent_deletion_with_links(doc: ServiceRequest, method: str | None = None) -> None:
     """Prevents deletion of the request if there are links to it."""
     if linked_report := frappe.db.exists(
         "Service Report", {"service_request": doc.name}
@@ -91,7 +92,7 @@ def _ensure_customer(doc: ServiceRequest) -> None:
 
 
 @frappe.whitelist(allow_guest=False)
-def get_engineers_for_object(service_object_name: str) -> List[str]:
+def get_engineers_for_object(service_object_name: str) -> list[str]:
     """Returns a list of engineers assigned to the service object."""
     if not service_object_name:
         return []

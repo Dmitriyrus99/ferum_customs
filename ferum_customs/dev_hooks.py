@@ -1,7 +1,7 @@
 """Local development hooks for customizing Frappe/ERPNext behavior.
 
 This file allows you to add overrides or additional hook definitions
-specific to your local development environment. 
+specific to your local development environment.
 
 You can extend fixtures, define custom hooks for events, and more.
 

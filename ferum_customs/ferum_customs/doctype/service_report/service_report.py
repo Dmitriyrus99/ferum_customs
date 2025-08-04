@@ -6,7 +6,7 @@ Python controller for DocType "Service Report".
 from __future__ import annotations
 
 import datetime
-from typing import Optional, List, Dict
+from typing import Optional
 
 import frappe
 from frappe import _
@@ -14,8 +14,8 @@ from frappe.model.document import Document
 
 
 class ServiceReport(Document):
-    service_request: Optional[str] = None
-    customer: Optional[str] = None
+    service_request: str | None = None
+    customer: str | None = None
     total_quantity: float = 0.0
     total_payable: float = 0.0
 
@@ -44,14 +44,14 @@ class ServiceReport(Document):
         posting_date_val = self.get("posting_date")
         if posting_date_val:
             if not isinstance(posting_date_val, str):
-                if isinstance(posting_date_val, (datetime.datetime, datetime.date)):
+                if isinstance(posting_date_val, datetime.datetime | datetime.date):
                     self.posting_date = posting_date_val.isoformat()
         else:
             if self.is_new() and self.meta.get_field("posting_date").reqd:
                 self.posting_date = frappe.utils.nowdate()
 
     def _validate_work_items(self) -> None:
-        work_items_table: List[Dict] = self.get("work_items") or []
+        work_items_table: list[dict] = self.get("work_items") or []
         if not work_items_table:
             return
 
@@ -60,7 +60,9 @@ class ServiceReport(Document):
             description = item.get("description", "").strip()
             if not description:
                 frappe.throw(
-                    _("Description is required for all work items (row {0}).").format(row_num)
+                    _("Description is required for all work items (row {0}).").format(
+                        row_num
+                    )
                 )
             item["description"] = description
 
@@ -96,7 +98,7 @@ class ServiceReport(Document):
         total_qty: float = 0.0
         total_pay: float = 0.0
 
-        work_items_table: List[Dict] = self.get("work_items", [])
+        work_items_table: list[dict] = self.get("work_items", [])
 
         for item in work_items_table:
             try:

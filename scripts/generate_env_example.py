@@ -6,8 +6,9 @@ This script reads the settings from the environment and generates a
 variables.
 """
 
-from ferum_customs.config.settings import Settings
 import os
+
+from ferum_customs.config.settings import Settings
 
 
 def main() -> None:
@@ -15,19 +16,19 @@ def main() -> None:
     settings = Settings(telegram_bot_token=os.getenv("TELEGRAM_BOT_TOKEN", ""))
     fields = settings.model_fields
     lines = ["# Generated .env.example"]
-    
+
     for name, _ in fields.items():
         key = name.upper()
         default = getattr(settings, name, "")
         lines.append(f"{key}={default if default is not None else ''}")
 
     content = "\n".join(lines) + "\n"
-    
+
     try:
         with open(".env.example", "w", encoding="utf-8") as f:
             f.write(content)
         print("✅ .env.example generated.")
-    except IOError as e:
+    except OSError as e:
         print(f"❌ Error writing .env.example: {e}")
 
 

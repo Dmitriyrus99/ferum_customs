@@ -19,8 +19,8 @@ class TestPayrollEntryCustom(FrappeTestCase):
         """Test edge cases for total_payable rounding."""
         edge_cases = [1234.564, 1234.565, 1234.566]
         expected_results = [1234.56, 1234.57, 1234.57]
-        
-        for value, expected in zip(edge_cases, expected_results):
+
+        for value, expected in zip(edge_cases, expected_results, strict=False):
             doc = frappe.new_doc("Payroll Entry Custom")
             doc.total_payable = value
             doc.validate()

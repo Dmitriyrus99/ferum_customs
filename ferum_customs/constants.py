@@ -16,7 +16,6 @@
 - Используйте ROLE_ADMINISTRATOR для проверки прав доступа пользователя.
 """
 
-from typing import List
 
 # --- Статусы Заявок на обслуживание (service_request) ---
 STATUS_OPEN: str = "Open"
@@ -33,7 +32,7 @@ STATUS_VYPOLNENA: str = "Выполнена"
 STATUS_ZAKRYTA: str = "Закрыта"
 STATUS_OTMENENA: str = "Отменена"
 
-SERVICE_REQUEST_STATUSES: List[str] = [
+SERVICE_REQUEST_STATUSES: list[str] = [
     STATUS_OTKRYTA,
     STATUS_V_RABOTE,
     STATUS_VYPOLNENA,

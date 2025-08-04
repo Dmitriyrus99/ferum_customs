@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Optional, Tuple, List, Dict
+from typing import Any, Optional
 
 import frappe
 from frappe import _
@@ -9,8 +9,8 @@ from ferum_customs.constants import STATUS_OTMENENA, STATUS_ZAKRYTA
 
 
 def execute(
-    filters: Optional[Dict[str, Any]] = None
-) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
+    filters: dict[str, Any] | None = None,
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
     """
     Execute the service request overview report.
 

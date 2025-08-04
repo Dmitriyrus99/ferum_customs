@@ -1,12 +1,14 @@
-from typing import Any, List, Dict, Optional
+from typing import Any
 
 import frappe
 from frappe import _, whitelist
 from frappe.exceptions import PermissionError
+
 from ferum_customs.constants import SERVICE_REQUEST_STATUSES, STATUS_OTKRYTA
 
+
 @frappe.whitelist()
-def validate_service_request(docname: str) -> Optional[Dict[str, Any]]:
+def validate_service_request(docname: str) -> dict[str, Any] | None:
     """Return the service request document as a dict after permission check."""
     if not frappe.has_permission("Service Request", "read"):
         frappe.throw(_("Not permitted"), PermissionError)
@@ -34,7 +36,7 @@ def cancel_service_request(docname: str) -> None:
 
 
 @frappe.whitelist()
-def validate_service_report(docname: str) -> Optional[Dict[str, Any]]:
+def validate_service_report(docname: str) -> dict[str, Any] | None:
     """Return the service report document as a dict after permission check."""
     if not frappe.has_permission("Service Report", "read"):
         frappe.throw(_("Not permitted"), PermissionError)
@@ -109,8 +111,8 @@ def create_invoice_from_report(service_report: str) -> str:
 @frappe.whitelist()
 def bot_create_service_request(
     subject: str,
-    customer: Optional[str] = None,
-    description: Optional[str] = None,
+    customer: str | None = None,
+    description: str | None = None,
 ) -> str:
     """Create a Service Request document on behalf of the Telegram bot."""
     doc = frappe.get_doc(
@@ -153,7 +155,7 @@ def bot_upload_attachment(docname: str, file_url: str, attachment_type: str) -> 
 
 
 @frappe.whitelist()
-def bot_get_service_requests(status: Optional[str] = None) -> List[Dict[str, Any]]:
+def bot_get_service_requests(status: str | None = None) -> list[dict[str, Any]]:
     """Return a list of Service Requests filtered by status."""
     filters = {"status": status} if status else {}
     return frappe.get_all(

@@ -1,13 +1,14 @@
 # Copyright (c) 2025 Ferum LLC and contributors
 # For license information, please see license.txt
 
-from frappe.model.document import Document
 from frappe import _
+from frappe.model.document import Document
+
 
 class ServiceReportWorkItem(Document):
-    """Represents a work item in a service report. 
+    """Represents a work item in a service report.
     This DocType is used to manage individual work items associated with service reports.
-    
+
     Attributes:
         field_name (str): Description of the field.
         another_field (int): Description of another field.

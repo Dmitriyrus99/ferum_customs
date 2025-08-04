@@ -12,6 +12,7 @@ whitelisted API methods defined in :mod:`ferum_customs.api`.
 """
 
 from __future__ import annotations
+
 from typing import Optional
 
 from aiogram import Bot, Dispatcher
@@ -51,14 +52,16 @@ app = FastAPI(title="Ferum Bot Service")
 
 
 def _create_dispatcher(
-    bot: Optional[Bot] = None,
-    storage: Optional[BaseStorage] = None,
+    bot: Bot | None = None,
+    storage: BaseStorage | None = None,
 ) -> Dispatcher:
     """Instantiate dispatcher with in‑memory storage."""
-    
+
     if bot is None:
         if not settings.telegram_bot_token:
-            raise HTTPException(status_code=500, detail="Telegram bot token is not set.")
+            raise HTTPException(
+                status_code=500, detail="Telegram bot token is not set."
+            )
         bot = Bot(settings.telegram_bot_token)
     if storage is None:
         storage = MemoryStorage()
@@ -66,7 +69,7 @@ def _create_dispatcher(
 
 
 def get_dispatcher(
-    *, bot: Optional[Bot] = None, storage: Optional[BaseStorage] = None
+    *, bot: Bot | None = None, storage: BaseStorage | None = None
 ) -> Dispatcher:
     """Return a dispatcher instance for external usage (e.g. tests)."""
 
@@ -89,7 +92,7 @@ async def start_handler(bot: Bot, message: Message, state: FSMContext) -> None:
 @app.on_event("startup")
 async def startup_event() -> None:
     """Hook that runs on service startup."""
-    
+
     # Initialize any necessary resources or configurations here.
     pass
 
@@ -97,7 +100,7 @@ async def startup_event() -> None:
 @app.on_event("shutdown")
 async def shutdown_event() -> None:
     """Hook that runs on service shutdown."""
-    
+
     await dispatcher.storage.close()
 
 

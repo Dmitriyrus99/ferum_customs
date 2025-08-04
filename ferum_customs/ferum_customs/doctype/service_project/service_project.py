@@ -31,8 +31,8 @@ class ServiceProject(Document):
         Проверяет корректность дат начала и окончания проекта.
         Даты должны быть объектами date/datetime для сравнения.
         """
-        start_date_val: Optional[str] = self.get("start_date")
-        end_date_val: Optional[str] = self.get("end_date")
+        start_date_val: str | None = self.get("start_date")
+        end_date_val: str | None = self.get("end_date")
 
         if start_date_val and end_date_val:
             try:
@@ -61,7 +61,7 @@ class ServiceProject(Document):
         for fieldname in date_fields:
             field_value = self.get(fieldname)
             if field_value and not isinstance(field_value, str):
-                if isinstance(field_value, (datetime.datetime, datetime.date)):
+                if isinstance(field_value, datetime.datetime | datetime.date):
                     try:
                         setattr(self, fieldname, field_value.isoformat())
                     except Exception as e:

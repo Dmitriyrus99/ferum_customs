@@ -4,10 +4,12 @@ Python-контроллер для DocType "Service Object".
 """
 
 from __future__ import annotations
-from frappe.model.document import Document
+
+from typing import Optional
+
 import frappe
 from frappe import _
-from typing import Optional
+from frappe.model.document import Document
 
 
 class ServiceObject(Document):
@@ -17,10 +19,10 @@ class ServiceObject(Document):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.linked_service_project: Optional[str] = None
-        self.object_name: Optional[str] = None
-        self.warranty_expiry_date: Optional[str] = None
-        self.purchase_date: Optional[str] = None
+        self.linked_service_project: str | None = None
+        self.object_name: str | None = None
+        self.warranty_expiry_date: str | None = None
+        self.purchase_date: str | None = None
 
     def validate(self) -> None:
         """
@@ -34,7 +36,9 @@ class ServiceObject(Document):
         # Пример дополнительной валидации:
         if self.warranty_expiry_date and self.purchase_date:
             if self.warranty_expiry_date < self.purchase_date:
-                frappe.throw(_("Дата окончания гарантии не может быть раньше даты покупки."))
+                frappe.throw(
+                    _("Дата окончания гарантии не может быть раньше даты покупки.")
+                )
 
     def _clean_fields(self) -> None:
         """

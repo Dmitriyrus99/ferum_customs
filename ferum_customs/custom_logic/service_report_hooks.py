@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 try:
     import frappe
@@ -18,7 +18,8 @@ if TYPE_CHECKING:
         ServiceRequest,
     )
 
-def validate(doc: ServiceReport, method: Optional[str] = None) -> None:
+
+def validate(doc: ServiceReport, method: str | None = None) -> None:
     """Validate the Service Report before submission."""
     if not doc.service_request:
         raise frappe.ValidationError(
@@ -53,7 +54,8 @@ def validate(doc: ServiceReport, method: Optional[str] = None) -> None:
             ).format(STATUS_VYPOLNENA, req_status)
         )
 
-def on_submit(doc: ServiceReport, method: Optional[str] = None) -> None:
+
+def on_submit(doc: ServiceReport, method: str | None = None) -> None:
     """Update the linked Service Request upon submission of the Service Report."""
     if not doc.service_request:
         frappe.logger().warning(
@@ -78,9 +80,7 @@ def on_submit(doc: ServiceReport, method: Optional[str] = None) -> None:
             indicator="green",
             alert=True,
         )
-        frappe.logger().info(
-            f"Заявка '{req.name}' обновлена из отчета '{doc.name}'."
-        )
+        frappe.logger().info(f"Заявка '{req.name}' обновлена из отчета '{doc.name}'.")
 
     except frappe.DoesNotExistError:
         frappe.logger().error(

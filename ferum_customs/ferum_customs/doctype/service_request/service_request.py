@@ -29,15 +29,15 @@ class ServiceRequest(Document):  # type: ignore[misc]
     # Аннотации типов для полей DocType
     subject: DF.Data
     status: DF.Data
-    custom_customer: Optional[DF.Link]
-    custom_service_object_link: Optional[DF.Link]
-    custom_project: Optional[DF.Link]
+    custom_customer: DF.Link | None
+    custom_service_object_link: DF.Link | None
+    custom_project: DF.Link | None
     request_datetime: DF.Datetime
-    completed_on: Optional[DF.Datetime]
-    planned_start_datetime: Optional[DF.Datetime]
-    planned_end_datetime: Optional[DF.Datetime]
-    actual_start_datetime: Optional[DF.Datetime]
-    actual_end_datetime: Optional[DF.Datetime]
+    completed_on: DF.Datetime | None
+    planned_start_datetime: DF.Datetime | None
+    planned_end_datetime: DF.Datetime | None
+    actual_start_datetime: DF.Datetime | None
+    actual_end_datetime: DF.Datetime | None
     duration_hours: DF.Float
 
     def validate(self) -> None:
