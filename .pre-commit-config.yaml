@@ -100,6 +100,7 @@ repos:
         additional_dependencies:
           - pydantic-settings
         exclude: '^\.venv_dev/'
+        pass_filenames: false
 
   - repo: local
     hooks:
@@ -107,7 +108,7 @@ repos:
           name: Check fixture JSON doctype field
           entry: scripts/check_fixtures_doctype.py
           language: python
-          language_version: python3
+          language_version: python3.12  # current venv
           files: ^ferum_customs/fixtures/.*\.json$
 
   # Consider adding hooks for testing and security checks
