@@ -13,7 +13,7 @@
     },
     {
       "doctype": "Role",
-      "role": "Другие роли"  // Consider adding more roles as needed
+      "role": "Другие роли"
     }
   ]
 }
