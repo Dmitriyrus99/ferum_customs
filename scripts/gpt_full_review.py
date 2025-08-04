@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 Asynchronous GPT-powered code review helper.
 Version: 2.1 (fixes and improvements as of 2025-07-31)
@@ -17,9 +16,10 @@ import pathlib
 import random
 import re
 import textwrap
+from collections.abc import Iterable
 from dataclasses import asdict, dataclass
 from hashlib import md5
-from typing import Dict, Final, Iterable, List, Optional, Set
+from typing import Final, Optional
 
 import pathspec
 import tiktoken
@@ -52,7 +52,7 @@ OPENAI_RETRY_ATTEMPTS: Final[int] = 6
 OPENAI_BASE_DELAY: Final[float] = 2.0
 OPENAI_MAX_DELAY: Final[float] = 30.0
 
-EXTS: Final[Set[str]] = {
+EXTS: Final[set[str]] = {
     ".py",
     ".js",
     ".ts",
@@ -67,7 +67,7 @@ EXTS: Final[Set[str]] = {
     ".sh",
     ".sql",
 }
-IGNORE_EXTS: Final[Set[str]] = {
+IGNORE_EXTS: Final[set[str]] = {
     ".zip",
     ".tar",
     ".gz",
@@ -86,7 +86,7 @@ IGNORE_EXTS: Final[Set[str]] = {
     ".pem",
     ".log",
 }
-IGNORE_PATTERNS: Final[Set[str]] = {
+IGNORE_PATTERNS: Final[set[str]] = {
     "node_modules",
     "__pycache__",
     ".git",
@@ -115,7 +115,7 @@ SYSTEM_MSG: Final[str] = (
     "Provide no commentary outside the list or code block."
 )
 
-SECRET_PATTERNS: Final[List[re.Pattern[str]]] = [
+SECRET_PATTERNS: Final[list[re.Pattern[str]]] = [
     re.compile(r"AKIA[0-9A-Z]{16}"),
     re.compile(r"(?:ghp|gho|ghs|ghu)_[0-9A-Za-z]{36}"),
     re.compile(r"-----BEGIN (?:RSA|EC) PRIVATE KEY-----"),

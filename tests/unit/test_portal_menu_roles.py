@@ -1,11 +1,11 @@
 import json
 from pathlib import Path
-from typing import Any, List, Dict
+from typing import Any
 
 FIXTURE_PATH = Path("ferum_customs/fixtures")
 
 
-def load_fixture(name: str) -> List[Dict[str, Any]]:
+def load_fixture(name: str) -> list[dict[str, Any]]:
     file_path = FIXTURE_PATH / name
     if not file_path.exists():
         raise FileNotFoundError(f"Fixture file {name} does not exist.")

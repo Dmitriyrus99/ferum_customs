@@ -1,5 +1,5 @@
 import importlib
-from typing import List
+
 
 def test_basic_imports() -> None:
     """Ensure that core dependencies are available for import.
@@ -8,7 +8,7 @@ def test_basic_imports() -> None:
     If any module is not found, an AssertionError will be raised. All specified modules
     should be importable without errors.
     """
-    modules: List[str] = ["aiogram", "fastapi", "requests_oauthlib"]
+    modules: list[str] = ["aiogram", "fastapi", "requests_oauthlib"]
 
     for module in modules:
         try:

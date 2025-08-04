@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Optional, Tuple, List, Dict
+from typing import Any, Optional
 
 import frappe
 from frappe import _
@@ -10,8 +10,8 @@ from ferum_customs.constants import STATUS_OTMENENA, STATUS_ZAKRYTA
 
 @frappe.whitelist()
 def execute(
-    filters: Optional[dict] = None
-) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
+    filters: dict | None = None,
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
     """
     Execute the engineer workload report.
 

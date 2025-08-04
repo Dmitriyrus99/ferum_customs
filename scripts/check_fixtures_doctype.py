@@ -4,7 +4,6 @@
 import json
 import sys
 from pathlib import Path
-from typing import List, Optional
 
 
 def check_file(path: Path) -> bool:
@@ -21,7 +20,7 @@ def check_file(path: Path) -> bool:
     return not missing
 
 
-def main(paths: List[str]) -> int:
+def main(paths: list[str]) -> int:
     """Main function to check multiple JSON files for 'doctype' field."""
     ok = True
     for path_str in paths:

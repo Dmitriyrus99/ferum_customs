@@ -1,8 +1,8 @@
 import importlib
+import os
 from datetime import datetime, timezone
 from types import SimpleNamespace
 from typing import TYPE_CHECKING, cast
-import os
 
 import pytest
 from aiogram import Bot
@@ -18,6 +18,7 @@ from aiogram.fsm.storage.memory import MemoryStorage
 
 from telegram_bot.bot_service import IncidentStates, get_dispatcher, start_handler
 
+
 @pytest.fixture
 def bot() -> Bot:
     """Fixture to create a Bot instance."""
@@ -26,10 +27,12 @@ def bot() -> Bot:
         raise ValueError("BOT_TOKEN environment variable is not set.")
     return Bot(token=token, parse_mode="HTML")
 
+
 @pytest.fixture
 def storage() -> MemoryStorage:
     """Fixture to create a MemoryStorage instance."""
     return MemoryStorage()
+
 
 @pytest.mark.asyncio
 async def test_start_handler_sets_incident_state(bot: Bot, storage: MemoryStorage):
@@ -48,6 +51,7 @@ async def test_start_handler_sets_incident_state(bot: Bot, storage: MemoryStorag
     )
     await start_handler(bot=bot, message=message, state=state)
     assert await state.get_state() == IncidentStates.waiting_object.state
+
 
 def test_get_dispatcher_custom_bot_and_storage(bot: Bot, storage: MemoryStorage):
     """Test that get_dispatcher returns the provided bot and storage objects."""

@@ -1,6 +1,8 @@
 import importlib
 from types import SimpleNamespace
+
 import pytest
+
 
 @pytest.mark.unit
 def test_create_invoice_from_report(frappe_stub):

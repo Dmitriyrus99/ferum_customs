@@ -11,4 +11,7 @@ Functions:
 
 from .bot_service import IncidentStates, start_handler
 
-__all__ = ["start_handler", "IncidentStates"]  # Expose the main handler and incident states for external use.
+__all__ = [
+    "start_handler",
+    "IncidentStates",
+]  # Expose the main handler and incident states for external use.

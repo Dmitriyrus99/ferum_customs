@@ -21,7 +21,7 @@ setup(
         "Framework :: Frappe",
         "Framework :: ERPNext",
     ],
-    python_requires='>=3.6',  # Specify the minimum Python version
+    python_requires=">=3.6",  # Specify the minimum Python version
 )
 
 # Changelog:

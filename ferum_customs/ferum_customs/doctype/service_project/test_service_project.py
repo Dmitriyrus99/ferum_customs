@@ -1,6 +1,7 @@
 import pytest
-from frappe import new_doc, utils, exceptions
+from frappe import exceptions, new_doc, utils
 from frappe.tests.utils import FrappeTestCase
+
 
 class TestServiceProject(FrappeTestCase):
     def test_date_validation(self):
@@ -8,7 +9,7 @@ class TestServiceProject(FrappeTestCase):
         doc = new_doc("Service Project")
         doc.start_date = utils.now_datetime()
         doc.end_date = utils.add_days(doc.start_date, -1)
-        
+
         with pytest.raises(exceptions.ValidationError):
             doc.validate()
 
@@ -17,6 +18,6 @@ class TestServiceProject(FrappeTestCase):
         doc = new_doc("Service Project")
         doc.start_date = utils.now_datetime()
         doc.end_date = utils.add_days(doc.start_date, 1)
-        
+
         # This should not raise any exceptions
         doc.validate()  # Ensure that no exceptions are raised

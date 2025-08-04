@@ -37,9 +37,13 @@ def after_install() -> None:
 
 def create_initial_data() -> None:
     """Create initial data for the application."""
-    if not frappe.db.exists("ServiceType", {"service_type_name": "Standard Maintenance"}):  # Example DocType
-        frappe.get_doc({
-            "doctype": "ServiceType",
-            "service_type_name": "Standard Maintenance",
-            "default_duration_hours": 2
-        }).insert()
+    if not frappe.db.exists(
+        "ServiceType", {"service_type_name": "Standard Maintenance"}
+    ):  # Example DocType
+        frappe.get_doc(
+            {
+                "doctype": "ServiceType",
+                "service_type_name": "Standard Maintenance",
+                "default_duration_hours": 2,
+            }
+        ).insert()

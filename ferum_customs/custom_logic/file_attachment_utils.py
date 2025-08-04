@@ -37,7 +37,7 @@ def _resolve_attachment_path(file_url: str, is_private: bool) -> tuple[Path, Pat
         )
         raise frappe.ValidationError(msg.format(file_url))
 
-    relative = file_url[len(prefix):]
+    relative = file_url[len(prefix) :]
     safe_name = os.path.basename(relative)
     if safe_name != relative or not safe_name or safe_name in (".", ".."):
         logger.error(
@@ -46,9 +46,7 @@ def _resolve_attachment_path(file_url: str, is_private: bool) -> tuple[Path, Pat
             relative,
             safe_name,
         )
-        raise frappe.PermissionError(
-            _("Invalid file name or path traversal attempt.")
-        )
+        raise frappe.PermissionError(_("Invalid file name or path traversal attempt."))
 
     base_dir = Path(frappe.get_site_path(base_folder, "files")).resolve(strict=True)
     file_path = (base_dir / safe_name).resolve()
@@ -154,7 +152,7 @@ def delete_attachment_file_from_filesystem(
         )
 
 
-def on_custom_attachment_trash(doc: FrappeDocument, method: Optional[str] = None) -> None:
+def on_custom_attachment_trash(doc: FrappeDocument, method: str | None = None) -> None:
     """
     Called when a CustomAttachment record is deleted (on_trash).
     Deletes the associated physical file and, if present, the File record.

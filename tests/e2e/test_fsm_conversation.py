@@ -18,13 +18,14 @@ if TYPE_CHECKING:  # pragma: no cover - type checking only
 else:
     aiogram_types = importlib.import_module("aiogram.types")
 
+
 @pytest.mark.asyncio
 async def test_fsm_start_handler():
     """Test the start handler of the FSM to ensure it transitions to the correct state."""
-    
+
     bot_token = os.getenv("BOT_TOKEN")  # Retrieve from environment
     assert bot_token is not None, "BOT_TOKEN must be set in the environment"
-    
+
     bot: Bot = Bot(token=bot_token)
     storage: MemoryStorage = MemoryStorage()
     key: StorageKey = StorageKey(bot_id=bot.id or 0, chat_id=123, user_id=123)

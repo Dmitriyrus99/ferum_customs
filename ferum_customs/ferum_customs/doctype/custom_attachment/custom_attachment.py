@@ -4,20 +4,23 @@ Python-контроллер для DocType "Custom Attachment".
 """
 
 from __future__ import annotations
+
 from typing import Optional
 
 import frappe
 from frappe import _  # Для возможных пользовательских сообщений
 from frappe.model.document import Document
 
+
 class CustomAttachment(Document):
     """
     Класс документа CustomAttachment.
-    
+
     Attributes:
         attachment_type (Optional[str]): Тип вложения.
     """
-    attachment_type: Optional[str] = None
+
+    attachment_type: str | None = None
 
     def validate(self) -> None:
         """
@@ -62,11 +65,17 @@ class CustomAttachment(Document):
 
         # Пример бизнес-правила: должен быть указан хотя бы один родитель
         if linked_parents_count == 0 and not self.is_new():
-            frappe.throw(_("Необходимо указать ссылку хотя бы на один родительский документ (Заявка, Отчет или Объект)."))
+            frappe.throw(
+                _(
+                    "Необходимо указать ссылку хотя бы на один родительский документ (Заявка, Отчет или Объект)."
+                )
+            )
 
         # Пример бизнес-правила: должен быть указан ТОЛЬКО один родитель
         if linked_parents_count > 1:
-            frappe.throw(_("Можно указать ссылку только на один родительский документ."))
+            frappe.throw(
+                _("Можно указать ссылку только на один родительский документ.")
+            )
 
     # Хук on_trash для CustomAttachment теперь обрабатывается в
     # ferum_customs.custom_logic.file_attachment_utils.on_custom_attachment_trash

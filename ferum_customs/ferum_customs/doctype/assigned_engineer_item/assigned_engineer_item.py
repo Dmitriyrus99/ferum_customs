@@ -12,13 +12,14 @@ from typing import Optional
 import frappe
 from frappe.model.document import Document
 
+
 class AssignedEngineerItem(Document):
     """
     Document class for the AssignedEngineerItem child table.
     """
 
-    engineer: Optional[str] = None
-    assignment_date: Optional[str] = None
+    engineer: str | None = None
+    assignment_date: str | None = None
 
     def validate(self) -> None:
         """
@@ -46,7 +47,7 @@ class AssignedEngineerItem(Document):
         """
         assignment_date_val = self.get("assignment_date")
         if assignment_date_val:
-            if isinstance(assignment_date_val, (datetime.datetime, datetime.date)):
+            if isinstance(assignment_date_val, datetime.datetime | datetime.date):
                 self.assignment_date = assignment_date_val.isoformat()
             elif isinstance(assignment_date_val, str):
                 try:

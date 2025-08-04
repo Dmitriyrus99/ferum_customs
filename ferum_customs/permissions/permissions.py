@@ -7,17 +7,18 @@ This module provides dynamic conditions for permission queries based on user rol
 
 from __future__ import annotations
 
-from typing import Optional, Dict, List, Tuple
+from typing import Optional
+
 import frappe
 
 from ferum_customs.constants import ROLE_CUSTOMER, ROLE_ZAKAZCHIK
 
-PQCConditionValue = Union[str, List[Union[str, List[str]]], Dict[str, str], Tuple[str, str]]
-PQCConditions = Dict[str, PQCConditionValue]
+PQCConditionValue = str | list[str | list[str]] | dict[str, str] | tuple[str, str]
+PQCConditions = dict[str, PQCConditionValue]
 
 
 @frappe.whitelist()
-def get_service_request_pqc(user: Optional[str] = None) -> Optional[PQCConditions]:
+def get_service_request_pqc(user: str | None = None) -> PQCConditions | None:
     """
     Get permission query conditions for service requests based on the user's roles and linked customer.
 

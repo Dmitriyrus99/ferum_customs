@@ -1,8 +1,8 @@
 """DocType hook mapping used by hooks.py."""
 
-from typing import Dict, Any
+from typing import Any
 
-DOC_EVENTS: Dict[str, Dict[str, str]] = {
+DOC_EVENTS: dict[str, dict[str, str]] = {
     "Service Request": {
         "validate": "ferum_customs.custom_logic.service_request_hooks.validate",
         "on_update_after_submit": "ferum_customs.custom_logic.service_request_hooks.on_update_after_submit",

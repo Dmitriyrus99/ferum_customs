@@ -3,7 +3,7 @@
 
 from __future__ import annotations
 
-from typing import Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 import frappe
 from frappe import _  # For translation
@@ -12,6 +12,7 @@ if TYPE_CHECKING:
     from ferum_customs.ferum_customs.doctype.service_object.service_object import (
         ServiceObject,
     )
+
 
 def validate(doc: ServiceObject) -> None:
     """
@@ -27,8 +28,10 @@ def validate(doc: ServiceObject) -> None:
     if doc.get("serial_no"):
         serial_no_cleaned = doc.serial_no.strip()
         if not serial_no_cleaned:
-            frappe.throw(_("Serial number cannot be empty."), title=_("Validation Error"))
-        
+            frappe.throw(
+                _("Serial number cannot be empty."), title=_("Validation Error")
+            )
+
         filters = {
             "serial_no": serial_no_cleaned,
             "name": ["!=", doc.name],

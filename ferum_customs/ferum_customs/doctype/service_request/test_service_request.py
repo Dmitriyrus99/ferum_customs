@@ -1,6 +1,7 @@
-from unittest.mock import patch
-import pytest
 from typing import Optional
+from unittest.mock import patch
+
+import pytest
 
 try:
     import frappe
@@ -17,6 +18,7 @@ TEST_PM_USER_EMAIL = "test_sr_pm_ferum@example.com"
 TEST_SP_NAME_FIELD = "_Test SP for SR Tests"
 ACTUAL_TEST_SP_NAME = TEST_SP_NAME_FIELD
 ACTUAL_TEST_SO_NAME = "_Test SO for SR Tests"
+
 
 class TestServiceRequest(FrappeTestCase):
     test_customer_name: str = TEST_CUSTOMER_NAME
@@ -35,7 +37,9 @@ class TestServiceRequest(FrappeTestCase):
         frappe.set_user(self.current_user_for_test)
         frappe.db.rollback()
 
-    def create_service_request_doc(self, status: str = STATUS_OTKRYTA, submit_doc: bool = False) -> Optional[frappe.Document]:
+    def create_service_request_doc(
+        self, status: str = STATUS_OTKRYTA, submit_doc: bool = False
+    ) -> frappe.Document | None:
         """Create a Service Request document with the given status."""
         sr = frappe.new_doc("Service Request")
         sr.subject = "Test SR - " + frappe.generate_hash(length=5)
@@ -49,7 +53,9 @@ class TestServiceRequest(FrappeTestCase):
                 sr.submit()
             except frappe.exceptions.DoesNotExistError as e:
                 if "WorkflowState" in str(e) and "Открыта" in str(e):
-                    frappe.get_doc("Workflow State", {"workflow_state_name": "Открыта"}).save(ignore_permissions=True)
+                    frappe.get_doc(
+                        "Workflow State", {"workflow_state_name": "Открыта"}
+                    ).save(ignore_permissions=True)
                     sr.reload()
                     sr.submit()
                 else:
@@ -70,24 +76,33 @@ class TestServiceRequest(FrappeTestCase):
         sr = self.create_service_request_doc(status=STATUS_OTKRYTA, submit_doc=True)
         sr.status = STATUS_VYPOLNENA
 
-        with self.assertRaisesRegex(frappe.ValidationError, "Нельзя отметить заявку выполненной без связанного отчёта"):
+        with self.assertRaisesRegex(
+            frappe.ValidationError,
+            "Нельзя отметить заявку выполненной без связанного отчёта",
+        ):
             sr.save()
 
     def test_hook_get_engineers_for_object(self, frappe_site) -> None:
         """Test the hook to get engineers for the service object."""
-        from ferum_customs.custom_logic.service_request_hooks import get_engineers_for_object
+        from ferum_customs.custom_logic.service_request_hooks import (
+            get_engineers_for_object,
+        )
 
         engineers = get_engineers_for_object(self.actual_test_so_name)
         self.assertIn(self.test_engineer_user_email, engineers)
 
-    def test_sr_controller_internal_methods_with_custom_fields(self, frappe_site) -> None:
+    def test_sr_controller_internal_methods_with_custom_fields(
+        self, frappe_site
+    ) -> None:
         """Test internal methods of Service Request controller with custom fields."""
         sr_doc = frappe.new_doc("Service Request")
         sr_doc.subject = " Test Subject for Cleaning "
         sr_doc.planned_start_datetime = now_datetime()
         sr_doc.planned_end_datetime = add_days(now_datetime(), -1)
 
-        with self.assertRaisesRegex(frappe.ValidationError, "Планируемая дата начала не может быть позже"):
+        with self.assertRaisesRegex(
+            frappe.ValidationError, "Планируемая дата начала не может быть позже"
+        ):
             sr_doc.validate()
 
         sr_doc.planned_end_datetime = add_days(now_datetime(), 1)
@@ -101,7 +116,9 @@ class TestServiceRequest(FrappeTestCase):
         self.assertAlmostEqual(sr_doc.duration_hours, 12.0, places=2)
 
     @patch("frappe.sendmail")
-    def test_notify_project_manager_on_close(self, mock_sendmail_func, frappe_site) -> None:
+    def test_notify_project_manager_on_close(
+        self, mock_sendmail_func, frappe_site
+    ) -> None:
         """Test notification to project manager when the service request is closed."""
         sr = self.create_service_request_doc(status=STATUS_OTKRYTA, submit_doc=True)
 
