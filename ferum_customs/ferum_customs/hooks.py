@@ -41,7 +41,7 @@ fixtures = [
 
 
 # Bench commands: custom CLI tools for this app
-def get_bench_commands() -> dict[str, Any]:
+def get_bench_commands() -> list[dict[str, Any]]:
     return [
         {"command": run_tests, "description": "Run custom tests for Ferum Customs"},
     ]

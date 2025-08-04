@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.8
+#!/usr/bin/env python3.12
 """Pre-commit hook to verify fixture JSON contains 'doctype' field."""
 
 import json

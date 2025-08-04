@@ -11,7 +11,7 @@ frappe.ui.form.on("Service Request", {
 	 * Handler for the change event of 'service_object_link'.
 	 * Requests engineers and sets filter for 'assigned_engineer'.
 	 */
-	service_object_link(frm: any) {
+	service_object_link(frm) {
 		const engineer_field = "assigned_engineer";
 
 		if (!frm.doc.service_object_link) {
@@ -26,12 +26,14 @@ frappe.ui.form.on("Service Request", {
 		frappe.call({
 			method: "ferum_customs.custom_logic.service_request_hooks.get_engineers_for_object",
 			args: { service_object_name: frm.doc.service_object_link },
-			callback(r: any) {
+			callback(r) {
 				frm.dashboard.clear_indicator();
 				if (r.message && Array.isArray(r.message)) {
 					if (r.message.length > 0) {
 						frm.set_query(engineer_field, function () {
-							return { filters: [["User", "name", "in", r.message]] };
+							return {
+								filters: [["User", "name", "in", r.message]],
+							};
 						});
 
 						if (
@@ -39,24 +41,34 @@ frappe.ui.form.on("Service Request", {
 							!r.message.includes(frm.doc[engineer_field])
 						) {
 							frm.set_value(engineer_field, null);
-						} else if (r.message.length === 1 && !frm.doc[engineer_field]) {
+						} else if (
+							r.message.length === 1 &&
+							!frm.doc[engineer_field]
+						) {
 							frm.set_value(engineer_field, r.message[0]);
 						}
 					} else {
 						frm.set_query(engineer_field, function () {
 							return {
 								filters: [
-									["User", "name", "in", ["NON_EXISTENT_USER_SO_LIST_IS_EMPTY"]],
+									[
+										"User",
+										"name",
+										"in",
+										["NON_EXISTENT_USER_SO_LIST_IS_EMPTY"],
+									],
 								],
 							};
 						});
 						frm.set_value(engineer_field, null);
 						frappe.show_alert(
 							{
-								message: __("No engineers found for this service object."),
+								message: __(
+									"No engineers found for this service object.",
+								),
 								indicator: "info",
 							},
-							5
+							5,
 						);
 					}
 				} else {
@@ -66,15 +78,17 @@ frappe.ui.form.on("Service Request", {
 					frm.set_value(engineer_field, null);
 					frappe.show_alert(
 						{
-							message: __("Failed to retrieve a valid list of engineers from the server."),
+							message: __(
+								"Failed to retrieve a valid list of engineers from the server.",
+							),
 							indicator: "warning",
 						},
-						7
+						7,
 					);
 				}
 				frm.refresh_field(engineer_field);
 			},
-			error(r: any) {
+			error(r) {
 				frm.dashboard.clear_indicator();
 				console.error("Error retrieving engineer list:", r);
 				frm.set_query(engineer_field, null);
@@ -82,22 +96,31 @@ frappe.ui.form.on("Service Request", {
 				frm.refresh_field(engineer_field);
 				frappe.show_alert(
 					{
-						message: __("An error occurred while retrieving the engineer list from the server."),
+						message: __(
+							"An error occurred while retrieving the engineer list from the server.",
+						),
 						indicator: "error",
 					},
-					7
+					7,
 				);
 			},
 		});
 	},
 
-	refresh(frm: any) {
+	refresh(frm) {
 		// Common logic: setting add_fetch and engineer filters
-		frm.add_fetch("service_object_link", "linked_service_project", "project");
+		frm.add_fetch(
+			"service_object_link",
+			"linked_service_project",
+			"project",
+		);
 
 		if (frm.doc.service_object_link && !frm.is_new()) {
 			const engineer_field = "assigned_engineer";
-			if (frm.fields_dict[engineer_field] && !frm.fields_dict[engineer_field].get_query()) {
+			if (
+				frm.fields_dict[engineer_field] &&
+				!frm.fields_dict[engineer_field].get_query()
+			) {
 				frm.trigger("service_object_link");
 			}
 		}
@@ -108,10 +131,12 @@ frappe.ui.form.on("Service Request", {
 				__("Assign Engineer (SR Specific)"),
 				() => {
 					frappe.msgprint(
-						__("Logic for assigning an engineer specific to the service_request form...")
+						__(
+							"Logic for assigning an engineer specific to the service_request form...",
+						),
 					);
 				},
-				__("Actions")
+				__("Actions"),
 			);
 		}
 
@@ -125,12 +150,12 @@ frappe.ui.form.on("Service Request", {
 							customer: frm.doc.custom_customer,
 						});
 					},
-					__("Create")
+					__("Create"),
 				);
 		}
 	},
 
-	validate(frm: any) {
+	validate(frm) {
 		// Implement validation logic or remove if not needed
 		return true;
 	},
