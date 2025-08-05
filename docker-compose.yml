@@ -71,6 +71,28 @@ services:
       - ./docker/entrypoint.sh:/usr/local/bin/docker-entrypoint.sh:ro
     command: ["/usr/local/bin/docker-entrypoint.sh", "bench", "start"]
 
+  fastapi:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.fastapi
+    depends_on:
+      frappe:
+        condition: service_started
+    ports:
+      - "8100:8000"
+    env_file:
+      - .env
+
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.frontend
+    depends_on:
+      fastapi:
+        condition: service_started
+    ports:
+      - "3000:3000"
+
   nginx:
     image: nginx:alpine
     depends_on:
