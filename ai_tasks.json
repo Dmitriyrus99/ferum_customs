@@ -191,7 +191,7 @@
       "id": "2-REPORTS",
       "name": "Акты и фотофиксация",
       "tasks": [
-        { "id": "2.1", "description": "Импортировать DocType'ы ServiceReport*, добавить hooks (суммы, закрытие заявки).", "dependencies": ["1-CRM"], "status": "pending" },
+        { "id": "2.1", "description": "Импортировать DocType'ы ServiceReport*, добавить hooks (суммы, закрытие заявки).", "dependencies": ["1-CRM"], "status": "done" },
         { "id": "2.2", "description": "Генерация PDF акта, отправка email и загрузка в Drive (DRIVE_ACTS_FOLDER).", "dependencies": ["2.1"], "status": "pending" }
       ]
     },

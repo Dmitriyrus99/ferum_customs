@@ -1,103 +1,39 @@
+"""Hooks for Service Report DocType."""
+
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
-try:
-    import frappe
-    from frappe import _
-except ImportError:
-    raise ImportError("Frappe module is not installed.")
+import frappe
+from frappe import _
 
-from ferum_customs.constants import FIELD_CUSTOM_LINKED_REPORT, STATUS_VYPOLNENA
+from ferum_customs.constants import STATUS_CLOSED
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover - for type checkers only
     from ferum_customs.ferum_customs.doctype.service_report.service_report import (
         ServiceReport,
-    )
-    from ferum_customs.ferum_customs.doctype.service_request.service_request import (
-        ServiceRequest,
     )
 
 
 def validate(doc: ServiceReport, method: str | None = None) -> None:
-    """Validate the Service Report before submission."""
+    """Ensure the Service Report has a linked Service Request."""
+
     if not doc.service_request:
-        raise frappe.ValidationError(
+        frappe.throw(
             _("Не выбрана связанная заявка на обслуживание (Service Request).")
         )
 
-    if not frappe.db.exists("Service Request", doc.service_request):
-        raise frappe.ValidationError(
-            _(
-                "Связанная заявка на обслуживание (Service Request) '{0}' не найдена."
-            ).format(doc.service_request)
-        )
 
-    req_status = frappe.db.get_value("Service Request", doc.service_request, "status")
+def calculate_total_payable(doc: ServiceReport, method: str | None = None) -> None:
+    """Recalculate totals before saving the document."""
 
-    if req_status is None:
-        frappe.logger().error(
-            _(
-                "Не удалось получить статус для заявки '{0}', связанной с отчетом '{1}'."
-            ).format(doc.service_request, doc.name)
-        )
-        raise frappe.ValidationError(
-            _(
-                "Не удалось получить статус для связанной заявки '{0}'. Обратитесь к администратору."
-            ).format(doc.service_request)
-        )
-
-    if req_status != STATUS_VYPOLNENA:
-        raise frappe.ValidationError(
-            _(
-                "Отчёт можно привязать только к заявке в статусе «{0}». Текущий статус заявки «{1}»."
-            ).format(STATUS_VYPOLNENA, req_status)
-        )
+    doc.calculate_total_payable()
 
 
-def on_submit(doc: ServiceReport, method: str | None = None) -> None:
-    """Update the linked Service Request upon submission of the Service Report."""
-    if not doc.service_request:
-        frappe.logger().warning(
-            f"Отчет '{doc.name}' отправлен без ссылки на заявку. Пропущено обновление."
-        )
-        return
+def close_related_request(doc: ServiceReport, method: str | None = None) -> None:
+    """Mark the linked Service Request as closed on submit."""
 
-    try:
-        req: ServiceRequest = frappe.get_doc("Service Request", doc.service_request)
-
-        req.set(FIELD_CUSTOM_LINKED_REPORT, doc.name)
-
-        if req.status != STATUS_VYPOLNENA:
-            req.status = STATUS_VYPOLNENA
-            if req.meta.has_field("completed_on") and not req.get("completed_on"):
-                req.completed_on = frappe.utils.now()
-
-        req.save()  # Consider removing ignore_permissions=True for security
-
-        frappe.msgprint(
-            _("Связанная заявка на обслуживание {0} была обновлена.").format(req.name),
-            indicator="green",
-            alert=True,
-        )
-        frappe.logger().info(f"Заявка '{req.name}' обновлена из отчета '{doc.name}'.")
-
-    except frappe.DoesNotExistError:
-        frappe.logger().error(
-            _("Заявка '{0}', указанная в отчете '{1}', не найдена.").format(
-                doc.service_request, doc.name
-            ),
-            exc_info=True,
-        )
-    except Exception as e:
-        frappe.logger().error(
-            _("Ошибка при обновлении заявки '{0}' из отчета '{1}': {2}").format(
-                doc.service_request, doc.name, e
-            ),
-            exc_info=True,
-        )
-        raise frappe.ValidationError(
-            _(
-                "Произошла ошибка при обновлении связанной заявки. Обратитесь к администратору."
-            )
+    if doc.service_request:
+        frappe.db.set_value(
+            "Service Request", doc.service_request, "status", STATUS_CLOSED
         )

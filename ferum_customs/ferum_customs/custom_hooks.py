@@ -10,7 +10,8 @@ DOC_EVENTS: dict[str, dict[str, str]] = {
     },
     "Service Report": {
         "validate": "ferum_customs.custom_logic.service_report_hooks.validate",
-        "on_submit": "ferum_customs.custom_logic.service_report_hooks.on_submit",
+        "before_save": "ferum_customs.custom_logic.service_report_hooks.calculate_total_payable",
+        "on_submit": "ferum_customs.custom_logic.service_report_hooks.close_related_request",
     },
     "Service Object": {
         "validate": "ferum_customs.custom_logic.service_object_hooks.validate",
