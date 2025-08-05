@@ -1,0 +1,237 @@
+{
+  "project": "Ferum Customizations",
+  "instructions": [
+    "Выполняйте фазы строго по порядку (0 → 6).",
+    "После **проверки** любого task меняйте его поле \"status\" на \"done\" (или отметьте ✅/✔) и сохраняйте документ."
+  ],
+
+  "globals": {
+    "env": {
+      "DB_TYPE": "postgres",
+      "POSTGRES_DB": "erpnext",
+      "POSTGRES_USER": "erp_user",
+      "POSTGRES_PASSWORD": "strong_pass",
+      "REDIS_URL": "redis://redis:6379",
+      "SITE_NAME": "site1.local",
+      "ADMIN_PASSWORD": "admin",
+      "DRIVE_ROOT_ID": "1rxx-abcdef-root",
+      "DRIVE_ACTS_FOLDER": "1rxx-acts",
+      "DRIVE_PHOTOS_FOLDER": "1rxx-photos",
+      "SHEETS_INVOICE_ID": "1xyz-invoice-sheet",
+      "TELEGRAM_BOT_TOKEN": "TG-<secret>",
+      "WHATSAPP_TOKEN": "WA-<secret>",
+      "SENTRY_DSN": "https://xxxxx@sentry.io/12345",
+      "JWT_TTL_MIN": 60,
+      "JWT_REFRESH_DAYS": 30,
+      "RATE_LIMIT": "100/15m"
+    },
+
+    "sla_rules": {
+      "maintenance_request": {
+        "assign_within_min": 180,
+        "close_within_hours": 72
+      },
+      "emergency_request": {
+        "assign_within_min": 15,
+        "close_within_hours": 2
+      }
+    },
+
+    "permission_matrix": [
+      { "role": "Administrator",    "doctype": "*",                       "read": 1, "write": 1, "submit": 1, "cancel": 1 },
+      { "role": "Project Manager",  "doctype": "ServiceProject",         "read": 1, "write": 1, "submit": 1, "cancel": 0 },
+      { "role": "Project Manager",  "doctype": "ServiceRequest",         "read": 1, "write": 1, "submit": 1 },
+      { "role": "Engineer",         "doctype": "ServiceRequest",         "read": 1, "write": 1, "submit": 0 },
+      { "role": "Engineer",         "doctype": "ServiceReport",          "read": 1, "write": 1, "submit": 1 },
+      { "role": "Client",           "doctype": "ServiceRequest",         "read": 1, "write": 1, "submit": 0, "condition": "project in user.allowed_projects" },
+      { "role": "Client",           "doctype": "Invoice",                "read": 0 }
+    ],
+
+    "doctypes": {
+      "ServiceProject": {
+        "fields": {
+          "project_name":       { "type": "Data",      "reqd": 1 },
+          "contract_no":        { "type": "Data",      "reqd": 1 },
+          "client":             { "type": "Link",      "options": "Customer", "reqd": 1 },
+          "start_date":         { "type": "Date",      "reqd": 1 },
+          "end_date":           { "type": "Date",      "reqd": 1 },
+          "total_amount":       { "type": "Currency" },
+          "response_time_min":  { "type": "Int",       "default": 15 },
+          "objects":            { "type": "Table",     "options": "ProjectObjectItem" }
+        },
+        "hooks": {
+          "validate":   "check_dates_and_amount()"
+        }
+      },
+
+      "ServiceObject": {
+        "fields": {
+          "object_name":   { "type": "Data",  "reqd": 1 },
+          "address":       { "type": "Small Text", "reqd": 1 },
+          "project":       { "type": "Link", "options": "ServiceProject", "reqd": 1 },
+          "equipment":     { "type": "Table", "options": "EquipmentItem" }
+        },
+        "hooks": {
+          "on_trash": "block_delete_if_active_requests()"
+        }
+      },
+
+      "ServiceRequest": {
+        "fields": {
+          "request_type":  { "type": "Select", "options": "Maintenance\nEmergency", "reqd": 1 },
+          "project":       { "type": "Link",   "options": "ServiceProject", "reqd": 1 },
+          "object":        { "type": "Link",   "options": "ServiceObject",  "reqd": 1 },
+          "priority":      { "type": "Int",    "default": 3 },
+          "status":        { "type": "Select", "options": "Open\nAssigned\nIn Progress\nClosed", "default": "Open" },
+          "assigned_to":   { "type": "Link",   "options": "User" },
+          "description":   { "type": "Text" }
+        },
+        "hooks": {
+          "before_save": "autofill_project_based_on_object()",
+          "on_update":   "notify_status_change()"
+        }
+      },
+
+      "ServiceReport": {
+        "fields": {
+          "service_request":   { "type": "Link", "options": "ServiceRequest", "reqd": 1 },
+          "work_items":        { "type": "Table", "options": "ServiceReportWorkItem" },
+          "documents":         { "type": "Table", "options": "ServiceReportDocumentItem" },
+          "total_payable":     { "type": "Currency", "read_only": 1 }
+        },
+        "hooks": {
+          "before_save": "calculate_total_payable()",
+          "on_submit":   "close_related_request()"
+        }
+      },
+
+      "Invoice": {
+        "fields": {
+          "project":       { "type": "Link", "options": "ServiceProject", "reqd": 1 },
+          "period":        { "type": "DateRange", "reqd": 1 },
+          "amount":        { "type": "Currency", "reqd": 1 },
+          "supplier":      { "type": "Data", "reqd": 1 },
+          "status":        { "type": "Select", "options": "Pending\nPaid", "default": "Pending" },
+          "drive_file_id": { "type": "Data" }
+        },
+        "hooks": {
+          "after_insert": "sync_to_google_sheet()",
+          "on_update":    "notify_admin_if_paid()"
+        }
+      },
+
+      "PayrollEntryCustom": {
+        "fields": {
+          "employee":      { "type": "Link", "options": "Employee", "reqd": 1 },
+          "period":        { "type": "DateRange", "reqd": 1 },
+          "salary":        { "type": "Currency", "reqd": 1 },
+          "advance":       { "type": "Currency", "default": 0 },
+          "total_payable": { "type": "Currency", "read_only": 1 }
+        },
+        "hooks": {
+          "before_save": "calc_total_payable()"
+        }
+      },
+
+      "CustomAttachment": {
+        "fields": {
+          "attached_to_doctype": { "type": "Data", "reqd": 1 },
+          "attached_to_name":    { "type": "Data", "reqd": 1 },
+          "file_url":            { "type": "Data", "reqd": 1 },
+          "category":            { "type": "Select", "options": "Photo\nDocument\nOther", "reqd": 1 }
+        },
+        "hooks": {
+          "on_trash": "delete_drive_file()"
+        }
+      }
+    },
+
+    "workflows": {
+      "ServiceRequest": {
+        "states": ["Open", "Assigned", "In Progress", "Closed"],
+        "transitions": [
+          { "action": "assign",         "from": "Open",        "to": "Assigned" },
+          { "action": "start",          "from": "Assigned",    "to": "In Progress" },
+          { "action": "complete",       "from": "In Progress", "to": "Closed" }
+        ]
+      },
+      "Invoice": {
+        "states": ["Pending", "Paid"],
+        "transitions": [
+          { "action": "mark_paid", "from": "Pending", "to": "Paid" }
+        ]
+      }
+    },
+
+    "ci_template_github_actions": "name: CI\\n\\non: [push]\\n\\njobs:\\n  test-build:\\n    runs-on: ubuntu-latest\\n    services:\\n      postgres:\\n        image: postgres:13\\n        ports: ['5432:5432']\\n        env:\\n          POSTGRES_PASSWORD: test\\n    steps:\\n      - uses: actions/checkout@v4\\n      - uses: actions/setup-python@v5\\n        with:\\n          python-version: '3.11'\\n      - name: Install deps\\n        run: pip install -r requirements.txt\\n      - name: Lint\\n        run: ruff . && black --check . && isort --check .\\n      - name: Tests\\n        run: pytest\\n      - name: Docker build\\n        run: docker build -t ferum_customs:${{ github.sha }} ."
+  },
+
+  "phases": [
+    {
+      "id": "0-INFRA",
+      "name": "Инфраструктура (Docker + CI/CD)",
+      "tasks": [
+        { "id": "0.1", "description": "Поднять ERPNext v14 (PostgreSQL + Redis) и Nginx + TLS.", "dependencies": [], "status": "pending" },
+        { "id": "0.2", "description": "Создать Docker-контейнеры backend (FastAPI/NestJS) и frontend (React).", "dependencies": ["0.1"], "status": "pending" },
+        { "id": "0.3", "description": "Настроить GitHub Actions из ci_template_github_actions.", "dependencies": ["0.2"], "status": "pending" }
+      ]
+    },
+
+    {
+      "id": "1-CRM",
+      "name": "CRM, проекты и заявки",
+      "tasks": [
+        { "id": "1.1", "description": "Импортировать DocType'ы ServiceProject, ServiceObject, ProjectObjectItem, ServiceRequest со схемами из doctypes.", "dependencies": ["0-INFRA"], "status": "pending" },
+        { "id": "1.2", "description": "Добавить hooks для уникальности и запрета удаления объектов.", "dependencies": ["1.1"], "status": "pending" },
+        { "id": "1.3", "description": "Настроить форму и уведомления ServiceRequest + SLA из sla_rules.", "dependencies": ["1.2"], "status": "pending" }
+      ]
+    },
+
+    {
+      "id": "2-REPORTS",
+      "name": "Акты и фотофиксация",
+      "tasks": [
+        { "id": "2.1", "description": "Импортировать DocType'ы ServiceReport*, добавить hooks (суммы, закрытие заявки).", "dependencies": ["1-CRM"], "status": "pending" },
+        { "id": "2.2", "description": "Генерация PDF акта, отправка email и загрузка в Drive (DRIVE_ACTS_FOLDER).", "dependencies": ["2.1"], "status": "pending" }
+      ]
+    },
+
+    {
+      "id": "3-INVOICES",
+      "name": "Счета и платежи",
+      "tasks": [
+        { "id": "3.1", "description": "Импортировать DocType Invoice и Google Sheets sync (SHEETS_INVOICE_ID).", "dependencies": ["2-REPORTS"], "status": "pending" },
+        { "id": "3.2", "description": "Workflow статусов счета + уведомление admin при оплате.", "dependencies": ["3.1"], "status": "pending" }
+      ]
+    },
+
+    {
+      "id": "4-PAYROLL",
+      "name": "HR и зарплата",
+      "tasks": [
+        { "id": "4.1", "description": "Импортировать DocType PayrollEntryCustom и calc_total_payable().", "dependencies": ["3-INVOICES"], "status": "pending" },
+        { "id": "4.2", "description": "Интеграция отпусков/больничных в расчёт ЗП.", "dependencies": ["4.1"], "status": "pending" }
+      ]
+    },
+
+    {
+      "id": "5-DOCS",
+      "name": "Документооборот и вложения",
+      "tasks": [
+        { "id": "5.1", "description": "Создать DocType CustomAttachment + hook delete_drive_file().", "dependencies": ["4-PAYROLL"], "status": "pending" },
+        { "id": "5.2", "description": "Согласование и ЭЦП документов, хранение на Drive_ROOT_ID.", "dependencies": ["5.1"], "status": "pending" }
+      ]
+    },
+
+    {
+      "id": "6-MONSEC",
+      "name": "Мониторинг, аналитика, безопасность",
+      "tasks": [
+        { "id": "6.1", "description": "Модуль KPI-аналитики с Redis cache.", "dependencies": ["5-DOCS"], "status": "pending" },
+        { "id": "6.2", "description": "Telegram-бот команды руководства.", "dependencies": ["6.1"], "status": "pending" },
+        { "id": "6.3", "description": "Полное логирование, ежедневные бэкапы Drive_ROOT_ID, Prometheus, Sentry.", "dependencies": ["6.2"], "status": "pending" },
+        { "id": "6.4", "description": "JWT + 2FA, rate-limit, permission_query_conditions для клиента.", "dependencies": ["6.3"], "status": "pending" }
+      ]
+    }
+  ]
+}
