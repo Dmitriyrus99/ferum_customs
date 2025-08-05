@@ -23,8 +23,10 @@ wheels/
 tags
 MANIFEST
 .mypy_cache/
+
 # Environments
 .env
+.env.*
 .venv
 ENV/
 env.bak/
@@ -34,8 +36,6 @@ venv.bak/
 .pre-commit-home/
 venv/
 env/
-*.pyc
-__pycache__/
 
 # Dependency directories
 node_modules/
@@ -63,28 +63,26 @@ jspm_packages/
 # Local frappe_docker clone
 frappe_docker/
 
+# Logs and temporary files
 *.log
 *.tmp
 *.bak
 *.pot
 *.mo
-.DS_Store
-.vscode/
-.idea/
+
+# Build artifacts
 /build/
 /dist/
+
+# Test artifacts
 .pytest_cache/
 .ruff_cache/
-.codex/config.toml
-
-# Coverage reports
 htmlcov/
 coverage.xml
+ui-tests/playwright-report/
+ui-tests/test-results/
 
 # Local environments
 testvenv/
 frappe-bench/
-
-# Playwright test artifacts
-ui-tests/playwright-report/
-ui-tests/test-results/
+SUMMARY.md

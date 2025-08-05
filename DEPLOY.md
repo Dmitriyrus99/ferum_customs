@@ -1,4 +1,4 @@
-# Deployment Checklist
+# Deployment Guide
 
 This document explains how to verify the project before a production deployment and how to launch it on the target server.
 
@@ -82,3 +82,4 @@ bench backup --with-files
 
 Store the resulting archives outside the server for safety. More details are in [backup.md](backup.md).
 
+```

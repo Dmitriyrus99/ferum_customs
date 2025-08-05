@@ -4,50 +4,13 @@ This document explains how to install the `ferum_customs` app in your Frappe/ERP
 
 ## Requirements
 
-- Требуется **Frappe + ERPNext**.
-- Tested with **Frappe/ERPNext 15.0**. Older versions are not officially supported.
-- ERPNext branch must match your Frappe version (e.g. `version-15`).
-- A working [bench](https://github.com/frappe/bench) setup.
+- Frappe + ERPNext 15.x or later.
+- Matching ERPNext branch (e.g. `version-15`).
+- A working [bench](https://github.com/frappe/bench) setup if installing without Docker.
 
-## Bare-metal
+## Installation
 
-> **Note:** To automate all steps for bare-metal installation without Docker, run:
->
-> ```bash
-> sudo bash scripts/quick_setup_bare_metal.sh
-> ```
-
-1. Install the bench CLI if you don't have it yet:
-   ```bash
-   pipx install frappe-bench
-   ```
-2. Clone this repository inside your bench directory:
-   ```bash
-   bench get-app https://github.com/Dmitriyrus99/ferum_customs.git --branch main
-   ```
-3. (Optional) Create and activate a Python virtual environment:
-   ```bash
-   python3 -m venv .venv_dev
-   source .venv_dev/bin/activate
-   ```
-4. Install Python dependencies:
-   ```bash
-   pip install .
-   ```
-5. Copy and edit the environment configuration:
-   ```bash
-   cp .env.example .env
-   # Edit .env to set TELEGRAM_BOT_TOKEN, SITE_NAME, ADMIN_PASSWORD, FRAPPE_ADMIN_PASSWORD, DB_ROOT_PASSWORD, etc.
-   ```
-6. Install the application on your site:
-   ```bash
-   bench --site YOUR_SITE_NAME install-app ferum_customs
-   ```
-7. Build assets and restart bench:
-   ```bash
-   bench build && bench restart
-   ```
-## Docker
+### Using Docker
 
 Before running Docker, ensure your user has permission to access the Docker daemon:
 
@@ -56,62 +19,82 @@ Before running Docker, ensure your user has permission to access the Docker daem
 sudo usermod -aG docker "$USER" && newgrp docker
 ```
 
-Prepare your environment file:
+Copy and configure your environment file:
 
 ```bash
 cp .env.example .env
 # Edit .env to set TELEGRAM_BOT_TOKEN, SITE_NAME, ADMIN_PASSWORD, FRAPPE_ADMIN_PASSWORD, DB_ROOT_PASSWORD, etc.
 ```
 
-Run the stack with:
+Run the stack locally:
 
 ```bash
 docker compose up -d --build
 ```
 
+### Bare-metal (no Docker)
 
-If you use Docker images, add `ferum_customs` to `apps.txt` (or `apps.json`) and rebuild the image before running the `install-app` command.
-
-## Инструменты разработчика
-
-Для автоматизации задач код-ревью и CI используем Codex CLI.
-
-**Установка**:
-```bash
-pip install codex-cli
-```
-
-**Использование**:
-```bash
-codex --config .codex/project.yaml
-```
-
-## Configuration
-
-After installation log in as **Administrator** and open **Role List**. Make sure the following roles exist and assign them to appropriate users:
-
-- `Проектный менеджер`
-- `Инженер`
-- `Заказчик` (customers only)
-
-The app also installs a *Service Request Workflow*. Review the workflow states and transitions under **Workflow List** and adjust them if required.
-
-## Backup
-
-To protect your data run daily backups:
+To automate all steps for bare-metal installation without Docker, run:
 
 ```bash
-bench backup --with-files
+sudo bash scripts/quick_setup_bare_metal.sh
 ```
 
-Use `cron` or a systemd timer and copy archives to external storage.
+#### Manual bare-metal installation
 
-## Production Setup
+1. **Install system dependencies**
 
-For production deployments run:
+   On Ubuntu/Debian-based systems:
+   ```bash
+   sudo apt update
+   sudo apt install -y \
+     mariadb-server \
+     redis-server \
+     python3-dev python3-venv python3-pip \
+     nodejs npm
+   # (optional) yarn:
+   sudo npm install --global yarn
 
-```bash
-bench setup production <frappe-user>
-```
+   # Make sure services are running:
+   sudo systemctl enable --now mariadb redis-server
+   ```
 
-The command configures Nginx and Supervisor. After obtaining TLS certificates (e.g. via Certbot), edit the generated Nginx config to reference your `fullchain.pem` and `privkey.pem` files so the site is served over HTTPS.
+2. **Install bench CLI**
+
+   ```bash
+   pipx install frappe-bench
+   ```
+
+3. **Initialize bench**
+
+   ```bash
+   bench init frappe-bench --frappe-branch version-15
+   cd frappe-bench
+   ```
+
+4. **Create a new site**
+
+   ```bash
+   bench new-site <SITE_NAME> \
+     --admin-password <ADMIN_PASSWORD> \
+     --db-root-password <DB_ROOT_PASSWORD>
+   ```
+
+5. **Get the app**
+
+   ```bash
+   bench get-app https://github.com/Dmitriyrus99/ferum_customs.git --branch main
+   ```
+
+6. **Install the app on your site**
+
+   ```bash
+   bench --site <SITE_NAME> install-app ferum_customs
+   ```
+
+7. **Build assets and restart**
+
+   ```bash
+   bench build
+   bench restart
+   ```
