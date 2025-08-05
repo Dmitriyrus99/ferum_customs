@@ -1,0 +1,12 @@
+FROM frappe/erpnext:version-14
+
+USER root
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        curl \
+        git \
+        python3-dev \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+USER frappe
