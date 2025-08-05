@@ -1,9 +1,0 @@
---- ferum_customs/ferum_customs/report/service_request_overview/__init__.py
-+++ ferum_customs/ferum_customs/report/service_request_overview/__init__.py
-@@ -1 +1,5 @@
--__version__ = "0.0.1"
-+"""
-+This module provides the initialization for the service_request_overview report.
-+"""
-+
-+__version__ = "0.0.1"
