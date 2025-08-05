@@ -1,0 +1,23 @@
+version: "3.9"
+
+services:
+  frappe:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.frappe
+    ports:
+      - "8000:8000"
+      - "9000:9000"
+    env_file:
+      - .env
+
+  fastapi:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.fastapi
+    depends_on:
+      - frappe
+    ports:
+      - "8100:8000"
+    env_file:
+      - .env
