@@ -64,6 +64,8 @@ jspm_packages/
 frappe_docker/
 
 *.log
+*.tmp
+*.bak
 *.pot
 *.mo
 .DS_Store
@@ -74,3 +76,15 @@ frappe_docker/
 .pytest_cache/
 .ruff_cache/
 .codex/config.toml
+
+# Coverage reports
+htmlcov/
+coverage.xml
+
+# Local environments
+testvenv/
+frappe-bench/
+
+# Playwright test artifacts
+ui-tests/playwright-report/
+ui-tests/test-results/
