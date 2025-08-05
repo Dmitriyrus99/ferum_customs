@@ -14,6 +14,7 @@ DOC_EVENTS: dict[str, dict[str, str]] = {
     },
     "Service Object": {
         "validate": "ferum_customs.custom_logic.service_object_hooks.validate",
+        "on_trash": "ferum_customs.custom_logic.service_object_hooks.prevent_deletion_with_active_requests",
     },
     "Payroll Entry Custom": {
         "validate": "ferum_customs.custom_logic.payroll_entry_hooks.validate",

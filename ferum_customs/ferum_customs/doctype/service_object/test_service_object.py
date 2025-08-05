@@ -1,5 +1,5 @@
 import pytest
-from frappe import new_doc
+from frappe import exceptions, new_doc
 from frappe.tests.utils import FrappeTestCase
 
 try:
@@ -33,3 +33,16 @@ class TestServiceObject(FrappeTestCase):
         doc.linked_service_project = None
         doc.validate()
         self.assertIsNone(doc.linked_service_project)  # Ensure None is handled
+
+    def test_cannot_delete_object_with_active_request(self) -> None:
+        obj = new_doc("Service Object")
+        obj.object_name = "DEL-OBJ"
+        obj.insert()
+
+        req = new_doc("Service Request")
+        req.subject = "Test"
+        req.custom_service_object_link = obj.name
+        req.insert()
+
+        with pytest.raises(exceptions.ValidationError):
+            obj.delete()
