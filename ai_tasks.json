@@ -171,7 +171,7 @@
       "id": "0-INFRA",
       "name": "Инфраструктура (Docker + CI/CD)",
       "tasks": [
-        { "id": "0.1", "description": "Поднять ERPNext v14 (PostgreSQL + Redis) и Nginx + TLS.", "dependencies": [], "status": "pending" },
+        { "id": "0.1", "description": "Поднять ERPNext v14 (PostgreSQL + Redis) и Nginx + TLS.", "dependencies": [], "status": "done" },
         { "id": "0.2", "description": "Создать Docker-контейнеры backend (FastAPI/NestJS) и frontend (React).", "dependencies": ["0.1"], "status": "pending" },
         { "id": "0.3", "description": "Настроить GitHub Actions из ci_template_github_actions.", "dependencies": ["0.2"], "status": "pending" }
       ]
