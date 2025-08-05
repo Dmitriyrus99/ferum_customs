@@ -1,5 +1,0 @@
-{
-  "db_name": "_d4c01005bd6191dc",
-  "db_password": "REDACTED",  // Consider using environment variables for sensitive data
-  "db_type": "mariadb"
-}

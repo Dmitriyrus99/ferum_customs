@@ -1,9 +1,0 @@
---- ferum_customs/ferum_customs/doctype/assigned_engineer_item/__init__.py
-+++ ferum_customs/ferum_customs/doctype/assigned_engineer_item/__init__.py
-@@ -1 +1,5 @@
--__version__ = "0.0.1"
-+"""
-+This module contains the initialization for the Assigned Engineer Item Doctype.
-+"""
-+
-+__version__ = "0.0.1"
