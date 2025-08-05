@@ -1,11 +1,7 @@
 # ferum_customs/ferum_customs/doctype/service_object/service_object.py
-"""
-Python-контроллер для DocType "Service Object".
-"""
+"""Python controller for DocType "Service Object"."""
 
 from __future__ import annotations
-
-from typing import Optional
 
 import frappe
 from frappe import _
@@ -13,39 +9,39 @@ from frappe.model.document import Document
 
 
 class ServiceObject(Document):
-    """
-    Класс документа ServiceObject.
-    """
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.linked_service_project: str | None = None
-        self.object_name: str | None = None
-        self.warranty_expiry_date: str | None = None
-        self.purchase_date: str | None = None
+    """Business logic for service objects."""
 
     def validate(self) -> None:
-        """
-        Валидация данных документа.
-        Основная валидация уникальности серийного номера вынесена в
-        `custom_logic.service_object_hooks.validate`.
-        Здесь можно добавить специфичные для класса валидации.
-        """
-        self._clean_fields()
+        """Ensure uniqueness of object within the project."""
+        self._ensure_unique_per_project()
 
-        # Пример дополнительной валидации:
-        if self.warranty_expiry_date and self.purchase_date:
-            if self.warranty_expiry_date < self.purchase_date:
-                frappe.throw(
-                    _("Дата окончания гарантии не может быть раньше даты покупки.")
+    def on_trash(self) -> None:
+        """Prevent deletion if there are active service requests."""
+        self.block_delete_if_active_requests()
+
+    def _ensure_unique_per_project(self) -> None:
+        if not (self.object_name and self.project):
+            return
+        exists = frappe.db.exists(
+            "Service Object",
+            {
+                "object_name": self.object_name,
+                "project": self.project,
+                "name": ["!=", self.name],
+            },
+        )
+        if exists:
+            frappe.throw(
+                _("Object {0} already exists for this project.").format(
+                    self.object_name
                 )
+            )
 
-    def _clean_fields(self) -> None:
-        """
-        Очистка строковых полей.
-        """
-        if self.linked_service_project and isinstance(self.linked_service_project, str):
-            self.linked_service_project = self.linked_service_project.strip()
-
-        if self.object_name and isinstance(self.object_name, str):
-            self.object_name = self.object_name.strip()
+    def block_delete_if_active_requests(self) -> None:
+        """Disallow deletion when active Service Requests are linked."""
+        has_open = frappe.db.exists(
+            "Service Request",
+            {"object": self.name, "status": ["not in", ["Closed", "Закрыта"]]},
+        )
+        if has_open:
+            frappe.throw(_("Cannot delete object linked to active service requests."))

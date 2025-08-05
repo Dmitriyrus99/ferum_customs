@@ -7,48 +7,64 @@
     "engine": "InnoDB",
     "track_changes": 1,
     "title_field": "project_name",
-    "description": "This DocType represents a service project.",
+    "description": "Service maintenance project with contract details.",
     "fields": [
       {
         "fieldname": "project_name",
-        "label": "Название проекта",
+        "label": "Project Name",
         "fieldtype": "Data",
         "reqd": 1,
-        "in_list_view": 1,
-        "unique": 1
-      },
-      {
-        "fieldname": "customer",
-        "label": "Клиент",
-        "fieldtype": "Link",
-        "options": "Customer",
         "in_list_view": 1
       },
-      { "fieldname": "start_date", "label": "Дата начала", "fieldtype": "Date" },
-      { "fieldname": "end_date", "label": "Дата окончания", "fieldtype": "Date" },
       {
-        "fieldname": "budget",
-        "label": "Бюджет",
-        "fieldtype": "Currency",
-        "precision": 2,
-        "options": "RUB"
+        "fieldname": "contract_no",
+        "label": "Contract No",
+        "fieldtype": "Data",
+        "reqd": 1,
+        "in_list_view": 1
       },
       {
-        "fieldname": "service_objects_section",
-        "fieldtype": "Section Break",
-        "label": "Service Objects"
+        "fieldname": "client",
+        "label": "Client",
+        "fieldtype": "Link",
+        "options": "Customer",
+        "reqd": 1,
+        "in_list_view": 1
       },
       {
-        "fieldname": "service_objects",
-        "label": "Service Objects",
+        "fieldname": "start_date",
+        "label": "Start Date",
+        "fieldtype": "Date",
+        "reqd": 1
+      },
+      {
+        "fieldname": "end_date",
+        "label": "End Date",
+        "fieldtype": "Date",
+        "reqd": 1
+      },
+      {
+        "fieldname": "total_amount",
+        "label": "Total Amount",
+        "fieldtype": "Currency"
+      },
+      {
+        "fieldname": "response_time_min",
+        "label": "Response Time (min)",
+        "fieldtype": "Int",
+        "default": "15"
+      },
+      {
+        "fieldname": "objects",
+        "label": "Objects",
         "fieldtype": "Table",
         "options": "Project Object Item"
       }
     ],
     "permissions": [
-      { "role": "System Manager", "read": 1, "write": 1, "create": 1, "delete": 1, "submit": 1, "cancel": 1, "amend": 1 },
-      { "role": "Administrator", "read": 1, "write": 1, "create": 1, "delete": 1, "submit": 1, "cancel": 1, "amend": 1 },
-      { "role": "Project Manager", "read": 1, "write": 1, "create": 1, "delete": 0, "submit": 1, "cancel": 1, "amend": 1 }
+      {"role": "System Manager", "read": 1, "write": 1, "create": 1, "delete": 1, "submit": 1, "cancel": 1, "amend": 1},
+      {"role": "Administrator", "read": 1, "write": 1, "create": 1, "delete": 1, "submit": 1, "cancel": 1, "amend": 1},
+      {"role": "Project Manager", "read": 1, "write": 1, "create": 1, "delete": 0, "submit": 1, "cancel": 0, "amend": 0}
     ]
   }
 ]

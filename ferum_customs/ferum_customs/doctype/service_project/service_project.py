@@ -1,12 +1,9 @@
 # ferum_customs/ferum_customs/doctype/service_project/service_project.py
-"""
-Python-контроллер для DocType "Service Project".
-"""
+"""Python controller for DocType "Service Project"."""
 
 from __future__ import annotations
 
-import datetime
-from typing import Optional, cast
+from typing import cast
 
 import frappe
 from frappe import _
@@ -14,85 +11,30 @@ from frappe.model.document import Document
 
 
 class ServiceProject(Document):
-    """Класс документа Service Project."""
+    """Business logic for service projects."""
 
     def validate(self) -> None:
-        """Валидация данных документа."""
-        self._validate_dates()
-        self._validate_budget()
-        self._format_dates_to_iso()
+        """Validate project fields before saving."""
+        self.check_dates_and_amount()
         self._validate_unique_objects()
 
-    def _validate_dates(self) -> None:
-        """Проверяет корректность дат начала и окончания проекта.
-        Даты должны быть объектами date/datetime для сравнения."""
-        start_date_val: str | None = self.get("start_date")
-        end_date_val: str | None = self.get("end_date")
+    def check_dates_and_amount(self) -> None:
+        """Ensure dates are ordered correctly and amount is non-negative."""
+        if self.start_date and self.end_date and self.start_date > self.end_date:
+            frappe.throw(_("End date cannot be before start date."))
 
-        if start_date_val and end_date_val:
+        if self.total_amount is not None:
             try:
-                start_dt = frappe.utils.get_date(start_date_val)
-                end_dt = frappe.utils.get_date(end_date_val)
-
-                if end_dt < start_dt:
-                    frappe.throw(
-                        _(
-                            "Дата окончания проекта ({0}) не может быть раньше даты начала ({1})."
-                        ).format(
-                            frappe.utils.formatdate(end_dt),
-                            frappe.utils.formatdate(start_dt),
-                        )
-                    )
-            except Exception as e:
-                frappe.logger(__name__).warning(
-                    f"Could not validate dates for Service Project {self.name} due to parsing error: {e}"
-                )
-
-    def _format_dates_to_iso(self) -> None:
-        """Форматирует поля дат в ISO формат, если они установлены и являются объектами date/datetime."""
-        date_fields = ["start_date", "end_date"]
-        for fieldname in date_fields:
-            field_value = self.get(fieldname)
-            if field_value and not isinstance(field_value, str):
-                if isinstance(field_value, datetime.datetime | datetime.date):
-                    try:
-                        setattr(self, fieldname, field_value.isoformat())
-                    except Exception as e:
-                        frappe.logger(__name__).error(
-                            f"Error converting date field '{fieldname}' to ISO format for Service Project '{self.name}': {e}"
-                        )
-            elif isinstance(field_value, str):
-                try:
-                    dt_obj = frappe.utils.get_datetime(field_value)
-                    setattr(
-                        self,
-                        fieldname,
-                        (
-                            dt_obj.date().isoformat()
-                            if isinstance(dt_obj, datetime.datetime)
-                            else dt_obj.isoformat()
-                        ),
-                    )
-                except Exception as e:
-                    frappe.logger(__name__).warning(
-                        f"Could not convert string date field '{fieldname}' to ISO format for Service Project '{self.name}': {e}"
-                    )
-
-    def _validate_budget(self) -> None:
-        """Проверяет, что бюджет неотрицательный."""
-        if self.get("budget") is not None:
-            try:
-                budget_val: float = float(self.budget)
-                if budget_val < 0:
-                    frappe.throw(_("Бюджет проекта не может быть отрицательным."))
-            except (ValueError, TypeError):
-                frappe.throw(_("Некорректное значение бюджета проекта."))
+                if float(self.total_amount) < 0:
+                    frappe.throw(_("Total amount cannot be negative."))
+            except (TypeError, ValueError):
+                frappe.throw(_("Total amount must be a number."))
 
     def _validate_unique_objects(self) -> None:
-        """Ensure each service object is linked to only one project."""
-        objects_table: list[dict] = self.get("service_objects") or []
+        """Ensure each service object is unique and not linked to other projects."""
+        rows: list[dict] = self.get("objects") or []
         seen: set[str] = set()
-        for idx, row in enumerate(objects_table, start=1):
+        for idx, row in enumerate(rows, start=1):
             obj = row.get("service_object")
             if not obj:
                 frappe.throw(_("Service Object is required (row {0}).").format(idx))
@@ -106,10 +48,7 @@ class ServiceProject(Document):
 
             existing_parent = frappe.db.get_value(
                 "Project Object Item",
-                {
-                    "service_object": obj,
-                    "parent": ["!=", self.name],
-                },
+                {"service_object": obj, "parent": ["!=", self.name]},
                 "parent",
             )
             if existing_parent:
