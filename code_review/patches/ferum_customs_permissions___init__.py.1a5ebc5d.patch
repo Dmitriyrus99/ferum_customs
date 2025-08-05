@@ -1,9 +1,0 @@
---- a/ferum_customs/permissions/__init__.py
-+++ b/ferum_customs/permissions/__init__.py
-@@ -1 +1,5 @@
--__version__ = "0.0.1"
-+"""
-+This module contains permission-related functionalities for the Ferum Customs application.
-+"""
-+
-+__version__ = "0.1.0"

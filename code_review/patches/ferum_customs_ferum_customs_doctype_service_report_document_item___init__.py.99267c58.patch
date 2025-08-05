@@ -1,9 +1,0 @@
---- a/ferum_customs/ferum_customs/doctype/service_report_document_item/__init__.py
-+++ b/ferum_customs/ferum_customs/doctype/service_report_document_item/__init__.py
-@@ -1 +1,5 @@
--__version__ = "0.0.1"
-+"""
-+Module for handling service report document items in the Ferum Customs application.
-+"""
-+
-+__version__ = "0.0.1"  # Version should follow PEP 440 guidelines.

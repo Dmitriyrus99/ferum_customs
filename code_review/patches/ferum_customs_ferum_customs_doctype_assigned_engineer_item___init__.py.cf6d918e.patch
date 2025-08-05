@@ -1,9 +1,0 @@
---- a/ferum_customs/ferum_customs/doctype/assigned_engineer_item/__init__.py
-+++ b/ferum_customs/ferum_customs/doctype/assigned_engineer_item/__init__.py
-@@ -1 +1,5 @@
--__version__ = "0.0.1"
-+"""
-+Module for managing assigned engineer items in the Ferum Customs application.
-+"""
-+
-+__version__ = "0.0.1"
