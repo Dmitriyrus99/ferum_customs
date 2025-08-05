@@ -6,7 +6,7 @@ Python-контроллер для DocType "Service Project".
 from __future__ import annotations
 
 import datetime
-from typing import Optional
+from typing import Optional, cast
 
 import frappe
 from frappe import _
@@ -14,23 +14,18 @@ from frappe.model.document import Document
 
 
 class ServiceProject(Document):
-    """
-    Класс документа Service Project.
-    """
+    """Класс документа Service Project."""
 
     def validate(self) -> None:
-        """
-        Валидация данных документа.
-        """
+        """Валидация данных документа."""
         self._validate_dates()
         self._validate_budget()
         self._format_dates_to_iso()
+        self._validate_unique_objects()
 
     def _validate_dates(self) -> None:
-        """
-        Проверяет корректность дат начала и окончания проекта.
-        Даты должны быть объектами date/datetime для сравнения.
-        """
+        """Проверяет корректность дат начала и окончания проекта.
+        Даты должны быть объектами date/datetime для сравнения."""
         start_date_val: str | None = self.get("start_date")
         end_date_val: str | None = self.get("end_date")
 
@@ -54,9 +49,7 @@ class ServiceProject(Document):
                 )
 
     def _format_dates_to_iso(self) -> None:
-        """
-        Форматирует поля дат в ISO формат, если они установлены и являются объектами date/datetime.
-        """
+        """Форматирует поля дат в ISO формат, если они установлены и являются объектами date/datetime."""
         date_fields = ["start_date", "end_date"]
         for fieldname in date_fields:
             field_value = self.get(fieldname)
@@ -94,3 +87,34 @@ class ServiceProject(Document):
                     frappe.throw(_("Бюджет проекта не может быть отрицательным."))
             except (ValueError, TypeError):
                 frappe.throw(_("Некорректное значение бюджета проекта."))
+
+    def _validate_unique_objects(self) -> None:
+        """Ensure each service object is linked to only one project."""
+        objects_table: list[dict] = self.get("service_objects") or []
+        seen: set[str] = set()
+        for idx, row in enumerate(objects_table, start=1):
+            obj = row.get("service_object")
+            if not obj:
+                frappe.throw(_("Service Object is required (row {0}).").format(idx))
+
+            obj = cast(str, obj)
+            if obj in seen:
+                frappe.throw(
+                    _("Service Object {0} is duplicated in this project.").format(obj)
+                )
+            seen.add(obj)
+
+            existing_parent = frappe.db.get_value(
+                "Project Object Item",
+                {
+                    "service_object": obj,
+                    "parent": ["!=", self.name],
+                },
+                "parent",
+            )
+            if existing_parent:
+                frappe.throw(
+                    _("Service Object {0} is already linked to project {1}.").format(
+                        obj, existing_parent
+                    )
+                )

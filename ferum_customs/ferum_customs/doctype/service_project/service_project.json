@@ -32,6 +32,17 @@
         "fieldtype": "Currency",
         "precision": 2,
         "options": "RUB"
+      },
+      {
+        "fieldname": "service_objects_section",
+        "fieldtype": "Section Break",
+        "label": "Service Objects"
+      },
+      {
+        "fieldname": "service_objects",
+        "label": "Service Objects",
+        "fieldtype": "Table",
+        "options": "Project Object Item"
       }
     ],
     "permissions": [

@@ -8,6 +8,8 @@ from typing import TYPE_CHECKING, Optional
 import frappe
 from frappe import _  # For translation
 
+from ferum_customs.constants import FIELD_CUSTOM_SERVICE_OBJECT_LINK
+
 if TYPE_CHECKING:
     from ferum_customs.ferum_customs.doctype.service_object.service_object import (
         ServiceObject,
@@ -46,3 +48,21 @@ def validate(doc: ServiceObject) -> None:
             frappe.throw(error_message, title=_("Uniqueness Error"))
 
     # Additional checks for ServiceObject can be added here.
+
+
+def prevent_deletion_with_active_requests(
+    doc: ServiceObject, method: str | None = None
+) -> None:
+    """Disallow deletion when active Service Requests reference the object."""
+    if frappe.db.exists(
+        "Service Request",
+        {
+            FIELD_CUSTOM_SERVICE_OBJECT_LINK: doc.name,
+            "docstatus": ["!=", 2],
+        },
+    ):
+        frappe.throw(
+            _(
+                "Cannot delete Service Object {0} because active Service Requests exist."
+            ).format(doc.name)
+        )

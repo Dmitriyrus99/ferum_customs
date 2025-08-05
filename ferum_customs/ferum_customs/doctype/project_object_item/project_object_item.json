@@ -1,0 +1,27 @@
+{
+    "doctype": "DocType",
+    "name": "Project Object Item",
+    "module": "Ferum Customs",
+    "istable": 1,
+    "engine": "InnoDB",
+    "track_changes": 1,
+    "fields": [
+        {
+            "fieldname": "service_object",
+            "label": "Service Object",
+            "fieldtype": "Link",
+            "options": "Service Object",
+            "reqd": 1,
+            "in_list_view": 1
+        }
+    ],
+    "permissions": [
+        {
+            "role": "System Manager",
+            "read": 1,
+            "write": 1,
+            "create": 1,
+            "delete": 1
+        }
+    ]
+}
