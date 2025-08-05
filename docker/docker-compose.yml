@@ -21,3 +21,12 @@ services:
       - "8100:8000"
     env_file:
       - .env
+
+  frontend:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.frontend
+    depends_on:
+      - fastapi
+    ports:
+      - "3000:3000"

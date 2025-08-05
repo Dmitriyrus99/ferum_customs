@@ -23,10 +23,11 @@
 
 * [ ] Установить Frappe/ERPNext с PostgreSQL и Redis.
 * [ ] Настроить Nginx как reverse proxy с HTTPS (TLS).
-* [ ] Создать отдельные Docker-сборки для:
+* [x] Создать отдельные Docker-сборки для:
 
-  * кастомного backend (FastAPI/NestJS),
-  * frontend (React).
+  * кастомного backend (FastAPI/NestJS) ✅
+  * frontend (React) ✅
+
 
 ---
 
