@@ -5,53 +5,74 @@
     "name": "Service Request",
     "module": "Ferum Customs",
     "engine": "InnoDB",
-    "is_submittable": 1,
-    "naming_series": "SR-.YYYY.-.#####",
-    "title_field": "subject",
     "track_changes": 1,
-    "track_seen": 1,
-    "track_views": 1,
-    "allow_rename": 1,
+    "is_submittable": 1,
+    "title_field": "request_type",
     "fields": [
       {
-        "fieldname": "request_datetime",
-        "label": "Дата и время заявки",
-        "fieldtype": "Datetime",
-        "default": "now",
-        "read_only": 1,
-        "in_list_view": 1
+        "fieldname": "request_type",
+        "label": "Request Type",
+        "fieldtype": "Select",
+        "options": "Maintenance\nEmergency",
+        "reqd": 1
       },
       {
-        "fieldname": "subject",
-        "label": "Тема",
-        "fieldtype": "Data",
-        "reqd": 1,
-        "in_list_view": 1
+        "fieldname": "project",
+        "label": "Project",
+        "fieldtype": "Link",
+        "options": "Service Project",
+        "reqd": 1
       },
       {
-        "fieldname": "customer_email",
-        "label": "Email клиента",
-        "fieldtype": "Data",
-        "options": "Email",
-        "in_list_view": 1
+        "fieldname": "object",
+        "label": "Object",
+        "fieldtype": "Link",
+        "options": "Service Object",
+        "reqd": 1
+      },
+      {
+        "fieldname": "priority",
+        "label": "Priority",
+        "fieldtype": "Int",
+        "default": "3"
       },
       {
         "fieldname": "status",
-        "label": "Статус",
+        "label": "Status",
         "fieldtype": "Select",
-        "options": "Open\nClosed\nPending",
-        "read_only": 0,
-        "in_list_view": 1,
-        "no_copy": 1
+        "options": "Open\nAssigned\nIn Progress\nClosed",
+        "default": "Open"
       },
       {
-        "fieldname": "duration_hours",
-        "label": "Длительность (часы)",
-        "fieldtype": "Float",
-        "precision": 2,
-        "read_only": 0,
-        "no_copy": 1
+        "fieldname": "assigned_to",
+        "label": "Assigned To",
+        "fieldtype": "Link",
+        "options": "User"
+      },
+      {
+        "fieldname": "description",
+        "label": "Description",
+        "fieldtype": "Text"
+      },
+      {
+        "fieldname": "assign_by",
+        "label": "Assign By",
+        "fieldtype": "Datetime",
+        "read_only": 1
+      },
+      {
+        "fieldname": "close_by",
+        "label": "Close By",
+        "fieldtype": "Datetime",
+        "read_only": 1
       }
+    ],
+    "permissions": [
+      {"role": "System Manager", "read": 1, "write": 1, "create": 1, "delete": 1, "submit": 1, "cancel": 1, "amend": 1},
+      {"role": "Administrator", "read": 1, "write": 1, "create": 1, "delete": 1, "submit": 1, "cancel": 1, "amend": 1},
+      {"role": "Project Manager", "read": 1, "write": 1, "create": 1, "submit": 1},
+      {"role": "Engineer", "read": 1, "write": 1},
+      {"role": "Client", "read": 1, "write": 1}
     ]
   }
 ]
