@@ -1,0 +1,441 @@
+Technical Specification and Development Plan for Ferum Customizations
+Project Overview and Objectives
+Ferum Customizations is an IT system designed to streamline a service company's operations in fire safety systems maintenance. The system integrates ERPNext (an open-source ERP) for core record-keeping and a custom web application (using FastAPI or NestJS with React) for extended functionality like bot interactions and Google Workspace integration. The primary business goals of the project include: automating contract and service request tracking, improving transparency through photo documentation and reporting, reducing manual data handling and duplicate data entry, controlling deadlines and work quality (especially for contractors), and monitoring financial metrics like project profitability, accounts receivable, and contractor payments. To address current pain points (slow document approvals, scattered documents, poor contractor oversight, and difficult financial tracking), the system will introduce unified data storage and process automation. Key performance indicators (KPIs) will be tracked, such as service request turnaround time, on-time completion rate for work reports, project receivables, and staff utilization. These objectives guide the technical requirements and development priorities of the project. User Roles and Permissions: The system defines clear user roles with specific permissions to ensure data security and operational clarity. The main roles include:
+Administrator: Full access to all projects, requests, invoices, and logs; user management; receives notifications about new invoices; can view analytics via the bot; authority to change invoice statuses.
+General Director (CEO): Approval of all budgets, payments, and contracts.
+Chief Accountant: Management of financial records, payments (payroll and contractor payments), and tax reporting.
+Department Head (Sales/Procurement or Service): Approval of service requests, supervision of staff, and oversight of reports.
+Project Manager: Oversees projects, handles client communications and photo documentation, manages service requests and their workflow, and uploads invoices for approval.
+Service Engineer: Executes service requests on-site; views assigned projects/requests; updates request statuses; receives alerts for new or urgent requests.
+Office Manager: Manages documentation, logs incoming service requests (especially from calls/emails), prepares reports; can create service requests and upload invoices across all projects.
+Client (Customer): Can view their own projects, create new service requests, and track request status; cannot see financial information like invoices.
+Each role will have role-based access control rules implemented in ERPNext and the custom application to enforce these permissions (including potential use of ERPNext’s permission query conditions for restricting Customer data access). Core System Entities: The solution’s data model is built around key DocTypes (data entities) in ERPNext and corresponding models in the custom backend. The main entities and their relationships are:
+ServiceProject – represents a maintenance Project or contract. This is a custom DocType (renamed from the standard Project to avoid conflicts). A ServiceProject groups multiple service requests under one client contract; it stores details like project name, service period dates, service location(s), responsible personnel, contract value, and status.
+Customer – the client organization or person. (Standard ERPNext Customer DocType, linked to projects and requests.)
+ServiceObject – a specific Object of service (equipment or site) that requires maintenance
+GitHub
+. ServiceObjects are linked to Customers and can be associated with projects via a child table. A project can have multiple service objects attached through the ProjectObjectItem child DocType. Business rule: A ServiceObject cannot be deleted if there are active service requests associated with it.
+ProjectObjectItem – a child table in ServiceProject that links one ServiceObject to the project. This implements a many-to-many relationship between projects and service objects (one project can cover multiple objects, and an object can belong to multiple projects over time).
+ServiceRequest – a Service Ticket logged for maintenance. This ERPNext DocType captures a request initiated by a client or internal staff, linked to a ServiceProject (and thereby to a Customer). Each ServiceRequest includes fields such as the affected ServiceObject (site/equipment), problem description, urgency level, type of request (e.g. Routine Maintenance vs Emergency), status (workflow status like Open, In Progress, Completed, Closed), timestamps (reported time, start/end times), and assignment to an engineer. In the custom backend, a corresponding model (or API endpoints) for Request will allow external creation and manipulation of service requests.
+PhotoAttachment and DocumentAttachment – entities for file uploads (images or documents) related to service activities. In ERPNext, these are custom DocTypes used to attach photos of equipment and documents (contracts, reports, etc.) to various records. It’s recommended to unify these into a single CustomAttachment DocType to simplify file management.
+RequestPhotoAttachmentItem – a child table linking attachments (photos/docs) to a ServiceRequest. Engineers will add multiple photo entries here as evidence for a service request.
+ServiceReport – a Work Report / Act of completed work for a service request. This ERPNext DocType documents the work done for a request, including references to the original ServiceRequest, date of completion, and a breakdown of tasks or services performed. It contains child tables: ServiceReportWorkItem (line items describing each task, quantity, and cost) and ServiceReportDocumentItem (to attach any additional documents to the report).
+Invoice – an Invoice record in the custom application for billing or contractor payments. In this context, Invoice is managed outside ERPNext (or as an extension) to track amounts due from clients or amounts payable to subcontractors. Each Invoice includes fields such as linked Project, billing period (month), amount, counterparty (customer or subcontractor), payment basis/description, tax (VAT) applicability, and links to attached documents (like scans of signed acts or invoices).
+PayrollEntryCustom – a custom Payroll Entry DocType in ERPNext for HR purposes. It extends or customizes payroll processing (for example, calculating salaries and deductions). Fields likely include employee details, salary components, advance payments, and final payable amounts.
+User – (standard ERPNext User) augmented with role assignments and possibly 2FA settings for security.
+These entities form the backbone of the system, and their relationships reflect the business workflows (e.g., a ServiceProject has many ServiceRequests; each ServiceRequest has one ServiceReport when completed; each ServiceReport can generate an Invoice for billing).
+Project Roadmap (Phased Implementation)
+Development and deployment will be carried out in five main phases, aligning with business priorities. Each phase delivers a set of modules and features, ensuring incremental value:
+Phase 1: CRM – Clients, Requests, and Projects. This initial stage focuses on core CRM and service management: implement Customer records, ServiceObject registry, ServiceProject (contracts) management, and the ServiceRequest handling workflow (ticketing system). The goal is to start tracking client data, maintenance sites, and incoming service requests in a structured manner.
+Phase 2: Service Execution and Control – Work Reports and Photo Documentation. Build out the functionality for engineers to execute work and document it. This includes ServiceReport (work completion acts) with detailed work items, photo attachments for evidence (equipment before/after), and any necessary inventory/warehouse tracking for parts (if applicable). The emphasis is on capturing service delivery data and ensuring quality control (via supervisor approvals, etc.). This phase also covers basic stock management if spare parts or equipment inventory needs tracking (the term "склад" in the plan suggests a warehouse module may be integrated here).
+Phase 3: Finance – Invoices and Payments. Introduce financial tracking for both client billing and subcontractor payments. This includes the custom Invoice module for generating client invoices and recording subcontractor bills, integration with Google Sheets for accounting reconciliation, and setting up notifications for financial approvals. By the end of this phase, the company can issue invoices to customers and log incoming supplier invoices through the system, improving financial transparency.
+Phase 4: Accounting and Tax Compliance. Extend the financial module to support accounting needs and tax reporting. In this phase, we ensure the system captures all data needed for tax filings (e.g., VAT, income tax) and potentially integrate with external accounting software or workflows (like 1C) for official ledgers. This might involve generating summary reports for the Chief Accountant (e.g., profit/loss by project, tax calculations) and ensuring all financial documents (invoices, acts) are stored and accessible for audit.
+Phase 5: HR and Payroll Automation. Implement HR processes including tracking of work hours, leaves, and payroll computation. Using the PayrollEntryCustom DocType, the system will calculate monthly salaries, taking into account advances and deductions, and prepare payout reports. This phase may also involve integration with any existing HR system or simply producing reports for the accounting department to process payments.
+Each phase should be completed with testing, user training, and documentation before moving to the next, ensuring a smooth rollout. The phased approach allows early benefits (Phase 1 establishes the foundation with CRM and ticketing) and mitigates risk by iteratively building on a stable base.
+Technical Specification by Module (Functional Requirements)
+Below is a detailed breakdown of each major module (business process) in the system, including the data model, business logic (automation), API endpoints, integrations, and user interface components required. These correspond to the business processes outlined in the Ferum Customizations model.
+1. Project and Contract Management
+Purpose: Enable efficient initiation of new projects (contracts) and coordination between the client and subcontractors. This module handles the creation of service projects and configuration of the sites/equipment under contract.
+Entities and Data Model:
+ERPNext: ServiceProject – custom DocType for projects. Fields include project name, start and end dates, service address(es), client (Customer link), responsible project manager, contract value, and status (e.g., Active, Completed). It has a child table ProjectObjectItem for listing all ServiceObject entries covered by the project.
+ERPNext: ServiceObject – represents a client’s site or equipment that requires service. Key fields: name/identifier, address/location, Customer link, maybe type of equipment. ServiceObjects can be associated with projects via ProjectObjectItem. (One ServiceObject can appear in multiple projects over time if contracts are renewed or changed.)
+ERPNext: ProjectObjectItem – child DocType linked to ServiceProject, with fields: ServiceObject reference and possibly some details like service scope for that object. This forms a many-to-many link between projects and service objects.
+Business Logic (Automation in ERPNext):
+Project Creation: When a Project Manager creates a new ServiceProject, they must add one or more ServiceObjects to it (via ProjectObjectItem). The system should ensure that the same ServiceObject isn’t added twice to one project – enforced by a custom validate hook on ServiceProject. The validation checks the combination of project and object for uniqueness, preventing duplicates.
+ServiceObject Protection: A custom on_trash hook on ServiceObject prevents deletion of any ServiceObject that is linked to active ServiceRequests. This ensures historical data integrity (objects with pending or past tickets cannot be removed arbitrarily).
+Role Permissions: Only certain roles can create or edit ServiceProjects (e.g., Project Manager, Administrator). This will be configured via role permissions in ERPNext.
+Email Integration: Upon project initiation, Project Managers often send a welcome email to the client with contact details. We will template this communication in the system: when a new project is saved (or set to Active), an email can be triggered to the client’s contact with a welcome message (optionally CCing the sales/operations head). This can be done via ERPNext’s notification or via the backend service.
+API (Backend):
+GET /projects – Retrieve a list of projects, possibly with filters (by client, status, date, etc.).
+POST /projects – Create a new project (for use by an external system or if a separate frontend is used instead of ERPNext desk for this).
+(If using ERPNext’s built-in UI for projects, these endpoints might be optional. However, for integration with other services or a React frontend, they would be implemented to call ERPNext under the hood.)
+The API should also expose endpoints to list ServiceObjects and to link/unlink them from projects.
+Integrations & Notifications:
+Google Drive: For each project, if needed, a folder on Google Drive could be created to store related files (reports, photos). The business model suggests that all files may be stored in a single Drive without project subfolders, but an alternative (creating a folder per project) can be considered for organization. At minimum, ensure that when ServiceReports or attachments are uploaded, they end up in the designated Drive storage (possibly via a scheduled sync or immediate API call).
+Telegram/WhatsApp Bot: When a new project is started, an optional notification can be sent via bot to the General Director or relevant team chats, informing them of project kick-off (this is an enhancement to keep everyone informed).
+External Contractor Sync: If using external systems (like 1C or another CRM for new clients), consider an integration or at least a data export of new project info so that client records remain consistent (e.g., the step of creating a new client in KUB-24 or 1C as mentioned in the process might be manual, but we should ensure data can be imported/exported easily).
+User Interface (ERPNext & Frontend):
+Use ERPNext’s Desk for Project management: a form for ServiceProject with the necessary custom fields and child table.
+Project Creation Form: It should allow selecting an existing Customer and linking service objects (possibly through a multiselect or table interface).
+Project Dashboard: On the ERPNext desk, a Project dashboard can show linked service objects and high-level info (like number of open requests, total invoiced amount, etc.). Custom indicators or a dashboard view might be added for convenience.
+If a React frontend is in use (for instance, a portal for internal users), create views for:
+Listing projects (with search and filter by client or status).
+Viewing project details, including service objects and service requests under that project.
+Creating/editing a project (this could simply embed or mirror the ERPNext form via API calls).
+Metrics: In this module, we will begin tracking metrics such as number of projects initiated and active, and ensure each project has at least one service object and responsible person assigned (data completeness checks).
+2. Service Request Management (Ticketing)
+Purpose: Automate the intake, processing, and monitoring of service tickets (maintenance requests). This is the core of daily operations, handling routine and emergency maintenance calls.
+Entities and Data Model:
+ERPNext: ServiceRequest – the primary DocType for service tickets. Key fields include:
+Type: Request category (e.g. "Technical Maintenance" vs "Emergency Call").
+Linked Project (project): Reference to a ServiceProject (or directly to a Customer if no project exists for that client).
+Service Object: The specific site/equipment related to the issue (link to ServiceObject). If selected, the system auto-fills the project and customer based on that object
+GitHub
+GitHub
+.
+Customer: The client, auto-derived either from the chosen project or service object
+GitHub
+.
+Subject/Description: A text describing the problem.
+Urgency/Priority: Mark if it’s an emergency or normal request, possibly with an SLA attached.
+Status: Workflow status (New/Open, In Progress, Completed, Closed, Canceled).
+Assigned Engineer: The user (Employee) responsible for this request.
+Dates/Times: Request creation time, planned start/end, actual start/end, completion timestamp.
+Linked Report: (custom field) to store reference to the ServiceReport once work is done.
+Child table: RequestPhotoAttachmentItem to attach multiple photos/documents relevant to the request.
+Backend Model: If using an external backend, a corresponding Request model or schema will mirror these fields to allow external creation (e.g., via bots or external forms).
+Business Logic (ERPNext Server Scripts & Hooks):
+Auto-populate Fields: A Client Script on the ServiceRequest form will auto-fill the project field when a ServiceObject is selected, by looking up which project that object is linked to
+GitHub
+. Also, it will filter the dropdown of engineers to show only those who are relevant (perhaps based on region or who is assigned to that ServiceObject). These help speed up data entry and ensure consistency.
+Notifications on Creation: When a new ServiceRequest is submitted, the system triggers notifications:
+If the request is marked as Emergency, immediate alerts are sent to all on-call engineers, project managers, and admins. This can be done via ERPNext’s Notification doctype or via the custom bot integration.
+For any new request (emergency or not), notifications with details should go out to relevant parties: the assigned engineer (or engineering team lead), the project manager, and the client (if the request was entered by staff on behalf of the client). The notifications can be via email, and also via Telegram/WhatsApp for instant delivery.
+Status Changes: The workflow statuses for a request typically flow: Открыта (Open) → В работе (In Progress) → Выполнена (Completed) → Закрыта (Closed)
+GitHub
+ (Open -> In Progress -> Completed -> Closed, with possible Cancel). The system enforces correct transitions:
+A validate hook on ServiceRequest ensures that a request cannot be marked Completed or Closed without an associated ServiceReport (work report) attached
+GitHub
+. If an engineer or manager tries to mark status to Completed/Closed while the report is missing, the system throws an error prompting to create the ServiceReport first.
+Additionally, on marking Completed, if the completion timestamp is not set, the system auto-sets it (to now)
+GitHub
+.
+A custom workflow (or in-code check) ensures only allowed transitions. For example, you cannot move directly from Open to Completed without going through In Progress, etc. The _validate_workflow_transition method in the ServiceRequest controller enforces these rules
+GitHub
+GitHub
+.
+Duration Calculation: The ServiceRequest DocType calculates the total time taken to complete the job. A before_save hook computes the duration (in hours) between actual_start_datetime and actual_end_datetime whenever both are set
+GitHub
+. This gives a field duration_hours which can be used for reporting engineer efficiency or billing.
+Logging: All status changes and key field updates on ServiceRequest should be logged with a timestamp and user. ERPNext by default keeps version logs of DocType changes; we will ensure this is enabled. Additionally, we can extend logging via a Server Script or the backend to record an audit trail of request progression.
+Linked Data Updates: When a ServiceReport is submitted and linked to a ServiceRequest (see ServiceReport module), the request’s status might automatically change to Completed/Closed via script. Conversely, if a request is re-opened or marked incomplete, linked reports might need to be cleared or flagged.
+API (Backend Endpoints):
+POST /requests – Create a new service request. This will be used by external sources such as the Telegram/WhatsApp bot or a customer web portal. It should capture the required fields (client, subject, etc.) and create the ServiceRequest in ERPNext via API.
+GET /requests – List service requests. Supports filters like ?status=Open or ?project=<ID> or ?assigned_to=<engineer>, so that different users can fetch relevant tickets (e.g., an engineer getting their open tasks).
+GET /requests/{id} – Retrieve details of a specific service request, including attached photos and linked report if any.
+PUT /requests/{id} – Update a request (for status changes, or to add information).
+PUT /requests/{id}/status – A dedicated endpoint for status transitions (could combine with above). This will enforce the workflow rules; e.g., an engineer can mark In Progress or Completed, but only an admin/project manager might be allowed to Close or Cancel.
+These endpoints will include authentication (only logged-in or bot-authenticated users can create/modify requests) and will likely call ERPNext’s REST API or use Frappe client library under the hood to perform operations.
+Integrations & Notifications:
+Telegram/WhatsApp Bot: A critical integration for this module. A Telegram bot will allow engineers and clients to interact with requests:
+Clients can create new requests via the bot command (e.g., /new_request <text>), which triggers the POST /requests API
+GitHub
+.
+Engineers can list their open requests (/my_requests)
+GitHub
+ and get brief status summaries.
+Engineers can update a request status via the bot (e.g., /set_status <req_id> <status>)
+GitHub
+, which hits an endpoint to change status, after verifying the user’s permission and the validity of transition.
+Engineers can upload a photo through the bot (/upload_photo <req_id>)
+GitHub
+. The bot will accept an image and call an API to attach it to the specified ServiceRequest (into RequestPhotoAttachmentItem).
+These bot commands internally call whitelisted server functions in ferum_customs.api on the ERPNext side
+GitHub
+, ensuring security. The system must maintain a mapping of Telegram users to system user accounts (perhaps using a token or pre-registration) for authentication.
+Email Alerts: In addition to chat notifications, formal email notifications will be configured for certain events:
+New Request Created: Email to the assigned engineer’s email, CC to project manager, with request details.
+Status Changes: e.g., when an engineer marks a request as Completed, an email could go to the client (if they have an email on file) with a note that work is completed and awaiting their confirmation.
+Overdue Alerts: If a request remains open past a due date (perhaps each request could have an expected completion due date), trigger a reminder email to responsible persons.
+These can be managed via ERPNext’s Notification module or via a scheduled job in the backend that checks for SLAs.
+Google Calendar (Potential): For scheduling maintenance visits, integration with Google Calendar could be considered. For example, when a request is set to In Progress and has planned start/end times, an event could be added to a shared calendar for the engineer.
+User Interface (Frontend & ERPNext):
+ERPNext Desk: Provide a customized ServiceRequest form with relevant fields and client scripts. Implement a Kanban or List view for service requests by status, so managers can drag requests through stages or quickly filter by engineer/customer.
+Engineer Dashboard: A special view for engineers that lists their assigned open requests and upcoming tasks. This could be done with an ERPNext Workspace or via the custom React frontend. The dashboard would show each request with key info (site, description, due date) and allow quick status updates.
+Client Portal: If using ERPNext’s web portal or a custom React app, allow clients to log in and see their own requests (enforcing record-level permissions so they only see their data). They should be able to create new requests and see statuses. This portal could be simpler in functionality (view, create, comment).
+Attachment Upload Component: In the request form/UI, include a component for uploading photos and documents. This should allow multiple file selection (for example, engineers may attach several images of equipment). The files will be stored in the system (and possibly synced to Google Drive). Ensure that uploading via both the web UI and the bot results in files being attached uniformly.
+Status Update UI: A simple interface (button or action) on the request form to move it to next status (with confirmation dialogues if needed). For instance, an engineer viewing a request can click "Mark as Completed", which triggers the logic that a ServiceReport must be attached first (if not, prompt to create one).
+Metrics & Monitoring: Track metrics such as average time from request open to close, and the percentage of requests closed within SLA. These metrics will feed into the analytics module and be available via the bot or reports. The system’s logging of each status change, along with timestamps, provides data for these calculations.
+3. Service Report Management (Work Completion Acts)
+Purpose: Document the results of completed work for service requests, generate official work reports/acts, and link them to the corresponding requests. This ensures all work is properly recorded and approved by stakeholders.
+Entities and Data Model:
+ERPNext: ServiceReport – a DocType for the act of completed work. Fields include:
+Service Request link: Reference to the ServiceRequest that this report is fulfilling.
+Date of work completion: When the work was done (could be auto-filled as submission date or manually entered if different).
+Engineer or Creator: Who is filing the report (could be the engineer or project manager).
+Work Details: Captured in child table ServiceReportWorkItem – each entry containing a description of work done, quantity, unit, and cost or value. For example, "Replaced 5 smoke detectors".
+Total Payable (amount): Calculated from the Work Items, representing the total charge for this report (if billable).
+Attachments: Child table ServiceReportDocumentItem for any documents attached to the report (e.g., a signed physical act, additional notes, or readings).
+Status/Signature: Possibly a field to indicate if the report is signed by the client or approved.
+Linked Invoice: There might be a link to an Invoice if this report has been invoiced (though billing is separately tracked in the Invoice module).
+The ServiceReport is usually “submitted” (in ERPNext terms) once completed, to indicate it’s finalized and approved.
+Business Logic (ERPNext Hooks & Validation):
+Before Save (Draft): As work items are added, the system automatically calculates the total amount of the report. A before_save hook on ServiceReport sums up all ServiceReportWorkItem entries and updates the total field. This ensures consistency and saves manual calculation.
+Validate: When saving or submitting, enforce that each work item has a proper description and possibly a cost if required (no blank entries). If any required fields are missing (like the link to ServiceRequest or work details), the system should throw validation errors.
+On Submit: Once an engineer or manager submits the ServiceReport (marks it as an official record), trigger automation:
+Link the report to the corresponding ServiceRequest: set the ServiceRequest’s linked_report field to this ServiceReport’s ID, and update the request’s status to Completed (Выполнена) or Closed if everything is done. The rule might be: marking the request Completed upon report submission, and then a manager can later mark it Closed after client confirmation.
+Generate a PDF or printable version of the report (ERPNext has built-in print format capability). Ensure that the ServiceReport DocType is configured with a print format (or uses the standard one) so it can produce a nicely formatted document (which can be sent to the client).
+Allow sending the report by email directly after submission. The system can prompt: "Do you want to email this report to the client?" and if confirmed, use ERPNext’s email form to send it (the doc is allow_email).
+Client Acknowledgment (Post-Submit): Optionally, the workflow might require the client’s approval. This can be handled offline (client signs a physical copy), but the process description suggests sending the documents for client signature. We should accommodate uploading a signed copy later. For instance, once the client signs the printed act, the Office Manager or PM could scan and attach it to the ServiceReport as an additional document. The system should allow updating the ServiceReportDocumentItem with that scan even after submission (ERPNext might require an amendment or a separate DocType for client-signed copy).
+Google Drive Archive: All final documents (signed acts, initial survey reports, etc.) should be stored in Google Drive under the project folder. The PM is responsible for placing them there, but we can automate part of this: e.g., when a ServiceReport is submitted, if it has any attachments (scans), an integration can upload those attachments to a specific Google Drive folder (perhaps named by project or a general "Archives" folder). At minimum, provide clear naming so manual upload is straightforward.
+Initial Survey: In long projects, there might be an initial inspection report (“Акт первичного обследования” and defect list) before maintenance starts. These could be treated as a ServiceReport of a special type or simply as attachments on the project. The process narrative suggests these are prepared by the Project Manager and approved by the dept head, then sent to the client. We might implement them as a separate DocType or reuse ServiceReport with a flag for "initial survey" type. However, since these occur at project start, not tied to a single request, perhaps better to store as part of Project documentation (maybe a child table or attachment in ServiceProject).
+API:
+GET /reports – List ServiceReports (with filters by project, by status, by date).
+GET /reports/{id} – Fetch details of a single ServiceReport, including work items and attachments.
+POST /reports – Create a new ServiceReport (this would typically be done via ERPNext UI by engineers, but an endpoint allows the mobile/bot interface to create reports as well).
+Possibly an endpoint to attach a document to a report (though could be part of a generic file upload API).
+These APIs would be used by the Telegram bot if an engineer chooses to finalize a report via the bot (though more likely they’d do it in the ERPNext web interface due to complexity of entering structured data).
+Integrations:
+Email: As mentioned, ability to email the completed ServiceReport (with PDF attachment) to the client directly.
+Google Drive: As part of archival, an integration to upload or synchronize ServiceReport attachments to Google Drive. We might use Google Drive API to automate this: e.g., when a ServiceReport is submitted with attachments, a background task reads the file from ERPNext (if stored on local file system or database) and uploads to Drive, then possibly stores the Drive link in the ServiceReportDocumentItem.
+Notification: Notify the Project Manager or Administrator when an engineer submits a report. This can be an email or bot message to alert that a report needs approval or is ready for invoicing.
+User Interface:
+ServiceReport Form: In ERPNext, design a form for ServiceReport with the child tables for Work Items and Documents. Make it user-friendly for engineers:
+Perhaps provide a link on the ServiceRequest form so that an engineer can click “Create Service Report” from the request once work is done, which opens a new ServiceReport form with the ServiceRequest already linked.
+Pre-fill known info: If accessed via a request, copy relevant info like customer, object, etc., into the report form for context.
+Work Item Table UI: Possibly customize to allow quick entry of tasks. If there are standard tasks, maybe provide a dropdown or template mechanism.
+Report Print Format: Create a professional print format for the ServiceReport (including company letterhead, client and project info, list of work done, signatures section).
+Reports List: A view for project managers to see all reports, filterable by project or engineer.
+In the React frontend, if one exists for internal use, include:
+A page to view a ServiceReport (perhaps with an option to view the PDF or print it).
+Possibly creation of ServiceReports if needed (though likely easier in ERPNext UI).
+Metrics: This module contributes to metrics like number of reports generated, average time from request completion to report submission, and financial metrics (like total billable amount per project from reports). The total_payable field of ServiceReport can be aggregated to track project profitability. These will feed into analytics and KPI monitoring.
+4. Invoice and Payment Management
+Purpose: Automate the creation, tracking, and status control of invoices for clients and payments to subcontractors, integrating with Google Sheets for financial reconciliation. This module bridges the operational work and the financial records, ensuring that completed work leads to invoices and that subcontractor bills are managed.
+Entities and Data Model:
+Custom App: Invoice – a model for financial entries representing either an outgoing invoice to a client or an incoming bill from a subcontractor. Key fields:
+Project: Reference to the ServiceProject (so we know which contract this invoice belongs to).
+Month/Period: The period for which services were provided (especially for recurring services, e.g., "January 2025").
+Amount: The monetary amount of the invoice.
+Counterparty: The customer (for client invoices) or the subcontractor (for payable bills).
+Payment Basis/Description: A text describing what the invoice is for (e.g., "Maintenance services for January", or for subcontractor: "Payment for fire alarm inspection work").
+VAT Included: A flag or field indicating if VAT applies (for subcontractors who are VAT-registered).
+Attachments: Links to documents such as the signed acts, the invoice PDF, any receipts or tax documents. In practice, these might be stored in Google Drive with the link or file ID recorded here.
+Status: e.g., "New", "Sent to Client", "Awaiting Payment", "Paid", etc.
+Type: Perhaps whether it's a Client Invoice or a Subcontractor Bill (this can be derived from counterparty role or a field).
+There might not be an ERPNext DocType for Invoice if this is purely handled in the custom backend and Google Sheets. However, to maintain consistency, we might create a simple DocType in ERPNext or at least use the Frappe framework for it, so it benefits from permission management and logging.
+Business Logic (Backend & Google Sheets Integration):
+Invoice Creation: As part of the monthly cycle, around the 20th-23rd of the month, the Project Manager generates invoices for the client for that month’s services. This includes preparing the invoice and related docs (invoice document, tax invoice, acts) and sending to the client for approval. In the system, the PM or Office Manager will create a new Invoice record with the details. Upon creation:
+Google Sheet Sync: The system automatically inserts a line into a Google Sheet that tracks all subcontractor payments. (The business model mentions a "Form for uploading invoices" which is a Google Sheet where they list bills to pay contractors.) When an Invoice of type "Payable to subcontractor" is created, we use the Google Sheets API to add a row containing project, month, amount, vendor name, payment reason, VAT, and a link to attachments. This Sheet likely has formulas to sum up totals by project and period.
+Data Validation: Ensure all required fields are filled before allowing an invoice to be saved: project, period, amount, counterparty, etc. This can be done in the form validation.
+Highlighting Rule: The model describes an automation where if an invoice entry is handled by someone other than the assigned project manager, the row in the Google Sheet is highlighted. We might implement this by adding a flag in the data we send to the sheet, or using conditional formatting in the sheet itself. For example, each invoice row could contain the PM’s name, and a Google Apps Script or formula could highlight the row if the current user editing is not that PM.
+Approval Notifications: Once a client invoice is created in the system, the Administrator is notified (they need to follow up for sending to client and monitoring payment). Likewise, for subcontractor bills, notifications to the Chief Accountant or Administrator should happen so they can schedule the payment.
+Document Handling: PMs will upload scan copies of financial documents (signed acts, etc.) to the Google Drive and possibly link them in the Invoice record. The system should make it easy to attach these files or at least record the Drive link. Perhaps a field "Drive Folder/Link" for that invoice can be maintained.
+Status Updates: As payments are processed:
+The Admin or PM can update the status of an invoice (e.g., mark as "Awaiting Payment" after sending to client, and "Paid" once payment is received). We will provide a field or selection for this status. Changing status might trigger:
+If a client invoice is marked Paid, possibly notify the project team or log the receipt (for financial metrics).
+If a subcontractor invoice is marked Paid, the date of payment could be recorded.
+All status changes should be logged for audit.
+Financial Metrics: The system will use these invoice records to calculate accounts receivable and payable. For instance, the KPI “Debtor (accounts receivable) by project” can be computed by summing unpaid client invoices per project. Similarly, we can track total subcontractor costs per project (for profitability).
+Monthly Process: Toward month-end (23-30th day), ensure all client invoices are sent and all subcontractor bills are recorded. Possibly implement a checklist or report to list any pending items (e.g., a report “Invoices not yet created for active projects for this month”).
+API:
+GET /invoices – List invoices/bills with filters (by project, by status, by type=client or subcontractor).
+POST /invoices – Create a new invoice or bill entry. This triggers the Google Sheet sync as described.
+PUT /invoices/{id} – Update invoice (could be used for status updates or adding payment details).
+These allow integration from external triggers; for example, if using another finance system, data could be pushed in.
+Additionally, a secure webhook or scheduled job could pull updates from the Google Sheet if needed (to catch any manual edits).
+Integrations:
+Google Sheets: As described, integrate via Google Sheets API (using credentials for a service account or OAuth) to append rows to the financial tracking sheet. Ensure network connectivity and proper error handling (if the Google API fails, we should queue a retry).
+Google Drive: The Google Sheet likely contains links to documents stored on Drive. We ensure that when documents are uploaded to an Invoice record, they are also placed in the Drive and the link is captured. Possibly automate uploading the attachments to a specific Drive folder (e.g., a folder per month or per project).
+Email: Possibly send emails to clients with the invoice and acts attached (though in practice, PMs might handle this manually by downloading from ERPNext and emailing). We can streamline by having a button "Email to Customer" on the invoice record, which composes an email with all relevant attachments.
+Telegram Notifications: The Administrator should get a Telegram alert whenever a new subcontractor invoice is uploaded (so they know to review it). This can be via the bot service pushing a message like "New subcontractor bill for Project X, amount Y uploaded."
+User Interface:
+Invoice Entry Form: Likely implemented in the custom frontend (or as a simple doctype form in ERPNext if we integrate it there). The form should capture all required fields and have an attachment section for uploading files.
+Google Sheet Link: Provide a quick link from the UI to open the Google Sheet for finance, since accounting staff might want to review the full sheet (with totals and summaries).
+Invoice List and Status Update: A view for administrators to see all invoices/bills and their statuses, with filters (e.g., all "Awaiting Payment" invoices). They should be able to select one and change status to Paid or others via an action.
+Permissions: Only finance roles (Accountant, Admin) and project managers should have access to this module’s data. Clients do not see invoices in the portal (explicitly noted: clients have no access to financial data). We will enforce that by not exposing invoice info on client-facing interfaces and by ERPNext permissions.
+Metrics: This module feeds critical financial metrics:
+Accounts receivable aging (outstanding client payments over time).
+Total subcontractor costs per project vs invoices to client (project profitability).
+Payment cycle times (how quickly invoices are paid).
+These metrics will be part of the analytics available to admins (via bot queries or dashboards).
+5. HR and Payroll Management
+Purpose: Automate employee time tracking and payroll calculations for the company’s staff (up to ~20 people), integrating this data with the rest of the system. While not as elaborate as a full HR module, it ensures salaries are computed based on recorded work.
+Entities and Data Model:
+ERPNext: PayrollEntryCustom – a customized payroll entry DocType. It likely extends ERPNext’s standard Payroll Entry or Salary Slip. Fields might include:
+Employee, Salary amount, Advance paid, Deductions, Net Payable (these can be computed).
+Pay Period (month/quarter).
+Status (Draft, Completed).
+Possibly links to timesheets or attendance if those are used.
+ERPNext: Employee and Attendance – we might leverage ERPNext’s built-in Employee records and Attendance or Timesheet DocTypes. The text suggests the admin department maintains a record of work schedules, leaves, etc. If not using Timesheets, they may just manually input data for payroll.
+There may not be heavy customization here beyond the PayrollEntryCustom to capture specific calculation logic.
+Business Logic:
+Time & Attendance Tracking: Admin/HR will keep track of each employee’s working days, leave, overtime, etc., likely outside or in a simple form. We can introduce an Attendance DocType (if not already used) for each day or a Timesheet for each month per employee.
+Payroll Calculation: At the end of the pay period (monthly or quarterly), the Chief Accountant will use PayrollEntryCustom to calculate salaries:
+Enter the base salary or total due for each employee. The system can assist by auto-fetching standard salary from Employee master.
+Deduct any advances given (the model mentions "зарплата - аванс", salary minus advance). Possibly have fields for advance payments recorded.
+The before_save or validate hook on PayrollEntryCustom auto-computes the final amount (total_payable) as Salary minus Advance. If there are other components (bonuses, deductions), those can be included in the calculation formula or additional child table.
+Ensure that for each employee, only one payroll entry per period is created to avoid duplication.
+Payout Process: Once payroll entries are confirmed, they serve as an internal record. Actual payment (bank transfer, etc.) is done outside the system, but after processing, the Accountant can mark them as paid or export a report for the bank.
+Tax Reporting: The accountant uses the data to prepare tax reports (like income tax, social contributions). The system could aid by summing up the payroll across the company (for forms like 6-НДФЛ in Russia, etc.). We might provide a simple report that aggregates salaries and tax amounts.
+Leave Management: Not detailed in the business model, but since they mention keeping track of vacations and sick leaves, we might incorporate:
+An Employee Leave record (could use ERPNext’s Leave Application) to record when someone is on leave.
+This could inform payroll (e.g., unpaid leave days could reduce salary).
+Security: Salary info is sensitive, so only HR and Accountant roles should access this data. Implement proper permission controls on PayrollEntryCustom (and maybe hide Employee salary info from other roles).
+API:
+We may not need external API endpoints for payroll (as it's internal). However, for completeness:
+GET /payroll?month=... – would list payroll entries for that period (restricted to authorized users).
+If timesheets are used, possibly an endpoint to fetch an employee's timesheet or to log hours (though likely unnecessary if done in ERPNext UI).
+Integrations:
+Possibly integration with external accounting software if they handle payroll taxes there. But likely, the scope is just to record and calculate internally.
+Could integrate with Google Sheets if the accountant prefers to have a sheet for payroll. But given the small team, the ERPNext reports might suffice.
+No explicit integration mentioned, so this module might largely reside within ERPNext.
+User Interface:
+HR Dashboard: A simple page where HR can see a list of employees and their attendance status, and initiate payroll generation each month.
+Payroll Form: A form (based on PayrollEntryCustom) where the accountant can select a month and generate entries for all employees. ERPNext has a concept of Payroll Entry that can pull in all employees' salaries at once; we might mimic or use that.
+Possibly a custom printable payslip for each employee, though not requested, could be a nice addition.
+Reports: Provide reports like "Total Salary Expenses by month", and lists of employees with their payment details for the accountant.
+Metrics: Track total payroll cost, and possibly how it trends. This can be combined with project profitability (if we allocate staff cost per project). However, since that detail isn't asked, we'll focus on basic metrics like monthly payroll total. This could feed into the financial analysis (expenses by project if allocation exists, or just overall expense).
+6. Document and Attachment Management
+Purpose: Ensure centralized storage, organization, and lifecycle management of all files (photos, documents) related to projects, requests, and reports. This module addresses how documents are attached, approved, and stored.
+Entities and Data Model:
+ERPNext: PhotoAttachment and DocumentAttachment – custom DocTypes used to represent files uploaded (the model suggests potentially merging them into CustomAttachment to handle any file type). Fields likely include:
+File reference (could be a link to the file in the ERPNext file system or an external URL to Google Drive).
+Linked Document Type and ID (to know if this attachment belongs to a Project, Request, or Report).
+Attachment type or category (photo, contract, report, etc.).
+Metadata like uploaded by, upload timestamp.
+Google Drive will serve as external storage for files. We might not replicate all file meta in ERPNext if we directly use Drive, but maintaining an index in ERPNext (via Attachment DocType or the built-in File DocType) is useful for permission control and quick access.
+Business Logic:
+File Upload Process: Users (engineers, PMs, office manager) will attach files through the UI or via the bot (photos). The system should store the file and create a record (PhotoAttachment/DocumentAttachment). If merging into CustomAttachment, one DocType can have a field indicating the category.
+Approval and Signing: Certain documents (like contracts, acts) go through approval outside the system (e.g., sign on paper). Our system will store drafts and final signed versions. We need conventions:
+For example, an unsigned Act (ServiceReport) PDF could be stored as a document attachment; later the signed scanned copy is stored as another attachment.
+It might be useful to mark attachments with a status (draft, signed, etc.) or simply ensure version control by date.
+Centralized Storage: The business model explicitly says all files related to projects (photos, acts) are stored in a single repository (Google Drive), and separate project folders are not required. This simplifies Drive structure but means we rely on naming conventions or metadata to group files by project. We will:
+Choose a Google Drive folder (e.g., "Ferum Files") where all files are uploaded.
+When uploading a file, prefix or tag the filename with the project or request ID (e.g., "PRJ1001_Request2003_photo1.jpg") so that it's discoverable.
+Alternatively, use Drive metadata or a spreadsheet index. But simplest is naming.
+The ERPNext attachment record will keep a link or the Drive file ID.
+Deletion: To avoid orphaned files, when an attachment record is deleted from ERPNext, the corresponding file should be removed from storage. Implement a server script (on_trash hook) on the Attachment DocType to perform deletion:
+If file is stored in ERPNext file system, delete it from disk.
+If stored on Drive, call the Drive API to delete the file permanently.
+Include checks to not delete if file might be referenced elsewhere (though if we keep one record per file, that’s fine).
+No Duplicate Storage: If a file is uploaded to ERPNext and we also copy to Drive, decide whether to keep it in ERPNext. Possibly, to save database space, we might configure ERPNext’s File storage to use external storage (Frappe can be configured with Google Cloud or WebDAV; but custom integration with Drive might be needed).
+A simpler approach: store files only in Drive and save the Drive URL in the ERPNext attachment doctype. Then the UI would fetch from Drive when needed. This requires the Drive files to have accessible links (perhaps using Google Drive API to generate a sharing link).
+Alternatively, keep a copy in ERPNext (for quick access in the app) and also backup to Drive. Given likely file sizes (photos), doubling storage might be acceptable.
+API:
+Possibly provide an endpoint POST /attachments for the bot to send files (like the /upload_photo command will use a bot API to send the file which eventually hits our server to store).
+GET /attachments?document_type=ServiceRequest&doc_id=123 – list attachments for a given record, to display in the UI or via bot command.
+These mostly wrap around ERPNext’s file handling or our custom attachment records.
+Integrations:
+Google Drive: Core to this module. Use the Drive API with a service account to upload files. We need to handle authentication (store credentials securely). When uploading a file via ERPNext, perhaps trigger a background job that pushes it to Drive and updates the record with the Drive link.
+Alternatively, use Google Drive Backup & Sync manually, but an automated approach is better for consistency.
+We should also handle the scenario of retrieving files: If a user clicks an attachment in ERPNext, it should open the file (maybe directly from Drive if we have the link).
+No other integrations required beyond Drive, since storage is the main concern.
+User Interface:
+Attachment Controls: In forms (Project, Request, Report), use the standard attachment section (ERPNext has a built-in attachment widget that we can utilize). We might customize it to show thumbnails for photos.
+For the React frontend, create an Attachment Gallery component, especially for Service Requests where multiple photos are common. Engineers should be able to see all photos they uploaded for a request, add more, or remove if needed (with permissions).
+Document Library: Possibly provide an interface for admins to browse all uploaded files (maybe by date or type), which could be useful if someone needs to find a document outside the context of a specific record. However, given everything is linked appropriately, this might not be crucial.
+Keep the UI simple by not enforcing any manual categorization; rely on the context of where the file is attached.
+Security and Permissions:
+Ensure that customers (client role) cannot see attachments that are not theirs. Since customers have access only to their projects/requests, and attachments are linked to those, our record-level permission enforcement will cover it.
+Internal users should see attachments relevant to their roles (e.g., engineers see attachments on their requests).
+Sensitive documents (like financial scans) should perhaps be restricted to finance roles. For instance, invoice attachments might not be visible to engineers. We can achieve this if invoice attachments are linked to Invoice records which only finance can access.
+We might implement separate DocTypes for different categories if needed with different permissions, or a field in CustomAttachment indicating sensitivity and then apply permission rules accordingly.
+Maintenance:
+Over time, Drive can accumulate a lot of files. We should plan for backup or retention. Perhaps keep all files indefinitely, or if needed, archive old ones offline. Initially, just ensure we have enough storage and organize by naming.
+7. Monitoring, Analytics, and Security
+Purpose: Provide oversight of system processes, on-demand analytics for performance, and maintain a high level of security for data and access. This module covers cross-cutting concerns like logging, reporting, system health monitoring, and security mechanisms.
+Monitoring and Logging:
+Activity Logs: The system should log all significant user actions. ERPNext already logs document creations and modifications (in versions and audit trail). We will enhance this by logging authentication events and important actions (like status transitions of requests, invoice payments) in a structured manner. For example, maintain a custom System Log DocType or use an external logging service for:
+User login attempts (success/failure, for security monitoring).
+Creation of key documents (requests, reports, invoices) – capturing who did it and when.
+Deletions or archival actions.
+These logs are primarily for the Administrator to review if needed (e.g., to investigate any misuse or simply to audit).
+Performance Metrics: The backend (especially if using NestJS or FastAPI) will have instrumentation to track performance metrics such as API response times, number of requests handled, etc. These will be exposed to Prometheus for real-time monitoring.
+Prometheus Integration: Deploy a Prometheus exporter or use existing ones for:
+Basic server metrics (CPU, memory, etc. if self-hosted).
+Application-specific metrics: e.g., count of open requests, overdue requests, average closure time updated periodically, etc. We might create a small endpoint or use Prometheus client library in FastAPI to expose these custom metrics.
+Prometheus will scrape these metrics periodically. We can set up Grafana (if available) for nice dashboards, though not explicitly required.
+Error Tracking (Sentry): Integrate Sentry into both backend and possibly the frontend React app. In the backend, use Sentry SDK to capture exceptions and send to a Sentry server (we might use Sentry’s cloud or self-host). This helps quickly catch errors or crashes in the system. In the React frontend, include Sentry JS to catch any UI errors as well.
+Telegram Admin Bot: Possibly extend the Telegram bot to have admin commands to check system status. For instance, an admin could send /stats to get a summary of key metrics (open requests count, recent errors, etc.), or /logs to fetch recent logs. This is a nice-to-have for quick monitoring on mobile.
+Analytics and Reporting:
+On-Demand Analytics Reports: The system will generate analytical summaries on request. For example, an administrator or director might press a button or send a bot command to get an analytics report on:
+Average request completion time, engineer workload, project profitability, expense vs revenue, etc..
+These analytics are computed by querying the ERPNext database (or using its reports) and possibly combining data (requests, invoices, payroll).
+To avoid heavy computation each time, an Analytics module in the backend will cache results in memory or Redis for a few hours. For instance, if "monthly financial summary" is requested, compute it and cache so subsequent requests within, say, 6 hours get the cached result.
+The analytics results are delivered through the Telegram bot as messages (and not via file export for now). This is a conscious decision to prevent data leaks – by not allowing exports, we ensure sensitive analytics are only seen by authorized roles via a secure channel.
+Some analytics might also be shown on dashboards within the app (e.g., an admin dashboard web page with charts for KPIs).
+Google Sheets Analytics: There is mention of Google Sheets for analytics of invoices. We might maintain a Google Sheet that is updated with key stats, or simply rely on the real data and compute on the fly. Alternatively, we might export certain data to Google Sheets if the director wants to play with it. But given security concerns, probably better to keep analytics within the system or via the bot.
+Security:
+Authentication: Implement robust auth using JWT tokens for the custom backend API, combined with Two-Factor Authentication (2FA) for user login. Concretely:
+Users (especially those using the React frontend or mobile) will log in with username/password to obtain a JWT. The system should verify credentials against ERPNext (which could be via API or a single sign-on approach).
+After password, require a 2FA code (ERPNext supports 2FA via OTP; we can either leverage that or implement TOTP in our auth service). Ensuring at least Admin and other power users have 2FA enabled.
+The JWT will be required for all subsequent API calls. We’ll use middleware (in FastAPI/NestJS) to check the token’s validity and roles (e.g., using JWT guard in NestJS or dependency in FastAPI).
+Token refresh mechanism: possibly implement refresh tokens or just short-lived tokens requiring re-login after some time, to reduce risk.
+Authorization: Enforce role-based access control on all endpoints and UI features. For example:
+Only Admins can access analytics endpoints.
+Only Project Managers/Engineers involved in a request can update it.
+Use a combination of guards/middleware (in the backend) and ERPNext’s permissions (for DocType access) to ensure no privilege escalation.
+In ERPNext, configure User Permissions such that Customer users can only see their own data (e.g., set user permission on Customer = their own company, which ERPNext then uses to restrict records).
+Implement permission_query_conditions for the Customer role on relevant DocTypes like ServiceRequest to enforce at the database query level that they only fetch their records.
+Data Encryption: Protect sensitive personal data in the database:
+Ensure all passwords are hashed (ERPNext does this by default for system users).
+For contact data like emails and phone numbers, consider encrypting them at rest in the DB (ERPNext has an encryption feature for certain fields, or we can handle encryption/decryption in the app). This prevents someone with DB access from reading client contact info.
+Any integration credentials (API keys for Google, etc.) will be stored in environment variables or secure storage, not in code or the DB.
+Network Security: Use HTTPS (TLS) for all external access. We will set up an Nginx reverse proxy in front of the web services (ERPNext and our backend) with a valid SSL certificate. This ensures all data in transit is encrypted.
+Rate Limiting: Implement measures to prevent abuse of the API (especially if some parts are exposed to the internet, like the bot or customer portal). Using something like SlowAPI for FastAPI or built-in rate limiter for NestJS, we will limit the number of requests per user/IP to mitigate brute force or spam. For example, limit login attempts to X per minute, and overall API calls for a user to Y per minute as appropriate.
+Audit and Alerts: If possible, set up alerts for suspicious activities. For instance, multiple failed logins trigger an alert to Admin (via email or Telegram). Access to admin functions could also log an alert.
+Backups: Though not directly security, it’s critical for data protection. The system will automatically perform daily backups of the database and store them securely (e.g., in Google Drive). Backups ensure that in case of any data loss or ransomware, we can recover. Additionally, periodically backup important file attachments.
+User Interface / Tools:
+Admin Dashboard: Provide an interface for admins to see system status: e.g., number of active users, recent errors (pulled from Sentry or logs), backup status (last backup date).
+Analytics Access: Likely via the bot or possibly a protected page. The bot approach is actually quite convenient: e.g., the Director can send /analytics today and get key numbers. We will document the available commands and ensure only authorized roles can invoke them (the bot will check user’s role).
+Sentry Interface: Admins will have access to the Sentry project to review errors in detail.
+No direct UI for Prometheus (that's handled via Grafana if needed), but we can assume DevOps will set that up if required.
+Deliverables in Monitoring & Security:
+Configuration files for Prometheus and Sentry integration.
+Security documentation (how auth is implemented, password policies, etc.).
+Backup scripts and verification procedures.
+Non-Functional Requirements
+In addition to the functional modules above, the system must meet several non-functional requirements to ensure it is secure, reliable, and maintainable.
+Security and Access Control
+Authentication: Implement JWT-based auth for the custom API with mandatory 2-Factor Authentication for user login. This ensures that even if a password is compromised, a second factor (like an OTP code) is needed to access the system. Use secure password hashing for all user credentials and enforce strong password policies.
+Authorization: Use role-based access controls throughout the system. For ERPNext DocTypes, configure role permissions such that each role only has access to the appropriate read/write actions on each doctype. Implement additional server-side checks (guards) in the backend API to validate the user’s role and ownership for each request. For example, if a Customer tries to access a request that doesn’t belong to them, the API should refuse, even if they manipulate IDs.
+Record-Level Security: Activate ERPNext’s permission query conditions and user permissions to restrict Customer users to only their records. This will be set on ServiceRequest, ServiceProject, etc., linking the record’s customer field to the logged-in user’s allowed customer.
+Data Encryption: Encrypt sensitive fields in the database. Contact information (emails, phone numbers) and any personal IDs should be stored encrypted (using Frappe’s encryption for DocType fields or custom encryption in the backend). All passwords and tokens will be hashed or encrypted.
+Transport Security: All external traffic must go through HTTPS via Nginx reverse proxy with TLS. We will obtain and configure certificates (e.g., Let’s Encrypt) for the domain.
+Rate Limiting: Protect the APIs from brute force and DDoS by rate limiting requests. Using SlowAPI (for FastAPI) or similar middleware, set global and per-user limits. For instance, max 5 login attempts per 15 minutes per IP, and perhaps ~100 requests per minute per user for normal operations (tune as needed).
+Audit Trails: Maintain detailed audit logs of user activities (logins, critical changes). These logs should be stored securely and monitored for anomalies. Consider enabling ERPNext’s built-in audit trail and augment with custom logging for the custom backend.
+Security Testing: Perform vulnerability scanning and penetration testing, especially on the new API endpoints. Ensure defenses against SQL injection (use ORM / parameterized queries in Frappe), XSS (use ERPNext sanitization for forms, and proper encoding in React), CSRF (ERPNext has protection for its forms; for custom API, enforce CORS rules and anti-CSRF tokens if needed).
+Backup and Recovery: See Backup section below for data protection in case of incidents.
+Observability and Monitoring
+Application Logging: Implement structured logging in both ERPNext (Python) and the custom backend. Key events (e.g., a service request status change) should produce log entries that can be reviewed later. Use a consistent format and include context (user, timestamp, ids).
+Error Tracking: Integrate Sentry for real-time error tracking. Configure the Python code and Node/Python backend to send exception details to a Sentry project. This will capture stack traces and user context, aiding in quick bug-fixing.
+Performance Monitoring: Expose key metrics via Prometheus. Use a Prometheus client to record metrics like:
+Number of open requests, number of new requests per day.
+Average request resolution time.
+System health metrics (memory usage, API response time).
+These metrics can be visualized on a Grafana dashboard for the team.
+Uptime Monitoring: Ensure the deployment includes uptime checks (could use an external service or a simple script) for the main services (ERPNext site, API server, bot).
+Alerts: Set up alerts for critical conditions. For example, if Prometheus finds high error rate or Sentry gets a flood of errors, send an alert to administrators (maybe via Telegram or email). Also, if a backup fails or falls out of date, alert the team.
+Logging Infrastructure: If logs become too voluminous, consider using a centralized log solution (like ELK stack or cloud logging). Initially, system logs can be kept in files/DB and rotated. But scaling might require a better approach.
+CI/CD and Deployment
+Version Control: All code resides in GitHub (ferum_customs repo) and is versioned. Developers should use feature branching and pull requests for changes.
+Continuous Integration: Set up GitHub Actions for CI. The CI pipeline will:
+Run automated tests (unit tests, integration tests) on every push.
+Lint and format code (perhaps using pre-commit hooks as mentioned
+GitHub
+ and CI to enforce style).
+Build the frontend (if applicable) and backend for deployment artifacts.
+Report code coverage (the repository has Codecov badge
+GitHub
+ indicating coverage is tracked).
+Testing: Aim for thorough test coverage, particularly for business-critical logic. Tests should cover:
+CRUD operations for all DocTypes.
+Workflow transitions and server script behaviors (e.g., cannot close request without report).
+Permission rules (e.g., a client user should be unable to access another client’s data – simulate with API calls in tests).
+Integration points (perhaps use mocks for Google API calls to test that they trigger correctly).
+Continuous Deployment: Use GitHub Actions (or another CI tool) to deploy to staging and production environments automatically after tests pass. This could involve:
+Building Docker images for the ERPNext app and the custom backend.
+Pushing to a registry.
+On production server, pulling the new images and restarting services (could use Kubernetes or Docker Compose deploy).
+Alternatively, use bench migrate for ERPNext app updates and a rolling update for backend.
+Environment Configuration: Manage secrets and config via environment variables (as indicated in the repo .env.example
+GitHub
+). Ensure that sensitive values (API tokens, DB passwords) are not hard-coded and are securely supplied in deployment.
+Modular Architecture Consideration: Although currently the system is largely a monolith (ERPNext app + one backend), structure the code into modules to allow future extraction into microservices. For instance, keep the analytics logic separate so it could run on a separate service if needed later. The CI/CD should accommodate deploying these components independently if it happens.
+Documentation: The CI process should also publish or package documentation if available (like the developer docs in the repo). Maintain a CHANGELOG for releases so the team and users know what’s updated.
+Backup and Disaster Recovery
+Database Backups: Implement daily automatic backups of the ERPNext database (PostgreSQL, as they plan). Use a cron job or scheduler to dump the database to a file.
+The backup file should then be uploaded to Google Drive (or another remote storage) for safekeeping.
+Keep a rotation of backups (e.g., last 7 daily backups, last 4 weekly backups).
+Encrypt backup files (since they contain sensitive data) before uploading, or ensure the Drive is access-controlled.
+File Backups: Since files are stored on Google Drive already as the primary store, they are inherently on the cloud. But we should also backup any files stored in ERPNext (if any remain in the private file system).
+Could schedule a script to copy new files to Drive or another storage.
+Log file backup actions and any failures.
+Archive Logs: Periodically archive system logs to Drive as well. For example, compress and upload logs monthly. This can help in post-mortem analyses if something goes wrong.
+Recovery Plan: Document the steps to restore the system in case of failure:
+How to restore the database from a backup.
+How to redeploy the applications (using Docker/bench as per docs).
+Verify that a restored system works in a staging environment periodically.
+Testing Backups: Occasionally perform a test restore on a separate environment to ensure backups are valid and complete.
+Resilience: Use database transaction and concurrency controls to keep data consistent. And ensure that if part of the integration fails (e.g., Google Sheets update), the system can retry without data loss.
