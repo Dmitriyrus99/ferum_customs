@@ -26,10 +26,10 @@ class ServiceReport(Document):
         self._clean_fields()
         self._validate_work_items()
         self._set_customer_from_service_request()
-        self.calculate_totals()
+        self.calculate_total_payable()
 
     def before_save(self) -> None:
-        pass  # Removed duplicate call to calculate_totals
+        self.calculate_total_payable()
 
     def on_submit(self) -> None:
         pass
@@ -94,7 +94,7 @@ class ServiceReport(Document):
                     exc_info=True,
                 )
 
-    def calculate_totals(self) -> None:
+    def calculate_total_payable(self) -> None:
         total_qty: float = 0.0
         total_pay: float = 0.0
 
@@ -127,5 +127,5 @@ class ServiceReport(Document):
         """Create a Sales Invoice draft for this report."""
         from ferum_customs import api
 
-        self.calculate_totals()
+        self.calculate_total_payable()
         return str(api.create_invoice_from_report(self.name))
