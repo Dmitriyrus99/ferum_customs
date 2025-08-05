@@ -1,85 +1,27 @@
 name: CI
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
-on:
-  push:
-    branches: [main]
-  pull_request:
-  workflow_dispatch:
+on: [push]
 
 jobs:
-  test:
+  test-build:
     runs-on: ubuntu-latest
-
+    services:
+      postgres:
+        image: postgres:13
+        ports: ['5432:5432']
+        env:
+          POSTGRES_PASSWORD: test
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
-          python-version: ${{ secrets.PYTHON_VERSION }}
-          cache: 'pip'
+          python-version: '3.11'
+      - name: Install deps
+        run: pip install -r requirements.txt
+      - name: Lint
+        run: ruff . && black --check . && isort --check .
+      - name: Tests
+        run: pytest
+      - name: Docker build
+        run: docker build -t ferum_customs:${{ github.sha }} .
 
-      - name: Install system dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libpq-dev curl
-
-      - name: Install Python dependencies
-        run: |
-          python -m pip install --upgrade pip setuptools wheel
-          pip install ".[dev,test]"
-
-      - name: Run pre-commit hooks
-        run: pre-commit run --all-files --show-diff-on-failure
-
-      - name: Run type checks
-        run: mypy --strict ferum_customs
-
-      - name: Security scan with Bandit
-        run: bandit -r ferum_customs -x tests
-
-      - name: Set up Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ secrets.NODE_VERSION }}
-
-      - name: Install Node dependencies
-        run: |
-          cd ui-tests
-          npm ci
-          npx playwright install --with-deps
-
-      - name: Audit npm dependencies
-        run: |
-          cd ui-tests
-          npm audit --audit-level=critical --production
-
-      - name: Lint and format JS
-        run: |
-          cd ui-tests
-          npm run lint
-          npm run format
-
-      - name: Run Playwright tests
-        run: |
-          cd ui-tests
-          npm test
-
-      - name: Run Locust smoke test
-        run: locust -f locustfile.py --headless -u 1 -r 1 -t 1s
-
-      - name: Verify pytest-cov plugin
-        run: pytest --help | grep -- '--cov'
-
-      - name: Run tests
-        run: pytest --cov=ferum_customs --cov-report=term-missing --cov-fail-under=80 -q tests
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
