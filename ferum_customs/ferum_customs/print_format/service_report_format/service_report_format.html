@@ -1,0 +1,25 @@
+<h3>Service Report</h3>
+<p>Request: {{ doc.service_request }}</p>
+<p>Date: {{ doc.get_formatted('date') }}</p>
+
+<h4>Work Items</h4>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Description</th>
+            <th>Quantity</th>
+            <th>Cost</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in doc.work_items %}
+        <tr>
+            <td>{{ item.description }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>{{ item.get_formatted('cost') }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<p><b>Total Cost:</b> {{ doc.get_formatted('total_cost') }}</p>

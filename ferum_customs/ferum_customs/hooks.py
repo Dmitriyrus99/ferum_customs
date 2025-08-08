@@ -13,11 +13,9 @@ app_license = "MIT"
 
 # Explicitly define doc_events for clarity
 doc_events = {
-    "Service Request": {
-        "on_update": "ferum_customs.custom_hooks.on_service_request_update",
-        "on_delete": "ferum_customs.custom_hooks.on_service_request_delete",
-    },
-    # Add other DocTypes and their events as needed
+    "ServiceRequest": {
+        "on_submit": "ferum_customs.notifications.send_telegram_notification"
+    }
 }
 
 permission_query_conditions = {

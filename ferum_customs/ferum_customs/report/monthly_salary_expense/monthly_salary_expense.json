@@ -1,0 +1,9 @@
+{
+ "doctype": "Report",
+ "name": "Monthly Salary Expense",
+ "module": "Ferum Customs",
+ "is_standard": "Yes",
+ "report_name": "Monthly Salary Expense",
+ "ref_doctype": "PayrollEntryCustom",
+ "report_type": "Script Report"
+}

@@ -1,70 +1,51 @@
-[
+{
+ "name": "ServiceProject",
+ "doctype": "DocType",
+ "module": "Ferum Customs",
+ "custom": 1,
+ "fields": [
   {
-    "doctype": "DocType",
-    "custom": 1,
-    "name": "Service Project",
-    "module": "Ferum Customs",
-    "engine": "InnoDB",
-    "track_changes": 1,
-    "title_field": "project_name",
-    "description": "Service maintenance project with contract details.",
-    "fields": [
-      {
-        "fieldname": "project_name",
-        "label": "Project Name",
-        "fieldtype": "Data",
-        "reqd": 1,
-        "in_list_view": 1
-      },
-      {
-        "fieldname": "contract_no",
-        "label": "Contract No",
-        "fieldtype": "Data",
-        "reqd": 1,
-        "in_list_view": 1
-      },
-      {
-        "fieldname": "client",
-        "label": "Client",
-        "fieldtype": "Link",
-        "options": "Customer",
-        "reqd": 1,
-        "in_list_view": 1
-      },
-      {
-        "fieldname": "start_date",
-        "label": "Start Date",
-        "fieldtype": "Date",
-        "reqd": 1
-      },
-      {
-        "fieldname": "end_date",
-        "label": "End Date",
-        "fieldtype": "Date",
-        "reqd": 1
-      },
-      {
-        "fieldname": "total_amount",
-        "label": "Total Amount",
-        "fieldtype": "Currency"
-      },
-      {
-        "fieldname": "response_time_min",
-        "label": "Response Time (min)",
-        "fieldtype": "Int",
-        "default": "15"
-      },
-      {
-        "fieldname": "objects",
-        "label": "Objects",
-        "fieldtype": "Table",
-        "options": "Project Object Item"
-      }
-    ],
-    "permissions": [
-      {"role": "System Manager", "read": 1, "write": 1, "create": 1, "delete": 1, "submit": 1, "cancel": 1, "amend": 1},
-      {"role": "Administrator", "read": 1, "write": 1, "create": 1, "delete": 1, "submit": 1, "cancel": 1, "amend": 1},
-      {"role": "Project Manager", "read": 1, "write": 1, "create": 1, "delete": 0, "submit": 1, "cancel": 0, "amend": 0}
-    ]
+   "fieldname": "project_name",
+   "fieldtype": "Data",
+   "label": "Project Name",
+   "reqd": 1
+  },
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "label": "Customer",
+   "options": "Customer",
+   "reqd": 1
+  },
+  {
+   "fieldname": "start_date",
+   "fieldtype": "Date",
+   "label": "Start Date"
+  },
+  {
+   "fieldname": "end_date",
+   "fieldtype": "Date",
+   "label": "End Date"
+  },
+  {
+   "fieldname": "cost",
+   "fieldtype": "Currency",
+   "label": "Cost"
+  },
+  {
+   "fieldname": "service_objects",
+   "fieldtype": "Table",
+   "label": "Service Objects",
+   "options": "ProjectObjectItem"
   }
-]
+ ],
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1
+  }
+ ]
+}

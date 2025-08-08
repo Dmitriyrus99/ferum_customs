@@ -21,7 +21,7 @@ jobs:
       - name: Lint
         run: ruff . && black --check . && isort --check .
       - name: Tests
-        run: pytest
+        run: pytest tests/
       - name: Docker build
         run: docker build -t ferum_customs:${{ github.sha }} .
 

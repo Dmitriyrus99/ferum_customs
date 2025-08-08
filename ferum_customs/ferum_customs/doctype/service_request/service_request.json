@@ -1,78 +1,60 @@
-[
+{
+ "name": "ServiceRequest",
+ "doctype": "DocType",
+ "module": "Ferum Customs",
+ "custom": 1,
+ "fields": [
   {
-    "doctype": "DocType",
-    "custom": 1,
-    "name": "Service Request",
-    "module": "Ferum Customs",
-    "engine": "InnoDB",
-    "track_changes": 1,
-    "is_submittable": 1,
-    "title_field": "request_type",
-    "fields": [
-      {
-        "fieldname": "request_type",
-        "label": "Request Type",
-        "fieldtype": "Select",
-        "options": "Maintenance\nEmergency",
-        "reqd": 1
-      },
-      {
-        "fieldname": "project",
-        "label": "Project",
-        "fieldtype": "Link",
-        "options": "Service Project",
-        "reqd": 1
-      },
-      {
-        "fieldname": "object",
-        "label": "Object",
-        "fieldtype": "Link",
-        "options": "Service Object",
-        "reqd": 1
-      },
-      {
-        "fieldname": "priority",
-        "label": "Priority",
-        "fieldtype": "Int",
-        "default": "3"
-      },
-      {
-        "fieldname": "status",
-        "label": "Status",
-        "fieldtype": "Select",
-        "options": "Open\nAssigned\nIn Progress\nClosed",
-        "default": "Open"
-      },
-      {
-        "fieldname": "assigned_to",
-        "label": "Assigned To",
-        "fieldtype": "Link",
-        "options": "User"
-      },
-      {
-        "fieldname": "description",
-        "label": "Description",
-        "fieldtype": "Text"
-      },
-      {
-        "fieldname": "assign_by",
-        "label": "Assign By",
-        "fieldtype": "Datetime",
-        "read_only": 1
-      },
-      {
-        "fieldname": "close_by",
-        "label": "Close By",
-        "fieldtype": "Datetime",
-        "read_only": 1
-      }
-    ],
-    "permissions": [
-      {"role": "System Manager", "read": 1, "write": 1, "create": 1, "delete": 1, "submit": 1, "cancel": 1, "amend": 1},
-      {"role": "Administrator", "read": 1, "write": 1, "create": 1, "delete": 1, "submit": 1, "cancel": 1, "amend": 1},
-      {"role": "Project Manager", "read": 1, "write": 1, "create": 1, "submit": 1},
-      {"role": "Engineer", "read": 1, "write": 1},
-      {"role": "Client", "read": 1, "write": 1}
-    ]
+   "fieldname": "subject",
+   "fieldtype": "Data",
+   "label": "Subject",
+   "reqd": 1
+  },
+  {
+   "fieldname": "type",
+   "fieldtype": "Select",
+   "label": "Type",
+   "options": "\nBug\nFeature\nQuestion"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "\nOpen\nIn Progress\nClosed"
+  },
+  {
+   "fieldname": "priority",
+   "fieldtype": "Select",
+   "label": "Priority",
+   "options": "\nLow\nMedium\nHigh\nUrgent"
+  },
+  {
+   "fieldname": "service_project",
+   "fieldtype": "Link",
+   "label": "Service Project",
+   "options": "ServiceProject"
+  },
+  {
+   "fieldname": "service_object",
+   "fieldtype": "Link",
+   "label": "Service Object",
+   "options": "ServiceObject"
+  },
+  {
+   "fieldname": "photo_attachments",
+   "fieldtype": "Table",
+   "label": "Photo Attachments",
+   "options": "RequestPhotoAttachmentItem"
   }
-]
+ ],
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1
+  }
+ ],
+ "client_script_file": "service_request.js"
+}

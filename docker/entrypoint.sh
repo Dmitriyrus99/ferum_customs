@@ -1,27 +1,14 @@
 #!/bin/bash
 set -euo pipefail
 
-echo "==> Ferum Customs entrypoint started"
-
-# Validate required environment variables
-: "${DB_ROOT_PASSWORD:?DB_ROOT_PASSWORD is required}"
-: "${ADMIN_PASSWORD:?ADMIN_PASSWORD is required}"
-: "${DB_HOST:=db}"
-: "${SITE_NAME:=}"
+/usr/local/bin/wait_for_db.sh
 
 cd /home/frappe/frappe-bench || { echo "No bench dir!"; exit 1; }
 
 # Fix permissions
-chown -R frappe:frappe sites logs || true
+# chown -R frappe:frappe sites logs || true
 
 INIT_LOCK_FILE="sites/${SITE_NAME}/.docker_site_initialized"
-
-echo "==> Waiting for MariaDB..."
-until mariadb -h "$DB_HOST" -P 3306 -uroot -p"${DB_ROOT_PASSWORD}" -e "SELECT 1" >/dev/null 2>&1; do
-  echo "   ... still waiting"
-  sleep 2
-done
-echo "==> MariaDB ready."
 
 # Idempotent site init
 if [[ -n "$SITE_NAME" ]]; then
@@ -34,8 +21,11 @@ if [[ -n "$SITE_NAME" ]]; then
       echo "==> Creating site $SITE_NAME"
       bench new-site --no-mariadb-socket \
         --admin-password "$ADMIN_PASSWORD" \
-        --mariadb-root-password "$DB_ROOT_PASSWORD" \
-        --db-host "$DB_HOST" "$SITE_NAME"
+        --db-type postgres \
+        --db-host "$DB_HOST" \
+        --db-user "${POSTGRES_USER:-erp_user}" \
+        --db-password "$POSTGRES_PASSWORD" \
+        "$SITE_NAME"
     else
       echo "==> site_config.json exists, skipping new-site"
     fi
@@ -56,43 +46,10 @@ if [[ -n "$SITE_NAME" ]]; then
   bench create-rq-users || true
   bench --site "$SITE_NAME" enable-scheduler || true
   bench set-config -g default_site "$SITE_NAME" || true
+  bench --site "$SITE_NAME" set-config -g enable_two_factor_auth 1 || true
+  #  bench --site "$SITE_NAME" set-config -g sentry_dsn "${SENTRY_DSN}" || true
+  bench --site "$SITE_NAME" set-config -g enable_prometheus 1 || true
 fi
 
-# Update common_site_config
-COMMON_CFG="sites/common_site_config.json"
-[ -f "$COMMON_CFG" ] || echo "{}" > "$COMMON_CFG"
-
-python3 - <<'PY'
-import json
-import os
-
-p = "sites/common_site_config.json"
-with open(p) as f:
-    try:
-        cfg = json.load(f)
-    except Exception:
-        cfg = {}
-cfg["redis_cache"] = os.environ.get("REDIS_CACHE", cfg.get("redis_cache"))
-cfg["redis_queue"] = os.environ.get("REDIS_QUEUE", cfg.get("redis_queue"))
-cfg["redis_socketio"] = os.environ.get("REDIS_SOCKETIO", cfg.get("redis_socketio"))
-if os.environ.get("SITE_NAME"):
-    cfg["default_site"] = os.environ["SITE_NAME"]
-with open(p, "w") as f:
-    json.dump(cfg, f, indent=2)
-PY
-
-chown frappe:frappe "$COMMON_CFG"
-
-echo "==> bench set-config for redis"
-bench set-config -g redis_cache "${REDIS_CACHE:-}" || true
-bench set-config -g redis_queue "${REDIS_QUEUE:-}" || true
-bench set-config -g redis_socketio "${REDIS_SOCKETIO:-}" || true
-
-echo "==> Build assets (non-fatal)"
-bench build || true
-
-echo "==> Remove redis lines from Procfile (use external redis)"
-sed -i '/redis_cache/d;/redis_queue/d;/redis_socketio/d' Procfile || true
-
-echo "==> Starting CMD: $*"
-exec "$@"
+echo "==> Starting CMD: bench start"
+exec bench start

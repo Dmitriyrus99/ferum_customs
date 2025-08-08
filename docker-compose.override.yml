@@ -1,12 +1,7 @@
-# This is the docker-compose.override.yml file for the Frappe application.
-# It defines additional services and configurations for local development.
-version: '3.8'  # Specify the Docker Compose file format version
+version: '3.8'
 
 services:
   frappe:
     volumes:
-      # Mounting the custom app directory as read-only
-      - ./ferum_customs:/home/frappe/frappe-bench/apps/ferum_customs:ro
-      # Mounting the sites directory as read-only
-      - ./sites:/home/frappe/frappe-bench/sites:ro
-      # Ensure that these directories do not contain sensitive information
+      - ./ferum_customs:/home/frappe/frappe-bench/apps/ferum_customs
+      - ./frappe-bench/sites:/home/frappe/frappe-bench/sites
