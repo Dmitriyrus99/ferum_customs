@@ -8,7 +8,7 @@ ARG ERPNEXT_BRANCH=version-15
 # 1) Устанавливаем redis-server для bench init
 USER root
 RUN apt-get update \
- && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends redis-server \
+ && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends redis-server rclone \
  && rm -rf /var/lib/apt/lists/*
 USER frappe
 
@@ -47,7 +47,8 @@ WORKDIR /home/frappe/frappe-bench
 COPY --from=builder /home/frappe/frappe-bench /home/frappe/frappe-bench
 
 COPY --chown=frappe:frappe docker/entrypoint.sh /usr/local/bin/docker-entrypoint.sh
-RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+COPY --chown=frappe:frappe docker/wait_for_db.sh /usr/local/bin/wait_for_db.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh /usr/local/bin/wait_for_db.sh
 
 VOLUME ["/home/frappe/frappe-bench/sites"]
 EXPOSE 8000 9000

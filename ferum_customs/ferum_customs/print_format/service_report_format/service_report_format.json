@@ -1,0 +1,8 @@
+{
+ "doctype": "Print Format",
+ "doc_type": "ServiceReport",
+ "name": "Service Report Format",
+ "module": "Ferum Customs",
+ "custom_format": 1,
+ "html": "service_report_format.html"
+}

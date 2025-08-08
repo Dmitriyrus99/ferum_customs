@@ -1,2 +1,7 @@
 fastapi==0.115.14
 frappe==0.0.1
+PyJWT==2.8.0
+sentry-sdk==1.40.0
+gspread==5.7.2
+google-auth==2.22.0
+cachetools==5.3.0

@@ -1,0 +1,9 @@
+{
+ "doctype": "Report",
+ "name": "Project Profitability",
+ "module": "Ferum Customs",
+ "is_standard": "Yes",
+ "report_name": "Project Profitability",
+ "ref_doctype": "ServiceProject",
+ "report_type": "Script Report"
+}

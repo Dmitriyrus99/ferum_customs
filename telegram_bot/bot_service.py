@@ -48,6 +48,22 @@ class PhotoStates(StatesGroup):
     confirming = State()
 
 
+class ServiceRequestStates(StatesGroup):
+    """Conversation flow for service request creation."""
+
+    waiting_subject = State()
+    waiting_type = State()
+    waiting_priority = State()
+    waiting_service_object = State()
+
+
+class PhotoUploadStates(StatesGroup):
+    """Conversation flow for photo upload."""
+
+    waiting_request_name = State()
+    waiting_photo = State()
+
+
 app = FastAPI(title="Ferum Bot Service")
 
 

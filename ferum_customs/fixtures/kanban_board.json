@@ -1,0 +1,20 @@
+[
+    {
+        "doctype": "Kanban Board",
+        "name": "Service Request Status",
+        "kanban_board_name": "Service Request Status",
+        "reference_doctype": "ServiceRequest",
+        "field_name": "status",
+        "columns": [
+            {
+                "column_name": "Open"
+            },
+            {
+                "column_name": "In Progress"
+            },
+            {
+                "column_name": "Closed"
+            }
+        ]
+    }
+]

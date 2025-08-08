@@ -1,0 +1,25 @@
+{
+ "name": "RequestPhotoAttachmentItem",
+ "doctype": "DocType",
+ "module": "Ferum Customs",
+ "custom": 1,
+ "istable": 1,
+ "fields": [
+  {
+   "fieldname": "attachment",
+   "fieldtype": "Link",
+   "label": "Attachment",
+   "options": "CustomAttachment",
+   "reqd": 1
+  }
+ ],
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1
+  }
+ ]
+}

@@ -1,18 +1,26 @@
 [
-  {
-    "doctype": "Notification",
-    "name": "Service Request Status Change",
-    "enabled": true,
-    "document_type": "Service Request",
-    "subject": "Статус заявки {{ doc.name | e }} изменен на {{ doc.status | e }}",
-    "message": "Заявка {{ doc.name | e }} находится в статусе {{ doc.status | e }}.",
-    "event": "Value Change",
-    "value_changed": "status",
-    "channel": "Email",
-    "recipients": [
-      {
-        "receiver_by_role": "Проектный менеджер"
-      }
-    ]
-  }
+    {
+        "doctype": "Notification",
+        "name": "Urgent Service Request",
+        "subject": "New Urgent Service Request: {{ doc.name }}",
+        "document_type": "ServiceRequest",
+        "send_to_all_assignees": 1,
+        "message": "A new urgent service request has been created.",
+        "condition": "doc.priority == 'Urgent'"
+    },
+    {
+        "doctype": "Notification",
+        "name": "New Invoice",
+        "subject": "New Invoice: {{ doc.name }}",
+        "document_type": "Invoice",
+        "recipients": [
+            {
+                "receiver_by_role": "Accountant"
+            },
+            {
+                "receiver_by_role": "System Manager"
+            }
+        ],
+        "message": "A new invoice has been created."
+    }
 ]

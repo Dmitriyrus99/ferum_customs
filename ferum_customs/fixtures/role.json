@@ -1,8 +1,6 @@
 [
-  {
-    "doctype": "Role",
-    "name": "Project Manager",
-    "role_name": "Project Manager",
-    "description": "Role assigned to users responsible for overseeing projects."
-  }
+    {
+        "doctype": "Role",
+        "role_name": "Auditor"
+    }
 ]

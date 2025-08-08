@@ -1,52 +1,37 @@
 {
-    "doctype": "DocType",
-    "name": "Custom_Attachment",
-    "module": "Ferum_Customs",
-    "track_changes": 1,
-    "permissions": [
-        {
-            "role": "Specific Role",
-            "read": 1,
-            "write": 1,
-            "create": 1,
-            "delete": 1
-        }
-    ],
-    "fields": [
-        {
-            "fieldname": "attachment_type",
-            "label": "Attachment Type",
-            "fieldtype": "Select",
-            "options": "\nphoto\n\ndocument"
-        },
-        {
-            "fieldname": "parent_reference_sr",
-            "label": "Parent Service Request",
-            "fieldtype": "Link",
-            "options": "Service Request"
-        },
-        {
-            "fieldname": "parent_reference_srep",
-            "label": "Parent Service Report",
-            "fieldtype": "Link",
-            "options": "Service Report"
-        },
-        {
-            "fieldname": "parent_reference_so",
-            "label": "Parent Service Object",
-            "fieldtype": "Link",
-            "options": "Service Object"
-        },
-        {
-            "fieldname": "attachment_file",
-            "label": "Attachment File",
-            "fieldtype": "Attach"
-        },
-        {
-            "fieldname": "attachment_file_description",
-            "label": "Attachment File Description",
-            "fieldtype": "Small Text",
-            "description": "Max file size: 10MB. Allowed types: jpg, png, pdf."
-        }
-    ]
+ "name": "CustomAttachment",
+ "doctype": "DocType",
+ "module": "Ferum Customs",
+ "custom": 1,
+ "fields": [
+  {
+   "fieldname": "file",
+   "fieldtype": "Attach",
+   "label": "File",
+   "reqd": 1
+  },
+  {
+   "fieldname": "attached_to_doctype",
+   "fieldtype": "Link",
+   "label": "Attached To DocType",
+   "options": "DocType",
+   "reqd": 1
+  },
+  {
+   "fieldname": "attached_to_name",
+   "fieldtype": "Dynamic Link",
+   "label": "Attached To Name",
+   "options": "attached_to_doctype",
+   "reqd": 1
+  }
+ ],
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1
+  }
+ ]
 }
