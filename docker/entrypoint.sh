@@ -6,7 +6,7 @@ set -euo pipefail
 cd /home/frappe/frappe-bench || { echo "No bench dir!"; exit 1; }
 
 # Fix permissions
-chown -R frappe:frappe sites logs || true
+# chown -R frappe:frappe sites logs || true
 
 INIT_LOCK_FILE="sites/${SITE_NAME}/.docker_site_initialized"
 
@@ -47,7 +47,7 @@ if [[ -n "$SITE_NAME" ]]; then
   bench --site "$SITE_NAME" enable-scheduler || true
   bench set-config -g default_site "$SITE_NAME" || true
   bench --site "$SITE_NAME" set-config -g enable_two_factor_auth 1 || true
-  bench --site "$SITE_NAME" set-config -g sentry_dsn "${SENTRY_DSN}" || true
+  #  bench --site "$SITE_NAME" set-config -g sentry_dsn "${SENTRY_DSN}" || true
   bench --site "$SITE_NAME" set-config -g enable_prometheus 1 || true
 fi
 

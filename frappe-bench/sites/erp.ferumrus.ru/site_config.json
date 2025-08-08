@@ -1,5 +1,6 @@
 {
-  "db_name": "_d4c01005bd6191dc",
-  "db_password": "REDACTED",
-  "db_type": "mariadb"
+ "allow_tests": true,
+ "db_name": "_d4c01005bd6191dc",
+ "db_password": "REDACTED",
+ "db_type": "mariadb"
 }
